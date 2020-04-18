@@ -1,0 +1,33 @@
+// Layout ——————————————————————————————————————————————————————————————
+
+:root {
+  --screen-padding-x: 20;
+
+  --layout-measure: #{em(640)};
+  --layout-base: calc(100vw - ((2rem / 16) * var(--screen-padding-x)));
+
+  --space-hairline: 1;
+  --space-smallest: 2;
+  --space-smaller: 4;
+  --space-small: 8;
+  --space-mid: 16;
+  --space-big: 24;
+  --space-bigger: 32;
+  --space-biggest: 48;
+
+  --space-rem-smallest: #{rem(var(--space-smallest))};
+  --space-rem-smaller: #{rem(var(--space-smaller))};
+  --space-rem-small: #{rem(var(--space-small))};
+  --space-rem-mid: #{rem(var(--space-mid))};
+  --space-rem-big: #{rem(var(--space-big))};
+  --space-rem-bigger: #{rem(var(--space-bigger))};
+  --space-rem-biggest: #{rem(var(--space-biggest))};
+}
+
+.layout {
+  width: var(--layout-base);
+  max-width: var(--layout-measure);
+  margin: 0 auto;
+  padding-right: env(safe-area-inset-right);
+  padding-left: env(safe-area-inset-left);
+}

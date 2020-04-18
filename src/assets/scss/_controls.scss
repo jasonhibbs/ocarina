@@ -1,0 +1,128 @@
+// Controls ————————————————————————————————————————————————————————————
+
+$icon_arrow-down-dark: url(data:image/svg+xml;base64,PHN2ZyBkYXRhLW5hbWU9ImFycm93LWRvd24tYmxhY2siIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDY0IDQwIj48ZyBvcGFjaXR5PSIwLjM1Ij48cGF0aCBkPSJNNjMuMzYsOC40N0wzMy40NywzOC4zNmEyLDIsMCwwLDEtMi45NSwwTDAuNjQsOC40N0EyLjIxLDIuMjEsMCwwLDEsMCw3LDIuMjEsMi4yMSwwLDAsMSwuNjQsNS41M0wzLjg1LDIuMzJhMi4wOSwyLjA5LDAsMCwxLDEuNDctLjY0LDIuMjEsMi4yMSwwLDAsMSwxLjQ3LjY0TDMyLDI3LjUyLDU3LjIsMi4zMmEyLDIsMCwwLDEsMi45NSwwbDMuMjEsMy4yMUEyLjIxLDIuMjEsMCwwLDEsNjQsNywyLjIxLDIuMjEsMCwwLDEsNjMuMzYsOC40N1oiIGZpbGw9IiMwMDAiLz48L2c+PC9zdmc+Cg==);
+$icon_arrow-down-light: url(data:image/svg+xml;base64,PHN2ZyBkYXRhLW5hbWU9ImFycm93LWRvd24td2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDY0IDQwIj48ZyBvcGFjaXR5PSIwLjM1Ij48cGF0aCBkPSJNNjMuMzYsOC40N0wzMy40NywzOC4zNmEyLDIsMCwwLDEtMi45NSwwTDAuNjQsOC40N0EyLjIxLDIuMjEsMCwwLDEsMCw3LDIuMjEsMi4yMSwwLDAsMSwuNjQsNS41M0wzLjg1LDIuMzJhMi4wOSwyLjA5LDAsMCwxLDEuNDctLjY0LDIuMjEsMi4yMSwwLDAsMSwxLjQ3LjY0TDMyLDI3LjUyLDU3LjIsMi4zMmEyLDIsMCwwLDEsMi45NSwwbDMuMjEsMy4yMUEyLjIxLDIuMjEsMCwwLDEsNjQsNywyLjIxLDIuMjEsMCwwLDEsNjMuMzYsOC40N1oiIGZpbGw9IiNmZmYiLz48L2c+PC9zdmc+Cg==);
+
+:root {
+  --controls-radius: 2px;
+
+  --input-padding-x: 15;
+  --input-padding-y: 10;
+  --input-color: var(--color-text);
+  --input-background-color: var(--contrast-lighter);
+  --input-border-color: transparent;
+  --input-hover-border-color: var(--color-key);
+  --input-focus-color: var(--color-focus);
+}
+
+// Placeholders
+
+%placeholder {
+  color: inherit;
+  opacity: (2/5);
+}
+
+::placeholder {
+  @extend %placeholder;
+}
+
+// Inputs
+
+input[type='text'],
+input[type='email'],
+input[type='search'],
+textarea {
+  appearance: none;
+  box-shadow: none;
+
+  &::-ms-clear {
+    display: none;
+  }
+}
+
+%input-base {
+  --color: var(--input-color);
+  --background-color: var(--input-background-color);
+  --border-color: var(--input-border-color);
+  --hover-border-color: var(--input-hover-border-color);
+  --focus-color: var(--input-focus-color);
+  --padding-x: var(--input-padding-x);
+  --padding-y: var(--input-padding-y);
+  --radius: var(--controls-radius);
+
+  color: var(--color);
+  background-color: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  line-height: (20/16);
+  padding: rem(var(--padding-y)) rem(var(--padding-x));
+  transition: border-color 0.1s, background-color 0.1s, box-shadow 0.1s;
+
+  &:focus,
+  &:hover {
+    outline: none;
+    border-color: var(--hover-border-color);
+  }
+
+  @include focus-shadow(var(--focus-color));
+}
+
+input,
+.input {
+  @extend %input-base;
+}
+
+input[type='date'],
+input[type='time'] {
+  --padding-x: 12;
+  appearance: none;
+  min-height: calc((20em / 16) + (10rem / 16));
+  min-width: 0;
+
+  &[required]::-webkit-clear-button {
+    appearance: none;
+    display: none;
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    height: 0;
+    margin: 0;
+  }
+  &::-webkit-datetime-edit {
+    min-width: em(52);
+  }
+  &::-webkit-datetime-edit-fields-wrapper {
+    padding: 0;
+  }
+  &::-webkit-datetime-edit-minute-field,
+  &::-webkit-datetime-edit-hour-field,
+  &::-webkit-datetime-edit-day-field,
+  &::-webkit-datetime-edit-month-field,
+  &::-webkit-datetime-edit-year-field {
+    padding: 0 2px;
+  }
+}
+
+// Select
+
+%select-base {
+  @extend %input-base;
+
+  appearance: none;
+  background-image: $icon_arrow-down-dark;
+  background-position: right rem(var(--padding-x)) center;
+  background-repeat: no-repeat;
+  background-size: rem(9.5) auto;
+  padding-right: rem(#{'var(--padding-x) * 2'});
+
+  &[multiple] {
+    height: auto;
+    padding-right: rem(var(--padding-x));
+    background-image: none;
+  }
+}
+
+select {
+  @extend %select-base;
+}

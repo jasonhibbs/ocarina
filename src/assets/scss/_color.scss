@@ -1,0 +1,119 @@
+// Colour ——————————————————————————————————————————————————————————————
+
+$color-white: #fff;
+$color-black: hsl(220, 40%, 15%);
+$color-red: hsl(353, 90%, 50%);
+$color-green: hsl(120, 60%, 50%);
+$color-blue: hsl(222, 83%, 60%);
+
+$color-key: $color-blue;
+$color-key-lighter: mix($color-white, $color-key, 20);
+$color-key-darker: mix($color-black, $color-key, 20);
+$color-key-50: fade-out($color-key, 0.5);
+$color-key-40: fade-out($color-key, 0.6);
+$color-key-30: fade-out($color-key, 0.7);
+$color-key-20: fade-out($color-key, 0.8);
+$color-key-10: fade-out($color-key, 0.9);
+$color-text-key: $color-key;
+
+$color-success: $color-green;
+$color-success-lighter: lighten($color-success, 12);
+$color-success-darker: darken($color-success, 8);
+$color-success-50: fade-out($color-success, 0.5);
+$color-success-40: fade-out($color-success, 0.6);
+$color-success-30: fade-out($color-success, 0.7);
+$color-success-20: fade-out($color-success, 0.8);
+$color-success-10: fade-out($color-success, 0.9);
+$color-text-success: lighten($color-success, 10);
+
+$color-error: $color-red;
+$color-error-lighter: lighten($color-error, 12);
+$color-error-darker: darken($color-error, 6);
+$color-error-50: fade-out($color-error, 0.5);
+$color-error-40: fade-out($color-error, 0.6);
+$color-error-30: fade-out($color-error, 0.7);
+$color-error-20: fade-out($color-error, 0.8);
+$color-error-10: fade-out($color-error, 0.9);
+$color-text-error: darken($color-error, 10);
+
+$tint-darkest: fade-out($color-white, 0.4);
+$tint-darker: fade-out($color-white, 0.5);
+$tint-dark: fade-out($color-white, 0.6);
+$tint-mid: fade-out($color-white, 0.7);
+$tint-light: fade-out($color-white, 0.8);
+$tint-lighter: fade-out($color-white, 0.88);
+$tint-lightest: fade-out($color-white, 0.94);
+
+$shade-darkest: fade-out($color-black, 0.2);
+$shade-darker: fade-out($color-black, 0.4);
+$shade-dark: fade-out($color-black, 0.5);
+$shade-mid: fade-out($color-black, 0.7);
+$shade-light: fade-out($color-black, 0.85);
+$shade-lighter: fade-out($color-black, 0.9);
+$shade-lightest: fade-out($color-black, 0.94);
+
+:root {
+  --color-white: #{$color-white};
+  --color-black: #{$color-black};
+  --color-red: #{$color-red};
+  --color-blue: #{$color-blue};
+  --color-green: #{$color-green};
+
+  --color-key: #{$color-key};
+  --color-key-contrast: #{$color-white};
+  --color-key-lighter: #{$color-key-lighter};
+  --color-key-darker: #{$color-key-darker};
+  --color-key-50: #{$color-key-50};
+  --color-key-40: #{$color-key-40};
+  --color-key-30: #{$color-key-30};
+  --color-key-20: #{$color-key-20};
+  --color-key-10: #{$color-key-10};
+  --color-text-key: #{$color-text-key};
+
+  --color-success: #{$color-success};
+  --color-success-contrast: #{$color-white};
+  --color-success-lighter: #{$color-success-lighter};
+  --color-success-darker: #{$color-success-darker};
+  --color-success-50: #{$color-success-50};
+  --color-success-40: #{$color-success-40};
+  --color-success-30: #{$color-success-30};
+  --color-success-20: #{$color-success-20};
+  --color-success-10: #{$color-success-10};
+  --color-text-success: #{$color-text-success};
+
+  --color-error: #{$color-error};
+  --color-error-contrast: #{$color-white};
+  --color-error-lighter: #{$color-error-lighter};
+  --color-error-darker: #{$color-error-darker};
+  --color-error-50: #{$color-error-50};
+  --color-error-40: #{$color-error-40};
+  --color-error-30: #{$color-error-30};
+  --color-error-20: #{$color-error-20};
+  --color-error-10: #{$color-error-10};
+  --color-text-error: #{$color-text-error};
+
+  --color-root: var(--color-white);
+  --color-root-backdrop: #{$tint-darkest};
+
+  --color-contrast: var(--color-black);
+  --color-shade: var(--color-black);
+
+  --contrast-darkest: #{$shade-darkest};
+  --contrast-darker: #{$shade-darker};
+  --contrast-dark: #{$shade-dark};
+  --contrast-mid: #{$shade-mid};
+  --contrast-light: #{$shade-light};
+  --contrast-lighter: #{$shade-lighter};
+  --contrast-lightest: #{$shade-lightest};
+
+  --shade-darkest: #{$shade-darkest};
+  --shade-darker: #{$shade-darker};
+  --shade-dark: #{$shade-dark};
+  --shade-mid: #{$shade-mid};
+  --shade-light: #{$shade-light};
+  --shade-lighter: #{$shade-lighter};
+  --shade-lightest: #{$shade-lightest};
+
+  --color-text: var(--color-contrast);
+  --color-focus: var(--color-key-40);
+}

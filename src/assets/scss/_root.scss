@@ -1,0 +1,56 @@
+// Root ————————————————————————————————————————————————————————————————
+
+:root {
+  --font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-body: var(--font-base);
+
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: (20/16);
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: var(--color-key-20);
+}
+
+*,
+:before,
+:after {
+  box-sizing: inherit;
+  font-weight: inherit;
+}
+
+::selection {
+  background-color: mix($color-white, $color-key, 80);
+}
+
+html {
+  background-color: var(--color-root);
+  color: var(--color-text);
+}
+
+:focus {
+  outline: 3px solid var(--color-focus);
+}
+
+a {
+  color: var(--color-key);
+  text-decoration: none;
+  transition: color 0.1s, background-color 0.1s, outline-color 0.1s;
+
+  &:focus,
+  &:hover {
+    color: var(--color-key-darker);
+  }
+
+  @include focus-outline;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+}

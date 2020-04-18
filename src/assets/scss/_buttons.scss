@@ -1,0 +1,92 @@
+// Buttons —————————————————————————————————————————————————————————————
+
+:root {
+  --button-padding-x: 18;
+  --button-padding-y: 10;
+
+  --button-color: var(--color-key);
+  --button-background-color: var(--color-key-10);
+  --button-hover-background-color: var(--color-key-20);
+  --button-focus-color: var(--color-focus);
+
+  --button-key-color: var(--color-white);
+  --button-key-background-color: var(--color-key);
+  --button-key-hover-background-color: var(--color-key-darker);
+  --button-key-focus-color: var(--color-focus);
+
+  --button-good-color: var(--color-text-success);
+  --button-good-background-color: var(--color-success-20);
+  --button-good-hover-background-color: var(--color-success-30);
+  --button-good-focus-color: var(--color-success-10);
+
+  --button-bad-color: var(--color-text-error);
+  --button-bad-background-color: var(--color-error-20);
+  --button-bad-hover-background-color: var(--color-error-30);
+  --button-bad-focus-color: var(--color-error-10);
+}
+
+%button {
+  --color: var(--button-color);
+  --background-color: var(--button-background-color);
+  --hover-background-color: var(--button-hover-background-color);
+  --focus-color: var(--button-focus-color);
+  --padding-x: var(--button-padding-x);
+  --padding-y: var(--button-padding-y);
+  --radius: var(--controls-radius);
+
+  appearance: none;
+  color: var(--color);
+  background-color: var(--background-color);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  cursor: pointer;
+  display: inline-block;
+  line-height: (20/16);
+  padding: rem(var(--padding-y)) rem(var(--padding-x));
+  transition: border-color 0.1s, background-color 0.1s, box-shadow 0.1s;
+
+  &:focus,
+  &:hover {
+    outline: none;
+    text-decoration: none;
+    background-color: var(--hover-background-color);
+  }
+
+  &[disabled] {
+    pointer-events: none;
+    opacity: (4/5);
+
+    > * {
+      opacity: (3/5);
+    }
+  }
+
+  @include focus-shadow(var(--focus-color));
+}
+
+%button._key,
+%button[type='submit'] {
+  --color: var(--button-key-color);
+  --background-color: var(--button-key-background-color);
+  --hover-background-color: var(--button-key-hover-background-color);
+  --focus-color: var(--button-key-focus-color);
+}
+
+%button._good {
+  --color: var(--button-bad-color);
+  --background-color: var(--button-bad-background-color);
+  --hover-background-color: var(--button-bad-hover-background-color);
+  --focus-color: var(--button-bad-focus-color);
+}
+
+%button._bad {
+  --color: var(--button-bad-color);
+  --background-color: var(--button-bad-background-color);
+  --hover-background-color: var(--button-bad-hover-background-color);
+  --focus-color: var(--button-bad-focus-color);
+}
+
+button,
+.button {
+  @extend %button;
+}

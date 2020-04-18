@@ -1,0 +1,55 @@
+// Dark ————————————————————————————————————————————————————————————————
+
+@media (prefers-color-scheme: dark) {
+  $color-black: #000;
+
+  $shade-darkest: fade-out($color-black, 0.2);
+  $shade-darker: fade-out($color-black, 0.4);
+  $shade-dark: fade-out($color-black, 0.5);
+  $shade-mid: fade-out($color-black, 0.7);
+  $shade-light: fade-out($color-black, 0.85);
+  $shade-lighter: fade-out($color-black, 0.9);
+  $shade-lightest: fade-out($color-black, 0.94);
+
+  :root {
+    --color-black: #{$color-black};
+
+    --color-root: var(--color-black);
+    --color-root-backdrop: #{$shade-darker};
+
+    --color-contrast: var(--color-white);
+
+    --contrast-darkest: #{$tint-darkest};
+    --contrast-darker: #{$tint-darker};
+    --contrast-dark: #{$tint-dark};
+    --contrast-mid: #{$tint-mid};
+    --contrast-light: #{$tint-light};
+    --contrast-lighter: #{$tint-lighter};
+    --contrast-lightest: #{$tint-lightest};
+
+    --shade-darkest: #{$shade-darkest};
+    --shade-darker: #{$shade-darker};
+    --shade-dark: #{$shade-dark};
+    --shade-mid: #{$shade-mid};
+    --shade-light: #{$shade-light};
+    --shade-lighter: #{$shade-lighter};
+    --shade-lightest: #{$shade-lightest};
+
+    --color-text: var(--color-contrast);
+    --color-focus: var(--color-key-50);
+    --color-text-error: #{lighten($color-error, 10)};
+
+    --button-bad-focus-color: var(--color-error-50);
+  }
+
+  ::selection {
+    background-color: mix($color-black, $color-key, 30);
+  }
+
+  a {
+    &:focus,
+    &:hover {
+      color: var(--color-key-lighter);
+    }
+  }
+}
