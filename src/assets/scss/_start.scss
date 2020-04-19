@@ -4,3 +4,24 @@ main {
   padding-top: max(0, env(safe-area-inset-top));
   padding-bottom: rem(120);
 }
+
+// Start ———————————————————————————————————————————————————————————————
+
+* {
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+:root {
+  overflow: hidden;
+}
+
+.synth-keys {
+  display: flex;
+  flex-wrap: wrap-reverse;
+}
+
+.synth-key {
+  flex: auto;
+  font-size: 3em;
+}

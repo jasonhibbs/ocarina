@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "core-js": "^3.6.4",
-    "tone": "^13.8.25",
+    "normalize.css": "^8.0.1",
+    "tone": "^14.6.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.1",
