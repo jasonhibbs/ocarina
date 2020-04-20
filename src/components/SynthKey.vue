@@ -1,9 +1,6 @@
 <template lang="pug">
 
-  button.synth-key(
-    @mouseenter="$emit('mouseenter')"
-    @touchstart.prevent="$emit('touchenter')"
-  ) {{ note }}
+  button.synth-key {{ note }}
 
 </template>
 <script lang="ts">

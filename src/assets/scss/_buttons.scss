@@ -45,6 +45,7 @@
   padding: rem(var(--padding-y)) rem(var(--padding-x));
   transition: border-color 0.1s, background-color 0.1s, box-shadow 0.1s;
 
+  &[aria-pressed='true'],
   &:focus,
   &:hover {
     outline: none;
