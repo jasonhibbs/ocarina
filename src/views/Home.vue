@@ -4,9 +4,7 @@
     main
       .layout
         h1 Ocarina
-        p It works!
-
-        synth-keys(:notes="notes")
+      synth-keys(:notes="notes")
 
 </template>
 

@@ -1,12 +1,5 @@
 // Start ———————————————————————————————————————————————————————————————
 
-main {
-  padding-top: max(0, env(safe-area-inset-top));
-  padding-bottom: rem(120);
-}
-
-// Start ———————————————————————————————————————————————————————————————
-
 * {
   -webkit-touch-callout: none;
   user-select: none;
@@ -16,12 +9,39 @@ main {
   overflow: hidden;
 }
 
+:root,
+body,
+#app,
+.screen,
+main {
+  height: 100%;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+}
+
 .synth-keys {
+  flex: auto;
   display: flex;
   flex-wrap: wrap-reverse;
 }
 
 .synth-key {
+  --padding-y: 18;
   flex: auto;
   font-size: 3em;
+  width: (100%/3);
+  border: 1px solid white;
+  border-top: none;
+  border-left: none;
+
+  @media (min-width: 36em) {
+    width: (100%/5);
+  }
+
+  @media (min-width: 96em) {
+    width: (100%/15);
+  }
 }

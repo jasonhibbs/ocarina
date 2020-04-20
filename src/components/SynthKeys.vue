@@ -67,6 +67,8 @@ export default class SynthKeys extends Vue {
 
   stopSynth() {
     if (this.synth) this.synth.triggerRelease()
+    if (document.activeElement instanceof HTMLElement)
+      document.activeElement.blur()
   }
 
   // Helpers
