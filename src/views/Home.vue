@@ -14,6 +14,8 @@ import SynthKeys from '@/components/SynthKeys.vue'
 
 // Zelda’s Lullaby https://youtu.be/3QvlxoX1GjI?t=2616
 // Saria’s Song https://youtu.be/3QvlxoX1GjI?t=2988
+// Sun Song https://youtu.be/3QvlxoX1GjI?t=3452
+// Song of Time https://youtu.be/3QvlxoX1GjI?t=7830
 
 @Component({
   components: { SynthKeys },
