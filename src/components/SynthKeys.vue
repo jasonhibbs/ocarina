@@ -47,11 +47,7 @@ export default class SynthKeys extends Vue {
   // UI
 
   isAriaPressed(note: string) {
-    // TODO this could be one array
-    const down = !!this.activeNotes.find(n => n === note)
-    const touchDown = !!this.activeTouchNotes.find(n => n === note)
-    const keyDown = !!this.activeKeys.find(k => k.note === note)
-    return down || touchDown || keyDown
+    return !!this.activeNotes.find(n => n.note === note)
   }
 
   // Synth
@@ -72,14 +68,14 @@ export default class SynthKeys extends Vue {
   synthVibrato: any
   synthReverb: any
   synthReverbOptions = {
-    decay: 0.1,
-    wet: 0.3,
+    decay: 0.4,
+    wet: 0.7,
   }
 
   setupSynth() {
     this.synth = new Synth()
     this.synth.set(this.synthOptions)
-    this.synthVibrato = new Vibrato(6, 0.1)
+    this.synthVibrato = new Vibrato(5, 0.1666)
     this.synthReverb = new Reverb()
     this.synthReverb.set(this.synthReverbOptions)
     this.synth.chain(this.synthVibrato, this.synthReverb, Destination)
@@ -93,6 +89,45 @@ export default class SynthKeys extends Vue {
     if (this.synth) this.synth.triggerRelease()
     if (document.activeElement instanceof HTMLElement)
       document.activeElement.blur()
+  }
+
+  // Active Notes
+
+  activeNotes: SynthNote[] = []
+
+  pushActiveNote(note: SynthNote) {
+    const index = this.activeNotes.findIndex(
+      n => n.identifier === note.identifier
+    )
+    if (index === -1) {
+      this.activeNotes.push(note)
+    }
+  }
+
+  updateActiveNote(note: SynthNote) {
+    const index = this.activeNotes.findIndex(
+      n => n.identifier === note.identifier
+    )
+    if (index > -1) {
+      this.activeNotes.splice(index, 1, note)
+    }
+  }
+
+  removeActiveNote(identifier: SynthNote['identifier']) {
+    const index = this.activeNotes.findIndex(n => n.identifier === identifier)
+    if (index > -1) {
+      this.activeNotes.splice(index, 1)
+    }
+  }
+
+  @Watch('activeNotes', { immediate: true, deep: true })
+  onActiveNotesChanged(newNotes: any[], oldNotes: any[]) {
+    const lastNote = newNotes[newNotes.length - 1]
+    if (lastNote) {
+      this.playNote(lastNote.note)
+    } else {
+      this.stopSynth()
+    }
   }
 
   // Helpers
@@ -116,12 +151,11 @@ export default class SynthKeys extends Vue {
     const touches = e.changedTouches
 
     for (var i = 0; i < touches.length; i++) {
-      const copy = this.copyTouch(touches[i])
-      const key = this.getKeyFromPoint(copy.pageX, copy.pageY)
+      const touch = touches[i]
+      const key = this.getKeyFromPoint(touch.pageX, touch.pageY)
       if (key) {
-        copy.note = key.note
+        this.pushActiveNote({ note: key.note, identifier: touch.identifier })
       }
-      this.activeTouches.push(copy)
     }
   }
 
@@ -131,16 +165,9 @@ export default class SynthKeys extends Vue {
 
     for (var i = 0; i < touches.length; i++) {
       const touch = touches[i]
-      const index = this.activeTouches.findIndex(
-        t => t.identifier === touch.identifier
-      )
-      if (index > -1) {
-        const copy = this.copyTouch(touch)
-        const key = this.getKeyFromPoint(copy.pageX, copy.pageY)
-        if (key) {
-          copy.note = key.note
-        }
-        this.activeTouches.splice(index, 1, copy)
+      const key = this.getKeyFromPoint(touch.pageX, touch.pageY)
+      if (key) {
+        this.updateActiveNote({ note: key.note, identifier: touch.identifier })
       }
     }
   }
@@ -151,27 +178,7 @@ export default class SynthKeys extends Vue {
 
     for (var i = 0; i < touches.length; i++) {
       const touch = touches[i]
-      const index = this.activeTouches.findIndex(
-        t => t.identifier === touch.identifier
-      )
-
-      if (index > -1) {
-        this.activeTouches.splice(index, 1)
-      }
-    }
-  }
-
-  get activeTouchNotes() {
-    return this.activeTouches.map(t => t.note)
-  }
-
-  @Watch('activeTouchNotes', { immediate: true, deep: true })
-  onTouchNotesChanged(newNotes: any[], oldNotes: any[]) {
-    const lastNote = newNotes[newNotes.length - 1]
-    if (lastNote) {
-      this.playNote(lastNote)
-    } else {
-      this.stopSynth()
+      this.removeActiveNote(touch.identifier)
     }
   }
 
@@ -179,85 +186,63 @@ export default class SynthKeys extends Vue {
 
   isMousedown = false
 
-  activeNotes: any = []
-
-  @Watch('activeNotes', { immediate: true, deep: true })
-  onActiveNotesChanged(newNotes: any[], oldNotes: any[]) {
-    const lastNote = newNotes[newNotes.length - 1]
-    if (lastNote) {
-      this.playNote(lastNote)
-    } else {
-      this.stopSynth()
-    }
-  }
-
   onMousedown(note: string) {
     this.isMousedown = true
-    this.activeNotes = [note]
-    // this.playNote(note)
+    this.pushActiveNote({ note: note, identifier: 'mouse' })
   }
 
   onMouseenter(note: string) {
     if (this.isMousedown) {
-      this.activeNotes = [note]
-      // this.playNote(note)
+      this.updateActiveNote({ note: note, identifier: 'mouse' })
     }
   }
 
   onMouseup() {
     this.isMousedown = false
-    this.activeNotes = []
-    // this.stopSynth()
+    this.removeActiveNote('mouse')
   }
 
   // Keyboard
 
+  // prettier-ignore
   keyboardKeys: any[] = [
-    { note: 'B4', down: false, code: 'KeyA' },
-    { note: 'C5', down: false, code: 'KeyS' },
-    { note: 'D5', down: false, code: 'KeyD' },
-    { note: 'E5', down: false, code: 'KeyF' },
-    { note: 'F5', down: false, code: 'KeyG' },
-    { note: 'G5', down: false, code: 'KeyH' },
-    { note: 'A5', down: false, code: 'KeyJ' },
-    { note: 'B5', down: false, code: 'KeyK' },
-    { note: 'C6', down: false, code: 'KeyL' },
-    { note: 'D6', down: false, code: 'Semicolon' },
-    { note: 'E6', down: false, code: 'Quote' },
-    { note: 'F6', down: false, code: 'Backslash' },
+    { code: 'KeyA',      note: 'B4', },
+    { code: 'KeyS',      note: 'C5', },
+    { code: 'KeyD',      note: 'D5', },
+    { code: 'KeyF',      note: 'E5', },
+    { code: 'KeyG',      note: 'F5', },
+    { code: 'KeyH',      note: 'G5', },
+    { code: 'KeyJ',      note: 'A5', },
+    { code: 'KeyK',      note: 'B5', },
+    { code: 'KeyL',      note: 'C6', },
+    { code: 'Semicolon', note: 'D6', },
+    { code: 'Quote',     note: 'E6', },
+    { code: 'Backslash', note: 'F6', },
   ]
 
   get keyboardKeyCodes() {
     return this.keyboardKeys.map(k => k.code)
   }
 
-  get activeKeys() {
-    return this.keyboardKeys.filter(k => k.down === true)
-  }
-
-  @Watch('activeKeys', { immediate: true, deep: true })
-  onKeysChanged(newNotes: any[], oldNotes: any[]) {
-    const lastNote = newNotes[newNotes.length - 1]
-    if (lastNote) {
-      this.playNote(lastNote.note)
-    } else {
-      this.stopSynth()
-    }
-  }
-
   onKeydown(e: KeyboardEvent) {
     const code = e.code
     const index = this.keyboardKeyCodes.findIndex(k => k === code)
     if (index > -1) {
-      this.keyboardKeys[index].down = true
+      const key = this.keyboardKeys[index]
+      this.pushActiveNote({ note: key.note, identifier: key.code })
     }
   }
 
   onKeyup(e: KeyboardEvent) {
     const code = e.code
     if (this.keyboardKeyCodes.includes(code)) {
-      this.keyboardKeys.find(key => key.code === code).down = false
+      this.removeActiveNote(code)
     }
   }
+}
+
+interface SynthNote {
+  note: string
+  identifier: string | number
 }
 </script>
