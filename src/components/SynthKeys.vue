@@ -68,8 +68,8 @@ export default class SynthKeys extends Vue {
   synthVibrato: any
   synthReverb: any
   synthReverbOptions = {
-    decay: 0.4,
-    wet: 0.7,
+    decay: 0.6,
+    wet: 0.6,
   }
 
   setupSynth() {
