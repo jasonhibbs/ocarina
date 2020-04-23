@@ -1,6 +1,10 @@
 <template lang="pug">
 
-  button.synth-key {{ note }}
+  button.synth-key(
+    :data-note="note"
+  )
+    .synth-key-inner
+      .synth-key-label {{ note }}
 
 </template>
 <script lang="ts">

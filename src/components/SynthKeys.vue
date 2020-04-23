@@ -1,18 +1,20 @@
 <template lang="pug">
 
   .synth-keys(
+    :class="{ _zelda: zelda }"
     @touchstart="onTouchstart"
     @touchmove="onTouchmove"
   )
-    synth-key(
-      v-for="note in notes"
-      ref="keys"
-      :key="note"
-      :note="note"
-      :aria-pressed="isAriaPressed(note)"
-      @mousedown.native="onMousedown(note)"
-      @mouseenter.native="onMouseenter(note)"
-    )
+    .synth-keys-inner
+      synth-key(
+        v-for="note in notes"
+        ref="keys"
+        :key="note"
+        :note="note"
+        :aria-pressed="isAriaPressed(note)"
+        @mousedown.native="onMousedown(note)"
+        @mouseenter.native="onMouseenter(note)"
+      )
 
 </template>
 <script lang="ts">
@@ -25,6 +27,7 @@ const defaultNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
 @Component({ components: { SynthKey } })
 export default class SynthKeys extends Vue {
   @Prop({ default: defaultNotes }) notes!: string[]
+  @Prop({ default: false }) zelda!: boolean
   @Ref() readonly keys!: SynthKey[]
 
   // Lifecycle

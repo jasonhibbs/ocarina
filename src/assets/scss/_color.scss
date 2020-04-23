@@ -114,6 +114,14 @@ $shade-lightest: fade-out($color-black, 0.94);
   --shade-lighter: #{$shade-lighter};
   --shade-lightest: #{$shade-lightest};
 
+  --tint-darkest: #{$tint-darkest};
+  --tint-darker: #{$tint-darker};
+  --tint-dark: #{$tint-dark};
+  --tint-mid: #{$tint-mid};
+  --tint-light: #{$tint-light};
+  --tint-lighter: #{$tint-lighter};
+  --tint-lightest: #{$tint-lightest};
+
   --color-text: var(--color-contrast);
   --color-focus: var(--color-key-40);
 }

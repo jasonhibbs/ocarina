@@ -4,7 +4,10 @@
     main
       .layout
         h1 Ocarina
-      synth-keys(:notes="notes")
+      synth-keys(
+        :notes="zeldaNotes"
+        :zelda="true"
+      )
 
 </template>
 
@@ -29,7 +32,9 @@ import SynthKeys from '@/components/SynthKeys.vue'
   components: { SynthKeys },
 })
 export default class Home extends Vue {
-  notes = [
+  fullNotes = [
+    'F4',
+    'G4',
     'A4',
     'B4',
     'C5',
@@ -46,5 +51,7 @@ export default class Home extends Vue {
     'G6',
     'A6',
   ]
+
+  zeldaNotes = ['D5', 'F5', 'A5', 'B5', 'D6']
 }
 </script>
