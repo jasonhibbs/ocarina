@@ -1,0 +1,15 @@
+// Transitions —————————————————————————————————————————————————————————
+$slide-duration: 0.2s;
+
+.slide-left-enter-active {
+  transition: transform $slide-duration ease-out;
+}
+
+.slide-left-leave-active {
+  transition: transform $slide-duration ease-in;
+}
+
+.slide-left-enter,
+.slide-left-leave-to {
+  transform: translateX(100%);
+}

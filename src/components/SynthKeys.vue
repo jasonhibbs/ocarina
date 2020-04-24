@@ -1,6 +1,7 @@
 <template lang="pug">
 
   .synth-keys(
+    ref="keyboard"
     :class="{ _zelda: zelda }"
     @touchstart="onTouchstart"
     @touchmove="onTouchmove"
@@ -19,23 +20,40 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
-import { Destination, Reverb, Synth, Vibrato } from 'tone/Tone'
+import { Destination, Reverb, Synth, Vibrato } from 'tone'
 import SynthKey from '@/components/SynthKey.vue'
 
-const defaultNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
+const defaultNotes = () => {
+  const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
+  const firstLetterIndex = 3
+  const firstNumberIndex = 4
+  const length = 20
+  const notes = []
+
+  for (var i = 0; i < length; i++) {
+    const count = firstLetterIndex + i
+    const thisLetter = letters[count % letters.length]
+    const thisNumber = firstNumberIndex + Math.floor(count / letters.length)
+    const note = `${thisLetter}${thisNumber}`
+    notes.push(note)
+  }
+
+  return notes
+}
 
 @Component({ components: { SynthKey } })
 export default class SynthKeys extends Vue {
   @Prop({ default: defaultNotes }) notes!: string[]
   @Prop({ default: false }) zelda!: boolean
+  @Ref('keyboard') readonly keyboardEl!: HTMLElement
   @Ref() readonly keys!: SynthKey[]
 
   // Lifecycle
 
   mounted() {
     this.setupSynth()
-    document.documentElement.addEventListener('touchend', this.onTouchend)
-    document.documentElement.addEventListener('touchcancel', this.onTouchend)
+    this.keyboardEl.addEventListener('touchend', this.onTouchend)
+    this.keyboardEl.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)
     document.documentElement.addEventListener('keydown', this.onKeydown)
     document.documentElement.addEventListener('keyup', this.onKeyup)
@@ -45,6 +63,8 @@ export default class SynthKeys extends Vue {
     document.documentElement.removeEventListener('touchend', this.onTouchend)
     document.documentElement.removeEventListener('touchcancel', this.onTouchend)
     document.documentElement.removeEventListener('mouseup', this.onMouseup)
+    document.documentElement.removeEventListener('keydown', this.onKeydown)
+    document.documentElement.removeEventListener('keyup', this.onKeyup)
   }
 
   // UI

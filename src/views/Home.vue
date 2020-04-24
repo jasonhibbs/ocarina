@@ -1,18 +1,40 @@
 <template lang="pug">
 
   .screen
+
+    header
+      button(@click="onClickLayoutToggle") {{ layoutSelectedLabel }}
+      button(
+        aria-controls="drawer"
+        :aria-expanded="drawerActive"
+        @click="drawerActive = !drawerActive"
+      ) ℹ️
+
+    transition(name="slide-left")
+      drawer#drawer(v-if="drawerActive")
+        template(#header)
+          button(
+            aria-controls="drawer"
+            :aria-expanded="drawerActive"
+            @click="drawerActive = false"
+          ) Close
+
+        select(
+          v-model="layoutSelected"
+        )
+          option(v-for="option in layoutOptions" :value="option.value") {{ option.label }}
+
+
     main
-      .layout
-        h1 Ocarina
       synth-keys(
-        :notes="zeldaNotes"
-        :zelda="true"
+        :class="layoutClass"
       )
 
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import Drawer from '@/components/Drawer.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
@@ -28,30 +50,39 @@ import SynthKeys from '@/components/SynthKeys.vue'
 // Song of Storms      https://youtu.be/3QvlxoX1GjI?t=17424
 // Requiem of Spirit   https://youtu.be/3QvlxoX1GjI?t=22509
 
+const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
+
 @Component({
-  components: { SynthKeys },
+  components: { Drawer, SynthKeys },
 })
 export default class Home extends Vue {
-  fullNotes = [
-    'F4',
-    'G4',
-    'A4',
-    'B4',
-    'C5',
-    'D5',
-    'E5',
-    'F5',
-    'G5',
-    'A5',
-    'B5',
-    'C6',
-    'D6',
-    'E6',
-    'F6',
-    'G6',
-    'A6',
+  drawerActive: boolean = false
+
+  // Layout
+
+  layoutSelected = 'n64'
+  layoutOptions = [
+    { label: 'Pad', value: 'pad' },
+    // { label: 'Rotated', value: '_rotated' },
+    { label: 'N64', value: 'n64' },
+    // { label: 'Buttons', value: '_gamepad' },
   ]
 
-  zeldaNotes = ['D5', 'F5', 'A5', 'B5', 'D6']
+  get layoutSelectedIndex() {
+    return this.layoutOptions.findIndex(o => o.value === this.layoutSelected)
+  }
+
+  get layoutSelectedLabel() {
+    return this.layoutOptions[this.layoutSelectedIndex].label
+  }
+
+  get layoutClass() {
+    return this.layoutSelected === 'n64' ? '_rotated _gamepad' : ''
+  }
+
+  onClickLayoutToggle() {
+    const nextIndex = (this.layoutSelectedIndex + 1) % this.layoutOptions.length
+    this.layoutSelected = this.layoutOptions[nextIndex].value
+  }
 }
 </script>

@@ -40,6 +40,9 @@
     --color-text-error: #{lighten($color-error, 10)};
 
     --button-bad-focus-color: var(--color-error-50);
+
+    --color-button-a: hsl(228, 60%, 16%);
+    --color-button-c: hsl(50, 60%, 16%);
   }
 
   ::selection {
