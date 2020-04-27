@@ -52,8 +52,8 @@ export default class SynthKeys extends Vue {
 
   mounted() {
     this.setupSynth()
-    this.keyboardEl.addEventListener('touchend', this.onTouchend)
-    this.keyboardEl.addEventListener('touchcancel', this.onTouchend)
+    document.documentElement.addEventListener('touchend', this.onTouchend)
+    document.documentElement.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)
     document.documentElement.addEventListener('keydown', this.onKeydown)
     document.documentElement.addEventListener('keyup', this.onKeyup)
@@ -196,7 +196,7 @@ export default class SynthKeys extends Vue {
   }
 
   onTouchend(e: TouchEvent) {
-    e.preventDefault()
+    // e.preventDefault()
     const touches = e.changedTouches
 
     for (var i = 0; i < touches.length; i++) {

@@ -13,3 +13,29 @@ $slide-duration: 0.2s;
 .slide-left-leave-to {
   transform: translateX(100%);
 }
+
+.drawer-slide-enter-active,
+.drawer-slide-leave-active {
+  transition: visibility $slide-duration;
+
+  .drawer-overlay {
+    transition: opacity $slide-duration;
+  }
+}
+
+.drawer-slide-enter-active .drawer-card {
+  transition: transform $slide-duration ease-out;
+}
+.drawer-slide-leave-active .drawer-card {
+  transition: transform $slide-duration ease-in;
+}
+
+.drawer-slide-enter,
+.drawer-slide-leave-to {
+  .drawer-overlay {
+    opacity: 0;
+  }
+  .drawer-card {
+    transform: translateY(100%);
+  }
+}

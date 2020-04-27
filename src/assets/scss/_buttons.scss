@@ -65,6 +65,36 @@
   @include focus-shadow(var(--focus-color));
 }
 
+%button._inner {
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+
+  .button-inner {
+    background-color: var(--background-color);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    padding: rem(var(--padding-y)) rem(var(--padding-x));
+    transition: inherit;
+  }
+
+  &[aria-pressed='true'],
+  &:focus,
+  &:hover {
+    background-color: transparent;
+
+    .button-inner {
+      background-color: var(--hover-background-color);
+    }
+  }
+
+  &:focus .button-inner {
+    box-shadow: 0 0 0 3px var(--focus-color);
+  }
+}
+
 %button._key,
 %button[type='submit'] {
   --color: var(--button-key-color);

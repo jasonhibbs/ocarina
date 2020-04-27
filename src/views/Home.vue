@@ -3,26 +3,42 @@
   .screen
 
     header
-      button(@click="onClickLayoutToggle") {{ layoutSelectedLabel }}
-      button(
+      button._inner(@click="onClickLayoutToggle") {{ layoutSelectedLabel }}
+      button._inner(
         aria-controls="drawer"
         :aria-expanded="drawerActive"
         @click="drawerActive = !drawerActive"
-      ) ℹ️
+      )
+        icon-ocarina
 
-    transition(name="slide-left")
-      drawer#drawer(v-if="drawerActive")
+    transition(name="drawer-slide")
+      drawer#drawer(
+        v-if="drawerActive"
+        @clickoverlay="drawerActive = false"
+        @overscrolldown="drawerActive = false"
+      )
         template(#header)
-          button(
+          h1
+            icon-ocarina
+            span Ocarina
+          button._inner(
             aria-controls="drawer"
             :aria-expanded="drawerActive"
             @click="drawerActive = false"
-          ) Close
+          )
+            icon-close
 
-        select(
-          v-model="layoutSelected"
-        )
-          option(v-for="option in layoutOptions" :value="option.value") {{ option.label }}
+        template(#default)
+          .form-blocks
+            .form-block._select
+              label.form-block-label(for="layout-select") Layout
+              .form-block-controls
+                .form-block-control
+                  select(
+                    id="layout-select"
+                    v-model="layoutSelected"
+                  )
+                    option(v-for="option in layoutOptions" :value="option.value") {{ option.label }}
 
 
     main
@@ -35,6 +51,8 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import Drawer from '@/components/Drawer.vue'
+import IconOcarina from '@/components/IconOcarina.vue'
+import IconClose from '@/components/IconClose.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
@@ -53,7 +71,7 @@ import SynthKeys from '@/components/SynthKeys.vue'
 const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
 
 @Component({
-  components: { Drawer, SynthKeys },
+  components: { IconOcarina, IconClose, Drawer, SynthKeys },
 })
 export default class Home extends Vue {
   drawerActive: boolean = false
@@ -63,9 +81,7 @@ export default class Home extends Vue {
   layoutSelected = 'n64'
   layoutOptions = [
     { label: 'Pad', value: 'pad' },
-    // { label: 'Rotated', value: '_rotated' },
     { label: 'N64', value: 'n64' },
-    // { label: 'Buttons', value: '_gamepad' },
   ]
 
   get layoutSelectedIndex() {
