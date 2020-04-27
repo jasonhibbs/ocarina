@@ -71,11 +71,13 @@
   border: none;
   border-radius: 0;
   padding: 0;
+  line-height: 1;
 
   .button-inner {
     background-color: var(--background-color);
     border: 1px solid transparent;
     border-radius: var(--radius);
+    line-height: (20/16);
     padding: rem(var(--padding-y)) rem(var(--padding-x));
     transition: inherit;
   }

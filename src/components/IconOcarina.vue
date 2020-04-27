@@ -17,6 +17,7 @@
 
   display: inline-block;
   position: relative;
+  vertical-align: bottom;
 
   svg {
     display: block;

@@ -28,6 +28,7 @@ main {
 
 header {
   display: flex;
+  align-items: center;
   touch-action: none;
 
   button._inner {
@@ -43,10 +44,40 @@ header {
   }
 }
 
-header button .icon-ocarina {
-  font-size: em(20);
-  margin-right: em(-4, 20);
-  margin-bottom: em(-4, 20);
+header button[aria-label^='Layout:'] .icon-layout {
+  --element-color: var(--contrast-light);
+  --hover-element-color: var(--contrast-darker);
+}
+
+header button[aria-controls='drawer'] {
+  &,
+  &:focus,
+  &:hover {
+    --fill: var(--color-contrast);
+  }
+
+  .icon-ocarina {
+    --potato-color: var(--fill);
+    --ring-color: var(--fill);
+
+    font-size: em(18);
+    margin: em(-1, 18);
+    margin-right: em(-5, 18);
+    opacity: 0.2;
+    transition: opacity 0.1s;
+
+    .holes,
+    .symbol {
+      display: none;
+    }
+  }
+
+  &:focus,
+  &:hover {
+    .icon-ocarina {
+      opacity: 0.5;
+    }
+  }
 }
 
 main {
@@ -109,6 +140,7 @@ main {
   button {
     display: block;
     width: 100%;
+    line-height: 1;
     text-align: right;
     font-size: em(32);
     padding-right: var(--space-rem-big);

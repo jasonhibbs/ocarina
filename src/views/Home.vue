@@ -3,7 +3,14 @@
   .screen
 
     header
-      button._inner(@click="onClickLayoutToggle") {{ layoutSelectedLabel }}
+      button._inner(
+        :aria-label="`Layout: ${layoutSelectedLabel}`"
+        @click="onClickLayoutToggle"
+      )
+        icon-layout(
+          :class="layoutSelected === 'n64' ? '_circles' : '_squares'"
+        )
+
       button._inner(
         aria-controls="drawer"
         :aria-expanded="drawerActive"
@@ -52,6 +59,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 import Drawer from '@/components/Drawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
+import IconLayout from '@/components/IconLayout.vue'
 import IconClose from '@/components/IconClose.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
 
@@ -71,7 +79,13 @@ import SynthKeys from '@/components/SynthKeys.vue'
 const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
 
 @Component({
-  components: { IconOcarina, IconClose, Drawer, SynthKeys },
+  components: {
+    IconOcarina,
+    IconLayout,
+    IconClose,
+    Drawer,
+    SynthKeys,
+  },
 })
 export default class Home extends Vue {
   drawerActive: boolean = false
