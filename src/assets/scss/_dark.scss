@@ -37,9 +37,9 @@
 
     --color-text: var(--color-contrast);
     --color-focus: var(--color-key-50);
-    --color-text-error: #{lighten($color-error, 10)};
+    --color-text-bad: #{lighten($color-bad, 10)};
 
-    --button-bad-focus-color: var(--color-error-50);
+    --button-bad-focus-color: var(--color-bad-50);
 
     --color-button-a: hsl(228, 60%, 16%);
     --color-button-c: hsl(50, 60%, 16%);

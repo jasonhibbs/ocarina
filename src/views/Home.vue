@@ -36,6 +36,9 @@
             icon-close
 
         template(#default)
+          .error(v-if="errorText")
+            pre {{ errorText }}
+
           .form-blocks
             .form-block._select
               label.form-block-label(for="layout-select") Layout
@@ -51,6 +54,7 @@
     main
       synth-keys(
         :class="layoutClass"
+        @error="onError"
       )
 
 </template>
@@ -89,6 +93,11 @@ const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
 })
 export default class Home extends Vue {
   drawerActive: boolean = false
+  errorText = ''
+
+  onError(e: any) {
+    this.errorText = e
+  }
 
   // Layout
 

@@ -60,10 +60,8 @@ header button[aria-controls='drawer'] {
     --potato-color: var(--fill);
     --ring-color: var(--fill);
 
-    font-size: em(18);
-    margin: em(-1, 18);
-    margin-right: em(-5, 18);
-    opacity: 0.2;
+    margin-right: em(-3);
+    opacity: 0.15;
     transition: opacity 0.1s;
 
     .holes,
@@ -75,7 +73,7 @@ header button[aria-controls='drawer'] {
   &:focus,
   &:hover {
     .icon-ocarina {
-      opacity: 0.5;
+      opacity: 0.6;
     }
   }
 }
@@ -114,19 +112,18 @@ main {
 }
 
 .drawer-card {
+  max-width: 26em;
+  margin: auto;
   pointer-events: auto;
   height: 100%;
   position: relative;
   z-index: 1;
   background-color: var(--color-root);
-  // margin-top: 20vh;
-  // overflow: hidden;
-  border-radius: 1em 1em 0 0;
-  // box-shadow: 0 0 8rem var(--shade-lighter);
+  border-radius: rem(8) rem(8) 0 0;
+  box-shadow: 0 0 2rem var(--shade-lighter);
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 20vh;
-  // overscroll-behavior: contain;
 }
 
 .drawer-header {
@@ -142,7 +139,7 @@ main {
     width: 100%;
     line-height: 1;
     text-align: right;
-    font-size: em(32);
+    font-size: em(28);
     padding-right: var(--space-rem-big);
 
     &:focus .icon-close {

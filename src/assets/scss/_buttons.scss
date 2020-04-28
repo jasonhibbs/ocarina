@@ -14,15 +14,15 @@
   --button-key-hover-background-color: var(--color-key-darker);
   --button-key-focus-color: var(--color-focus);
 
-  --button-good-color: var(--color-text-success);
-  --button-good-background-color: var(--color-success-20);
-  --button-good-hover-background-color: var(--color-success-30);
-  --button-good-focus-color: var(--color-success-10);
+  --button-good-color: var(--color-text-good);
+  --button-good-background-color: var(--color-good-20);
+  --button-good-hover-background-color: var(--color-good-30);
+  --button-good-focus-color: var(--color-good-10);
 
-  --button-bad-color: var(--color-text-error);
-  --button-bad-background-color: var(--color-error-20);
-  --button-bad-hover-background-color: var(--color-error-30);
-  --button-bad-focus-color: var(--color-error-10);
+  --button-bad-color: var(--color-text-bad);
+  --button-bad-background-color: var(--color-bad-20);
+  --button-bad-hover-background-color: var(--color-bad-30);
+  --button-bad-focus-color: var(--color-bad-10);
 }
 
 %button {

@@ -11,10 +11,10 @@
   $size: 1em;
 
   --background-color: var(--contrast-lighter);
-  --element-color: var(--contrast-mid);
+  --element-color: var(--grey-dark);
 
-  --hover-background-color: var(--contrast-light);
-  --hover-element-color: var(--contrast-darkest);
+  --hover-background-color: var(--contrast-mid);
+  --hover-element-color: var(--grey-darkest);
 
   display: inline-block;
   position: relative;
@@ -41,9 +41,9 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: ($size * 0.5);
+    width: ($size * 0.525);
     height: 2px;
-    border-radius: 2px;
+    border-radius: $size;
 
     &:first-child {
       transform: translate3d(-50%, -50%, 0) rotateZ(-45deg);

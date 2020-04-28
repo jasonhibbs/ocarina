@@ -20,8 +20,17 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
-import { Destination, Reverb, Synth, Vibrato } from 'tone'
+import {
+  Context,
+  Destination,
+  Reverb,
+  Synth,
+  Vibrato,
+  context,
+  start,
+} from 'tone'
 import SynthKey from '@/components/SynthKey.vue'
+import * as unmute from 'unmute-ios-audio'
 
 const defaultNotes = () => {
   const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -105,13 +114,24 @@ export default class SynthKeys extends Vue {
   }
 
   playNote(note: string) {
-    if (this.synth) this.synth.triggerAttack(note)
+    if (this.synth) {
+      try {
+        this.synth.triggerAttack(note)
+        this.$emit('play')
+      } catch (error) {
+        this.$emit('error', error)
+      }
+    }
   }
 
   stopSynth() {
-    if (this.synth) this.synth.triggerRelease()
-    if (document.activeElement instanceof HTMLElement)
+    if (this.synth) {
+      this.synth.triggerRelease()
+      this.$emit('stop')
+    }
+    if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
+    }
   }
 
   // Active Notes
@@ -127,12 +147,13 @@ export default class SynthKeys extends Vue {
     }
   }
 
-  updateActiveNote(note: SynthNote) {
+  updateActiveNote(newNote: SynthNote) {
     const index = this.activeNotes.findIndex(
-      n => n.identifier === note.identifier
+      n => n.identifier === newNote.identifier
     )
-    if (index > -1) {
-      this.activeNotes.splice(index, 1, note)
+    const activeNote = this.activeNotes[index]
+    if (activeNote && activeNote.note !== newNote.note) {
+      this.activeNotes.splice(index, 1, newNote)
     }
   }
 
@@ -162,6 +183,7 @@ export default class SynthKeys extends Vue {
 
   // Touch
 
+  neverTouched = true
   activeTouches: any[] = []
 
   copyTouch(touch: Touch) {
@@ -170,9 +192,20 @@ export default class SynthKeys extends Vue {
   }
 
   onTouchstart(e: TouchEvent) {
-    e.preventDefault()
-    const touches = e.changedTouches
+    if (this.neverTouched) {
+      this.neverTouched = false
+      unmute()
+    }
 
+    e.preventDefault()
+
+    // this doesn’t help
+    if (context.state !== 'running') {
+      context.resume()
+      start()
+    }
+
+    const touches = e.changedTouches
     for (var i = 0; i < touches.length; i++) {
       const touch = touches[i]
       const key = this.getKeyFromPoint(touch.pageX, touch.pageY)
@@ -185,7 +218,6 @@ export default class SynthKeys extends Vue {
   onTouchmove(e: TouchEvent) {
     e.preventDefault()
     const touches = e.changedTouches
-
     for (var i = 0; i < touches.length; i++) {
       const touch = touches[i]
       const key = this.getKeyFromPoint(touch.pageX, touch.pageY)
@@ -196,9 +228,7 @@ export default class SynthKeys extends Vue {
   }
 
   onTouchend(e: TouchEvent) {
-    // e.preventDefault()
     const touches = e.changedTouches
-
     for (var i = 0; i < touches.length; i++) {
       const touch = touches[i]
       this.removeActiveNote(touch.identifier)
