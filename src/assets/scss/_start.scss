@@ -151,7 +151,7 @@ main {
     padding-right: var(--space-rem-big);
 
     &:focus .icon-close {
-      box-shadow: 0 0 0 3px var(--contrast-mid);
+      box-shadow: 0 0 0 3px var(--contrast-light);
     }
   }
 }

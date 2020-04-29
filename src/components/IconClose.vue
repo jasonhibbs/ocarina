@@ -13,7 +13,7 @@
   --background-color: var(--contrast-lighter);
   --element-color: var(--grey-dark);
 
-  --hover-background-color: var(--contrast-mid);
+  --hover-background-color: var(--contrast-light);
   --hover-element-color: var(--grey-darkest);
 
   display: inline-block;

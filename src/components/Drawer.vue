@@ -11,9 +11,9 @@
         @touchstart="onTouchstart"
         @touchmove="onTouchmove"
       )
-        .drawer-header
+        .drawer-header(ref="header")
           slot(name="header")
-        .drawer-content
+        .drawer-content(ref="content")
           slot
 
 
@@ -30,11 +30,23 @@ export default class Drawer extends Vue {
   mounted() {
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
+
+    this.focusFirstinContent()
   }
 
   beforeDestroy() {
     document.documentElement.removeEventListener('touchend', this.onTouchend)
     document.documentElement.removeEventListener('touchcancel', this.onTouchend)
+  }
+
+  focusFirstinContent() {
+    const focusable = (this.$refs.content as Element).querySelectorAll(
+      '[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    )
+    const first = focusable[0]
+    if (first) {
+      first.focus()
+    }
   }
 
   // Touch

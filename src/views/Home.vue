@@ -16,17 +16,22 @@
 
       button._inner(
         aria-controls="drawer"
-        :aria-expanded="drawerActive"
-        @click="drawerActive = !drawerActive"
+        :aria-expanded="drawerExpanded"
+        @click="drawerExpanded = true"
       )
         icon-ocarina
 
+    main
+      synth-keys(
+        :class="layoutClass"
+        @error="onError"
+      )
 
     transition(name="drawer-slide")
       drawer#drawer(
-        v-if="drawerActive"
-        @clickoverlay="drawerActive = false"
-        @overscrolldown="drawerActive = false"
+        v-if="drawerExpanded"
+        @clickoverlay="drawerExpanded = false"
+        @overscrolldown="drawerExpanded = false"
       )
         template(#header)
           h1
@@ -34,8 +39,8 @@
             span Ocarina
           button._inner(
             aria-controls="drawer"
-            :aria-expanded="drawerActive"
-            @click="drawerActive = false"
+            :aria-expanded="drawerExpanded"
+            @click="drawerExpanded = false"
           )
             icon-close
 
@@ -56,12 +61,6 @@
                   )
                     option(v-for="option in layoutOptions" :value="option.value") {{ option.label }}
 
-
-    main
-      synth-keys(
-        :class="layoutClass"
-        @error="onError"
-      )
 
 </template>
 
@@ -100,7 +99,7 @@ const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
   computed: mapState(['audio']),
 })
 export default class Home extends Vue {
-  drawerActive: boolean = false
+  drawerExpanded: boolean = false
 
   // Audio
 

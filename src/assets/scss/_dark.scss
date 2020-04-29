@@ -11,6 +11,14 @@
   $shade-lighter: fade-out($color-black, 0.9);
   $shade-lightest: fade-out($color-black, 0.94);
 
+  $grey-darkest: mix($color-black, $color-white, 20);
+  $grey-darker: mix($color-black, $color-white, 40);
+  $grey-dark: mix($color-black, $color-white, 50);
+  $grey-mid: mix($color-black, $color-white, 70);
+  $grey-light: mix($color-black, $color-white, 85);
+  $grey-lighter: mix($color-black, $color-white, 90);
+  $grey-lightest: mix($color-black, $color-white, 94);
+
   :root {
     --color-black: #{$color-black};
 
@@ -34,6 +42,14 @@
     --shade-light: #{$shade-light};
     --shade-lighter: #{$shade-lighter};
     --shade-lightest: #{$shade-lightest};
+
+    --grey-darkest: #{$grey-darkest};
+    --grey-darker: #{$grey-darker};
+    --grey-dark: #{$grey-dark};
+    --grey-mid: #{$grey-mid};
+    --grey-light: #{$grey-light};
+    --grey-lighter: #{$grey-lighter};
+    --grey-lightest: #{$grey-lightest};
 
     --color-text: var(--color-contrast);
     --color-focus: var(--color-key-50);
