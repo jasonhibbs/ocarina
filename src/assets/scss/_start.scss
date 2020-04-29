@@ -19,6 +19,36 @@ body,
   height: 100%;
 }
 
+.screen {
+  background: var(--color-root);
+  transform: scale3d(1, 1, 1);
+  transform-origin: 50% 50%;
+  transition: border-radius, transform;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+
+  // @media (min-width: 40em) {
+  //   transform-origin: 50% 66.66%;
+  // }
+}
+
+#app {
+  background-color: black;
+}
+
+.screen-modal {
+  .screen {
+    $scale: (342/375);
+    transform: scale3d($scale, $scale, 1);
+    border-radius: rem(9);
+
+    @media (min-width: 40em) {
+      $scale: (620/640);
+      transform: scale3d($scale, $scale, 1);
+    }
+  }
+}
+
 .screen,
 main {
   flex: auto;
@@ -105,7 +135,7 @@ main {
   right: 0;
   bottom: 0;
   left: 0;
-  background: var(--shade-dark);
+  background: var(--shade-light);
 }
 
 .drawer-card-wrap {
@@ -114,7 +144,7 @@ main {
   right: 0;
   bottom: 0;
   left: 0;
-  padding-top: rem(80);
+  padding-top: rem(40);
   overflow: hidden;
   pointer-events: none;
 }

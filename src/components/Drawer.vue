@@ -30,8 +30,6 @@ export default class Drawer extends Vue {
   mounted() {
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
-
-    this.focusFirstinContent()
   }
 
   beforeDestroy() {

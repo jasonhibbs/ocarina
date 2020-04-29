@@ -1,5 +1,5 @@
 // Transitions —————————————————————————————————————————————————————————
-$slide-duration: 0.2s;
+$slide-duration: 0.3s;
 
 .slide-left-enter-active {
   transition: transform $slide-duration ease-out;
@@ -24,7 +24,7 @@ $slide-duration: 0.2s;
 }
 
 .drawer-slide-enter-active .drawer-card {
-  transition: transform $slide-duration ease-out;
+  transition: transform $slide-duration cubic-bezier(0.2, 0, 0, 1);
 }
 .drawer-slide-leave-active .drawer-card {
   transition: transform $slide-duration ease-in;

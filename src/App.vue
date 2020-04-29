@@ -3,11 +3,17 @@
   #app
     router-view
 
-    transition(name="drawer-slide")
+    transition(
+      name="drawer-slide"
+      @after-enter="afterDrawerEnter"
+    )
       drawer#drawer(
-        v-if="drawerExpanded"
-        @clickoverlay="drawerExpanded = false"
-        @overscrolldown="drawerExpanded = false"
+        v-if="ui.drawerExpanded"
+        ref="drawer"
+        role="dialog"
+        aria-label="Ocarina Settings"
+        @clickoverlay="ui.drawerExpanded = false"
+        @overscrolldown="ui.drawerExpanded = false"
       )
         template(#header)
           h1
@@ -15,8 +21,8 @@
             span Ocarina
           button._inner(
             aria-controls="drawer"
-            :aria-expanded="drawerExpanded"
-            @click="drawerExpanded = false"
+            :aria-expanded="ui.drawerExpanded"
+            @click="ui.drawerExpanded = false"
           )
             icon-close
 
@@ -45,7 +51,7 @@
 <style lang="scss" src="@/assets/scss/style.scss"></style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Ref, Watch, Vue } from 'vue-property-decorator'
 import { mapState } from 'vuex'
 import Drawer from '@/components/Drawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
@@ -60,14 +66,28 @@ import IconClose from '@/components/IconClose.vue'
   computed: mapState(['ui']),
 })
 export default class App extends Vue {
+  @Ref() readonly drawer!: Drawer
+
   ui!: any
 
-  get drawerExpanded() {
-    return this.ui.drawerExpanded
+  @Watch('ui.drawerExpanded', { immediate: true })
+  onDrawerChanged(newVal: boolean, oldVal: boolean) {
+    const root = document.documentElement
+    const appleTitle = root.querySelector(
+      'meta[name="apple-mobile-web-app-status-bar-style"]'
+    )
+
+    if (newVal) {
+      root.classList.add('screen-modal')
+      appleTitle?.setAttribute('content', 'black-translucent')
+    } else {
+      document.documentElement.classList.remove('screen-modal')
+      appleTitle?.setAttribute('content', 'default')
+    }
   }
 
-  set drawerExpanded(value) {
-    this.ui.drawerExpanded = value
+  afterDrawerEnter() {
+    this.drawer.focusFirstinContent()
   }
 
   // Errors
