@@ -145,16 +145,17 @@
   }
 
   .synth-key-inner:before {
-    background-color: transparent;
+    background-color: var(--contrast-light);
     content: '';
     border-radius: inherit;
-    transition: background-color 0.1s;
+    opacity: 0;
+    transition: opacity 0.1s;
   }
 
   [aria-pressed='true'] {
     animation: none;
     .synth-key-inner:before {
-      background-color: var(--contrast-light);
+      opacity: 1;
     }
   }
 
@@ -173,6 +174,10 @@
     .synth-key-inner:after {
       content: 'A';
     }
+
+    .synth-key-inner:before {
+      background-color: fade-out(#005, 0.8);
+    }
   }
 
   // C Buttons
@@ -185,6 +190,10 @@
 
     .synth-key-inner:after {
       content: '▲';
+    }
+
+    .synth-key-inner:before {
+      background-color: fade-out(#a00, 0.86);
     }
   }
 

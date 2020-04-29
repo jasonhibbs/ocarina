@@ -58,7 +58,7 @@
     --button-bad-focus-color: var(--color-bad-50);
 
     --color-button-a: hsl(228, 60%, 16%);
-    --color-button-c: hsl(50, 60%, 16%);
+    --color-button-c: hsl(42, 60%, 16%);
   }
 
   ::selection {
@@ -70,5 +70,41 @@
     &:hover {
       color: var(--color-key-lighter);
     }
+  }
+
+  .synth-keys._gamepad {
+    .synth-key-inner:before {
+      background-color: var(--contrast-lighter);
+    }
+
+    // A Button
+
+    [data-note='D5'] {
+      .synth-key-inner:before {
+        background-color: fade-out(#ddf, 0.88);
+      }
+    }
+
+    // C Buttons
+
+    [data-note='F5'],
+    [data-note='A5'],
+    [data-note='B5'],
+    [data-note='D6'] {
+      .synth-key-inner:before {
+        background-color: fade-out(#fdc, 0.82);
+      }
+    }
+  }
+
+  .drawer-card,
+  .screen-modal .screen {
+    --color-root: var(--grey-lighter);
+  }
+
+  .drawer .icon-ocarina {
+    --potato-color: var(--color-key);
+    --ring-color: var(--color-key-darker);
+    --symbol-color: var(--color-key-lighter);
   }
 }

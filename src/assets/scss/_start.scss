@@ -23,7 +23,7 @@ body,
   background: var(--color-root);
   transform: scale3d(1, 1, 1);
   transform-origin: 50% 50%;
-  transition: border-radius, transform;
+  transition: background-color, border-radius, transform;
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 
@@ -121,12 +121,19 @@ main {
 }
 
 .drawer {
+  --color-root: var(--color-white);
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   z-index: 9;
+}
+
+.drawer .icon-ocarina {
+  --potato-color: var(--color-key-lighter);
+  --ring-color: var(--color-key-darker);
+  --symbol-color: var(--color-key-lighter);
 }
 
 .drawer-overlay {
@@ -165,7 +172,7 @@ main {
 }
 
 .drawer-header {
-  background-color: var(--color-root);
+  background-color: vvar(--color-root);
   box-shadow: 0 1px 0 var(--shade-lighter);
   display: flex;
   position: sticky;
