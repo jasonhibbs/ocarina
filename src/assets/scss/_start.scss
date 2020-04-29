@@ -27,6 +27,7 @@ main {
 }
 
 header {
+  position: relative;
   display: flex;
   align-items: center;
   touch-action: none;
@@ -41,6 +42,13 @@ header {
     &:last-child {
       text-align: right;
     }
+  }
+
+  .status {
+    position: absolute;
+    z-index: 1;
+    bottom: rem(13);
+    right: rem(14);
   }
 }
 
@@ -100,7 +108,7 @@ main {
   background: var(--shade-dark);
 }
 
-.drawer-scroll {
+.drawer-card-wrap {
   position: absolute;
   top: 0;
   right: 0;
@@ -127,7 +135,7 @@ main {
 }
 
 .drawer-header {
-  margin-bottom: var(--space-rem-mid);
+  // margin-bottom: var(--space-rem-mid);
   box-shadow: 0 1px 0 var(--shade-lighter);
   display: flex;
   position: sticky;
@@ -161,4 +169,45 @@ main {
 
 .drawer .form-blocks {
   padding: 0 var(--space-rem-mid);
+}
+
+.status {
+  --size: #{em(10)};
+  --color: var(--grey-light);
+
+  pointer-events: none;
+
+  &:after {
+    content: '';
+    display: block;
+    width: var(--size);
+    height: var(--size);
+    border-radius: var(--size);
+    background-color: var(--color);
+    border: 1px solid var(--color-root);
+  }
+
+  &[data-state='running'] {
+    --color: var(--color-good);
+  }
+
+  &[data-state='interrupted'] {
+    --color: var(--color-bad);
+  }
+}
+
+.error {
+  padding: var(--space-rem-mid) var(--space-rem-mid);
+  color: var(--color-text-bad);
+  background-color: var(--color-bad-10);
+  overflow: auto;
+
+  pre {
+    margin: 0 0 var(--space-rem-mid);
+    white-space: pre-wrap;
+  }
+
+  button {
+    @extend ._bad;
+  }
 }

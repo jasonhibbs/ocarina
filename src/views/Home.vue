@@ -11,12 +11,16 @@
           :class="layoutSelected === 'n64' ? '_circles' : '_squares'"
         )
 
+      .status(:data-state="audioContextState")
+        .visuallyhidden Audio Status: {{ audioContextState }}
+
       button._inner(
         aria-controls="drawer"
         :aria-expanded="drawerActive"
         @click="drawerActive = !drawerActive"
       )
         icon-ocarina
+
 
     transition(name="drawer-slide")
       drawer#drawer(
@@ -38,6 +42,7 @@
         template(#default)
           .error(v-if="errorText")
             pre {{ errorText }}
+            button(@click="onClickReload") Try Reloading
 
           .form-blocks
             .form-block._select
@@ -61,6 +66,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { mapState } from 'vuex'
 import Drawer from '@/components/Drawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
@@ -90,13 +96,29 @@ const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
     Drawer,
     SynthKeys,
   },
+  computed: mapState(['audio']),
 })
 export default class Home extends Vue {
   drawerActive: boolean = false
+
+  // Audio
+
+  audio!: any
+
+  get audioContextState() {
+    return this.audio.context?.state
+  }
+
+  // Errors
+
   errorText = ''
 
   onError(e: any) {
     this.errorText = e
+  }
+
+  onClickReload() {
+    location.reload()
   }
 
   // Layout

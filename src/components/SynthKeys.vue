@@ -20,6 +20,7 @@
 </template>
 <script lang="ts">
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
+import { mapState } from 'vuex'
 import {
   Context,
   Destination,
@@ -30,7 +31,7 @@ import {
   start,
 } from 'tone'
 import SynthKey from '@/components/SynthKey.vue'
-import * as unmute from 'unmute-ios-audio'
+import * as unmuteIosAudio from 'unmute-ios-audio'
 
 const defaultNotes = () => {
   const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -50,7 +51,10 @@ const defaultNotes = () => {
   return notes
 }
 
-@Component({ components: { SynthKey } })
+@Component({
+  components: { SynthKey },
+  computed: mapState(['audio']),
+})
 export default class SynthKeys extends Vue {
   @Prop({ default: defaultNotes }) notes!: string[]
   @Prop({ default: false }) zelda!: boolean
@@ -59,8 +63,20 @@ export default class SynthKeys extends Vue {
 
   // Lifecycle
 
+  audio!: any
+  isStarted = false
+
+  async checkStarted() {
+    if (!this.isStarted) {
+      await start()
+      unmuteIosAudio()
+      this.setupSynth()
+      this.isStarted = true
+    }
+  }
+
   mounted() {
-    this.setupSynth()
+    // this.setupSynth()
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)
@@ -104,7 +120,8 @@ export default class SynthKeys extends Vue {
     wet: 0.6,
   }
 
-  setupSynth() {
+  async setupSynth() {
+    this.audio.context = context
     this.synth = new Synth()
     this.synth.set(this.synthOptions)
     this.synthVibrato = new Vibrato(5, 0.1666)
@@ -116,7 +133,7 @@ export default class SynthKeys extends Vue {
   playNote(note: string) {
     if (this.synth) {
       try {
-        this.synth.triggerAttack(note)
+        this.synth.triggerAttack(note, 0.00000001)
         this.$emit('play')
       } catch (error) {
         this.$emit('error', error)
@@ -192,11 +209,7 @@ export default class SynthKeys extends Vue {
   }
 
   onTouchstart(e: TouchEvent) {
-    if (this.neverTouched) {
-      this.neverTouched = false
-      unmute()
-    }
-
+    this.checkStarted()
     e.preventDefault()
 
     // this doesn’t help
@@ -240,6 +253,7 @@ export default class SynthKeys extends Vue {
   isMousedown = false
 
   onMousedown(note: string) {
+    this.checkStarted()
     this.isMousedown = true
     this.pushActiveNote({ note: note, identifier: 'mouse' })
   }
@@ -278,6 +292,7 @@ export default class SynthKeys extends Vue {
   }
 
   onKeydown(e: KeyboardEvent) {
+    this.checkStarted()
     const code = e.code
     const index = this.keyboardKeyCodes.findIndex(k => k === code)
     if (index > -1) {

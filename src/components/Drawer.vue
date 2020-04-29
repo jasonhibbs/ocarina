@@ -4,10 +4,9 @@
     .drawer-overlay(
       @click="$emit('clickoverlay')"
     )
-    .drawer-scroll(
-      ref="scroll"
-    )
+    .drawer-card-wrap
       nav.drawer-card(
+        ref="scroller"
         @mousewheel="onWheel"
         @touchstart="onTouchstart"
         @touchmove="onTouchmove"
@@ -24,7 +23,7 @@ import { Component, Ref, Vue } from 'vue-property-decorator'
 
 @Component
 export default class Drawer extends Vue {
-  @Ref('scroll') readonly scrollingElement!: HTMLElement
+  @Ref('scroller') readonly scrollingElement!: HTMLElement
 
   // LIfecycle
 
@@ -48,10 +47,10 @@ export default class Drawer extends Vue {
   }
 
   onTouchmove(e: TouchEvent) {
-    if (!this.scrollingElement) return
+    const isAtTop = this.scrollingElement?.scrollTop === 0
     const firstTouch = e.touches[0]
     const delta = firstTouch.pageY - this.initialTouchY
-    if (this.scrollingElement.scrollTop === 0 && delta > 30) {
+    if (isAtTop && delta > 30) {
       this.$emit('overscrolldown')
     }
   }
@@ -63,8 +62,8 @@ export default class Drawer extends Vue {
   // Mousewheel
 
   onWheel(e: WheelEvent) {
-    const src = e.srcElement as HTMLElement
-    if (src.scrollTop === 0 && e.deltaY < -30) {
+    const isAtTop = this.scrollingElement?.scrollTop === 0
+    if (isAtTop && e.deltaY < -40) {
       this.$emit('overscrolldown')
     }
   }
