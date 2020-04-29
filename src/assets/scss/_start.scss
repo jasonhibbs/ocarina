@@ -187,11 +187,11 @@ main {
     border: 1px solid var(--color-root);
   }
 
-  &[data-state='running'] {
+  &[data-state='good'] {
     --color: var(--color-good);
   }
 
-  &[data-state='interrupted'] {
+  &[data-state='bad'] {
     --color: var(--color-bad);
   }
 }

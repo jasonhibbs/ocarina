@@ -68,8 +68,8 @@ export default class SynthKeys extends Vue {
 
   async checkStarted() {
     if (!this.isStarted) {
-      await start()
       unmuteIosAudio()
+      await start()
       this.setupSynth()
       this.isStarted = true
     }

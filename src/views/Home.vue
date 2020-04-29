@@ -11,7 +11,7 @@
           :class="layoutSelected === 'n64' ? '_circles' : '_squares'"
         )
 
-      .status(:data-state="audioContextState")
+      .status(:data-state="status")
         .visuallyhidden Audio Status: {{ audioContextState }}
 
       button._inner(
@@ -42,7 +42,8 @@
         template(#default)
           .error(v-if="errorText")
             pre {{ errorText }}
-            button(@click="onClickReload") Try Reloading
+            p Don’t worry if this means nothing to you, reloading Ocarina may help.
+            button(@click="onClickReload") Reload
 
           .form-blocks
             .form-block._select
@@ -107,6 +108,20 @@ export default class Home extends Vue {
 
   get audioContextState() {
     return this.audio.context?.state
+  }
+
+  get status() {
+    let state = null
+
+    if (this.audioContextState === 'running') {
+      state = 'good'
+    }
+
+    if (this.errorText || this.audioContextState === 'interrupted') {
+      state = 'bad'
+    }
+
+    return state
   }
 
   // Errors
