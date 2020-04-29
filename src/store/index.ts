@@ -8,6 +8,14 @@ export default new Vuex.Store({
     audio: {
       context: null,
     },
+    ui: {
+      drawerExpanded: false,
+      synthLayout: 'n64',
+      synthLayouts: [
+        { label: 'Pad', value: 'pad' },
+        { label: 'N64', value: 'n64' },
+      ],
+    },
   },
   mutations: {},
   actions: {},

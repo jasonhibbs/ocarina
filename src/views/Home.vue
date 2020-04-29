@@ -4,11 +4,11 @@
 
     header
       button._inner(
-        :aria-label="`Layout: ${layoutSelectedLabel}`"
+        :aria-label="`Layout: ${synthLayoutLabel}`"
         @click="onClickLayoutToggle"
       )
         icon-layout(
-          :class="layoutSelected === 'n64' ? '_circles' : '_squares'"
+          :class="ui.synthLayout === 'n64' ? '_circles' : '_squares'"
         )
 
       .status(:data-state="status")
@@ -23,54 +23,17 @@
 
     main
       synth-keys(
-        :class="layoutClass"
+        :class="synthLayoutClass"
         @error="onError"
       )
-
-    transition(name="drawer-slide")
-      drawer#drawer(
-        v-if="drawerExpanded"
-        @clickoverlay="drawerExpanded = false"
-        @overscrolldown="drawerExpanded = false"
-      )
-        template(#header)
-          h1
-            icon-ocarina
-            span Ocarina
-          button._inner(
-            aria-controls="drawer"
-            :aria-expanded="drawerExpanded"
-            @click="drawerExpanded = false"
-          )
-            icon-close
-
-        template(#default)
-          .error(v-if="errorText")
-            pre {{ errorText }}
-            p Don’t worry if this means nothing to you, reloading Ocarina may help.
-            button(@click="onClickReload") Reload
-
-          .form-blocks
-            .form-block._select
-              label.form-block-label(for="layout-select") Layout
-              .form-block-controls
-                .form-block-control
-                  select(
-                    id="layout-select"
-                    v-model="layoutSelected"
-                  )
-                    option(v-for="option in layoutOptions" :value="option.value") {{ option.label }}
-
 
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { mapState } from 'vuex'
-import Drawer from '@/components/Drawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
-import IconClose from '@/components/IconClose.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
@@ -92,14 +55,20 @@ const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
   components: {
     IconOcarina,
     IconLayout,
-    IconClose,
-    Drawer,
     SynthKeys,
   },
-  computed: mapState(['audio']),
+  computed: mapState(['audio', 'ui']),
 })
 export default class Home extends Vue {
-  drawerExpanded: boolean = false
+  ui!: any
+
+  get drawerExpanded() {
+    return this.ui.drawerExpanded
+  }
+
+  set drawerExpanded(value) {
+    this.ui.drawerExpanded = value
+  }
 
   // Audio
 
@@ -137,27 +106,24 @@ export default class Home extends Vue {
 
   // Layout
 
-  layoutSelected = 'n64'
-  layoutOptions = [
-    { label: 'Pad', value: 'pad' },
-    { label: 'N64', value: 'n64' },
-  ]
-
-  get layoutSelectedIndex() {
-    return this.layoutOptions.findIndex(o => o.value === this.layoutSelected)
+  get layoutsIndex() {
+    return this.ui.synthLayouts.findIndex(
+      (o: any) => o.value === this.ui.synthLayout
+    )
   }
 
-  get layoutSelectedLabel() {
-    return this.layoutOptions[this.layoutSelectedIndex].label
+  get synthLayoutLabel() {
+    let options = this.ui.synthLayouts || []
+    return this.ui.synthLayouts[this.layoutsIndex]?.label || ''
   }
 
-  get layoutClass() {
-    return this.layoutSelected === 'n64' ? '_rotated _gamepad' : ''
+  get synthLayoutClass() {
+    return this.ui.synthLayout === 'n64' ? '_rotated _gamepad' : ''
   }
 
   onClickLayoutToggle() {
-    const nextIndex = (this.layoutSelectedIndex + 1) % this.layoutOptions.length
-    this.layoutSelected = this.layoutOptions[nextIndex].value
+    const nextIndex = (this.layoutsIndex + 1) % this.ui.synthLayouts.length
+    this.ui.synthLayout = this.ui.synthLayouts[nextIndex].value
   }
 }
 </script>
