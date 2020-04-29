@@ -72,6 +72,12 @@ export default class SynthKeys extends Vue {
       await start()
       this.setupSynth()
       this.isStarted = true
+      return
+    }
+
+    if (this.audio.context?.state !== 'running') {
+      this.$emit('error', 'Error: The audio was stopped by something.')
+      await start()
     }
   }
 

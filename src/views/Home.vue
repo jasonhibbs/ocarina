@@ -85,7 +85,7 @@ export default class Home extends Vue {
       state = 'good'
     }
 
-    if (this.errorText || this.audioContextState === 'interrupted') {
+    if (this.ui.synthError) {
       state = 'bad'
     }
 
@@ -94,14 +94,8 @@ export default class Home extends Vue {
 
   // Errors
 
-  errorText = ''
-
   onError(e: any) {
-    this.errorText = e
-  }
-
-  onClickReload() {
-    location.reload()
+    this.ui.synthError = e
   }
 
   // Layout

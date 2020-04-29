@@ -27,9 +27,9 @@
             icon-close
 
         template(#default)
-          .error(v-if="errorText")
-            pre {{ errorText }}
-            p Don’t worry if this means nothing to you, reloading Ocarina may help.
+          .error(v-if="ui.synthError")
+            pre {{ ui.synthError }}
+            p Reloading Ocarina should get the sound going again.
             button(@click="onClickReload") Reload
 
           .form-blocks
@@ -88,14 +88,6 @@ export default class App extends Vue {
 
   afterDrawerEnter() {
     this.drawer.focusFirstinContent()
-  }
-
-  // Errors
-
-  errorText = ''
-
-  onError(e: any) {
-    this.errorText = e
   }
 
   onClickReload() {

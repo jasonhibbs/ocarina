@@ -165,12 +165,12 @@ main {
 }
 
 .drawer-header {
-  // margin-bottom: var(--space-rem-mid);
+  background-color: var(--color-root);
   box-shadow: 0 1px 0 var(--shade-lighter);
   display: flex;
   position: sticky;
   top: 0;
-  background-color: var(--color-root);
+  z-index: 1;
 
   button {
     display: block;

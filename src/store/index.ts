@@ -10,6 +10,7 @@ export default new Vuex.Store({
     },
     ui: {
       drawerExpanded: false,
+      synthError: '',
       synthLayout: 'n64',
       synthLayouts: [
         { label: 'Pad', value: 'pad' },
