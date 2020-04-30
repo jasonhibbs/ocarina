@@ -20,6 +20,7 @@ body,
 }
 
 .screen {
+  overflow: hidden;
   background: var(--color-root);
   transform: scale3d(1, 1, 1);
   transform-origin: 50% 50%;
