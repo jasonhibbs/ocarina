@@ -65,8 +65,8 @@ header {
   flex: none;
   align-items: center;
   touch-action: none;
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
+  margin-left: env(safe-area-inset-left);
+  margin-right: env(safe-area-inset-right);
 
   button._inner {
     flex: auto;
