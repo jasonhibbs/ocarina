@@ -33,10 +33,6 @@ body,
   }
 }
 
-// #app {
-//   background-color: black;
-// }
-
 .screen-modal {
   .screen {
     --color-root: var(--grey-lightest);
@@ -47,6 +43,11 @@ body,
     @media (min-width: 40em) {
       $scale: (620/640);
       transform: scale3d($scale, $scale, 1);
+    }
+
+    @media (orientation: landscape) {
+      transform: none;
+      border-radius: 0;
     }
   }
 }
@@ -61,8 +62,11 @@ main {
 header {
   position: relative;
   display: flex;
+  flex: none;
   align-items: center;
   touch-action: none;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 
   button._inner {
     flex: auto;

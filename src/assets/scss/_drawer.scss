@@ -38,6 +38,10 @@
   .is-app & {
     padding-top: rem(10);
   }
+
+  @media (orientation: landscape) {
+    padding-top: rem(10);
+  }
 }
 
 .drawer-card {
@@ -48,15 +52,15 @@
   position: relative;
   z-index: 1;
   background-color: var(--color-root);
-  border-radius: rem(8) rem(8) 0 0;
+  border-radius: rem(10) rem(10) 0 0;
 
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 20vh;
-  box-shadow: 0 0 rem(24) var(--shade-light);
+  box-shadow: 0 0 rem(24) var(--shade-mid);
 
   .is-app & {
-    box-shadow: 0 0 rem(10) var(--shade-mid);
+    box-shadow: 0 0 rem(10) var(--shade-light);
   }
 }
 
