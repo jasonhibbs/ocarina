@@ -19,6 +19,11 @@
   @return #{'calc((1em /'} $context #{') * '} $value #{')'};
 }
 
+@mixin font-size($size: 16, $height: 24, $context: 16) {
+  font-size: em($size, $context);
+  line-height: ($height / $size);
+}
+
 @mixin padding-x($right: 0, $left: $right) {
   padding-left: $left;
   padding-right: $right;

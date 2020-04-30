@@ -8,7 +8,7 @@ $color-blue: hsl(222, 83%, 60%);
 
 $color-key: $color-blue;
 $color-key-lighter: mix($color-white, $color-key, 20);
-$color-key-darker: mix($color-black, $color-key, 20);
+$color-key-darker: mix($color-black, $color-key, 25);
 $color-key-50: fade-out($color-key, 0.5);
 $color-key-40: fade-out($color-key, 0.6);
 $color-key-30: fade-out($color-key, 0.7);
@@ -139,5 +139,8 @@ $grey-lightest: mix($color-white, $color-black, 94);
   --grey-lightest: #{$grey-lightest};
 
   --color-text: var(--color-contrast);
+  --color-text-light: var(--contrast-darker);
+  --color-text-lighter: var(--contrast-light);
+  --color-text-lightest: var(--contrast-mid);
   --color-focus: var(--color-key-40);
 }
