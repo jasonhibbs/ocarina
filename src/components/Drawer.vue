@@ -6,7 +6,7 @@
     )
     .drawer-card-wrap
       nav.drawer-card(
-        ref="scroller"
+        ref="card"
         @mousewheel="onWheel"
         @touchstart="onTouchstart"
         @touchmove="onTouchmove"
@@ -23,7 +23,9 @@ import { Component, Ref, Vue } from 'vue-property-decorator'
 
 @Component
 export default class Drawer extends Vue {
-  @Ref('scroller') readonly scrollingElement!: HTMLElement
+  @Ref('card') readonly cardElement!: HTMLElement
+  @Ref('header') readonly headerElement!: HTMLElement
+  @Ref('content') readonly contentElement!: HTMLElement
 
   // LIfecycle
 
@@ -38,10 +40,10 @@ export default class Drawer extends Vue {
   }
 
   focusFirstinContent() {
-    const focusable = (this.$refs.content as Element).querySelectorAll(
+    const focusable = this.contentElement.querySelectorAll(
       '[href], button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
     )
-    const first = focusable[0]
+    const first = focusable[0] as HTMLElement
     if (first) {
       first.focus()
     }
@@ -57,7 +59,7 @@ export default class Drawer extends Vue {
   }
 
   onTouchmove(e: TouchEvent) {
-    const isAtTop = this.scrollingElement?.scrollTop === 0
+    const isAtTop = this.cardElement?.scrollTop === 0
     const firstTouch = e.touches[0]
     const delta = firstTouch.pageY - this.initialTouchY
     if (isAtTop && delta > 30) {
@@ -72,7 +74,7 @@ export default class Drawer extends Vue {
   // Mousewheel
 
   onWheel(e: WheelEvent) {
-    const isAtTop = this.scrollingElement?.scrollTop === 0
+    const isAtTop = this.cardElement?.scrollTop === 0
     if (isAtTop && e.deltaY < -40) {
       this.$emit('overscrolldown')
     }
