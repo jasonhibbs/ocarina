@@ -11,14 +11,14 @@
         v-if="ui.drawerExpanded"
         ref="drawer"
         role="dialog"
-        aria-label="Ocarina Settings"
+        :aria-label="strings.dialogAriaLabel"
         @clickoverlay="ui.drawerExpanded = false"
         @overscrolldown="ui.drawerExpanded = false"
       )
         template(#header)
           h1
             icon-ocarina
-            span Ocarina
+            span {{ strings.appTitle }}
           button._inner(
             aria-controls="drawer"
             :aria-expanded="ui.drawerExpanded"
@@ -29,12 +29,12 @@
         template(#default)
           .error(v-if="ui.synthError")
             pre {{ ui.synthError }}
-            p Reloading Ocarina should get the sound going again.
-            button(@click="onClickReload") Reload
+            p {{ strings.reloadHint }}
+            button(@click="onClickReload") {{ strings.reloadButtonLabel }}
 
           .form-blocks
             .form-block._select
-              label.form-block-label(for="layout-select") Layout
+              label.form-block-label(for="layout-select") {{ strings.layoutFormLabel }}
               .form-block-controls
                 .form-block-control
                   select(
@@ -74,6 +74,14 @@ export default class App extends Vue {
   @Ref() readonly drawer!: Drawer
 
   ui!: any
+
+  strings = {
+    dialogAriaLabel: `Ocarina Settings`,
+    appTitle: `Ocarina`,
+    reloadHint: `Screws fall out all the time. Reloading Ocarina should get the sound going again.`,
+    reloadButtonLabel: `Reload`,
+    layoutFormLabel: `Layout`,
+  }
 
   @Watch('ui.drawerExpanded', { immediate: true })
   onDrawerChanged(newVal: boolean, oldVal: boolean) {
