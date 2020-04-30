@@ -83,6 +83,16 @@ export default class App extends Vue {
     layoutFormLabel: `Layout`,
   }
 
+  // Lifecycle
+
+  beforeCreate() {
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      document.documentElement.classList.add('is-app')
+    }
+  }
+
+  // Drawer
+
   @Watch('ui.drawerExpanded', { immediate: true })
   onDrawerChanged(newVal: boolean, oldVal: boolean) {
     const root = document.documentElement
@@ -92,10 +102,8 @@ export default class App extends Vue {
 
     if (newVal) {
       root.classList.add('screen-modal')
-      // appleTitle?.setAttribute('content', 'black-translucent')
     } else {
       document.documentElement.classList.remove('screen-modal')
-      // appleTitle?.setAttribute('content', 'default')
     }
   }
 

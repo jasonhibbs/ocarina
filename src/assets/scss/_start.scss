@@ -21,25 +21,26 @@ body,
 
 .screen {
   overflow: hidden;
-  background: var(--color-root);
+  background-color: var(--color-root);
   transform: scale3d(1, 1, 1);
-  transform-origin: 50% 50%;
+  // transform-origin: 50% 50%;
   transition: background-color, border-radius, transform;
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 
-  // @media (min-width: 40em) {
-  //   transform-origin: 50% 66.66%;
-  // }
+  .is-app & {
+    transform-origin: 50% 0%;
+  }
 }
 
-#app {
-  background-color: black;
-}
+// #app {
+//   background-color: black;
+// }
 
 .screen-modal {
   .screen {
-    $scale: (342/375);
+    --color-root: var(--grey-lightest);
+    $scale: (345/375);
     transform: scale3d($scale, $scale, 1);
     border-radius: rem(9);
 

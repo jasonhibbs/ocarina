@@ -22,7 +22,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background: var(--shade-light);
+  // background: var(--shade-light);
 }
 
 .drawer-card-wrap {
@@ -31,9 +31,13 @@
   right: 0;
   bottom: 0;
   left: 0;
-  padding-top: rem(40);
   overflow: hidden;
   pointer-events: none;
+  padding-top: percentage(35/375);
+
+  .is-app & {
+    padding-top: rem(10);
+  }
 }
 
 .drawer-card {
@@ -45,10 +49,15 @@
   z-index: 1;
   background-color: var(--color-root);
   border-radius: rem(8) rem(8) 0 0;
-  box-shadow: 0 0 2rem var(--shade-lighter);
+
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 20vh;
+  box-shadow: 0 0 rem(24) var(--shade-light);
+
+  .is-app & {
+    box-shadow: 0 0 rem(10) var(--shade-mid);
+  }
 }
 
 .drawer-header {

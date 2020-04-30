@@ -13,9 +13,9 @@
 
   $grey-darkest: mix($color-black, $color-white, 20);
   $grey-darker: mix($color-black, $color-white, 40);
-  $grey-dark: mix($color-black, $color-white, 50);
-  $grey-mid: mix($color-black, $color-white, 70);
-  $grey-light: mix($color-black, $color-white, 85);
+  $grey-dark: mix($color-black, $color-white, 66);
+  $grey-mid: mix($color-black, $color-white, 82);
+  $grey-light: mix($color-black, $color-white, 88);
   $grey-lighter: mix($color-black, $color-white, 90);
   $grey-lightest: mix($color-black, $color-white, 94);
 
@@ -97,9 +97,11 @@
     }
   }
 
-  .drawer-card,
-  .screen-modal .screen {
+  .drawer-card {
     --color-root: var(--grey-light);
+  }
+  .screen-modal .screen {
+    --color-root: var(--grey-mid);
   }
 
   .drawer .icon-ocarina {
