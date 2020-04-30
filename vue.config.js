@@ -25,6 +25,7 @@ module.exports = {
     name: 'Ocarina',
     themeColor: '#fff',
     appleMobileWebAppCapable: 'yes',
+    appleMobileWebAppStatusBarStyle: 'black-translucent',
     iconPaths: {
       appleTouchIcon: 'img/icons/apple-touch-icon.png',
     },

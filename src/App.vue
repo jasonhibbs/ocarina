@@ -92,10 +92,10 @@ export default class App extends Vue {
 
     if (newVal) {
       root.classList.add('screen-modal')
-      appleTitle?.setAttribute('content', 'black-translucent')
+      // appleTitle?.setAttribute('content', 'black-translucent')
     } else {
       document.documentElement.classList.remove('screen-modal')
-      appleTitle?.setAttribute('content', 'default')
+      // appleTitle?.setAttribute('content', 'default')
     }
   }
 
