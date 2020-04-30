@@ -40,7 +40,7 @@ const defaultNotes = () => {
   const length = 20
   const notes = []
 
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     const count = firstLetterIndex + i
     const thisLetter = letters[count % letters.length]
     const thisNumber = firstNumberIndex + Math.floor(count / letters.length)
@@ -225,8 +225,7 @@ export default class SynthKeys extends Vue {
     }
 
     const touches = e.changedTouches
-    for (var i = 0; i < touches.length; i++) {
-      const touch = touches[i]
+    for (const touch of touches) {
       const key = this.getKeyFromPoint(touch.pageX, touch.pageY)
       if (key) {
         this.pushActiveNote({ note: key.note, identifier: touch.identifier })
@@ -237,8 +236,7 @@ export default class SynthKeys extends Vue {
   onTouchmove(e: TouchEvent) {
     e.preventDefault()
     const touches = e.changedTouches
-    for (var i = 0; i < touches.length; i++) {
-      const touch = touches[i]
+    for (const touch of touches) {
       const key = this.getKeyFromPoint(touch.pageX, touch.pageY)
       if (key) {
         this.updateActiveNote({ note: key.note, identifier: touch.identifier })
@@ -248,8 +246,7 @@ export default class SynthKeys extends Vue {
 
   onTouchend(e: TouchEvent) {
     const touches = e.changedTouches
-    for (var i = 0; i < touches.length; i++) {
-      const touch = touches[i]
+    for (const touch of touches) {
       this.removeActiveNote(touch.identifier)
     }
   }
@@ -261,12 +258,12 @@ export default class SynthKeys extends Vue {
   onMousedown(note: string) {
     this.checkStarted()
     this.isMousedown = true
-    this.pushActiveNote({ note: note, identifier: 'mouse' })
+    this.pushActiveNote({ note, identifier: 'mouse' })
   }
 
   onMouseenter(note: string) {
     if (this.isMousedown) {
-      this.updateActiveNote({ note: note, identifier: 'mouse' })
+      this.updateActiveNote({ note, identifier: 'mouse' })
     }
   }
 

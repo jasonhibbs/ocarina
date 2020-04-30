@@ -107,7 +107,7 @@ export default class Home extends Vue {
   }
 
   get synthLayoutLabel() {
-    let options = this.ui.synthLayouts || []
+    const options = this.ui.synthLayouts || []
     return this.ui.synthLayouts[this.layoutsIndex]?.label || ''
   }
 
