@@ -12,23 +12,20 @@
 
 @keyframes pulse {
   from {
-    background-color: var(--pulse-from);
+    opacity: var(--pulse-from);
   }
   to {
-    background-color: var(--pulse-to);
+    opacity: var(--pulse-to);
   }
 }
 
 .synth-key {
-  --pitch-class: 0;
-  --lightness: calc(1% * (54 + var(--pitch-class)));
-  --hsl: #{hue($color-key)}, 83%, var(--lightness);
-  --button-color: var(--color-key);
-  --button-background-color: hsla(var(--hsl), 0.15);
-  --button-hover-background-color: hsla(var(--hsl), 0.25);
+  --color: var(--color-key);
+  --background-color: var(--color-key-20);
+  --hover-background-color: var(--color-key-30);
 
-  --pulse-from: hsla(var(--hsl), 0.25);
-  --pulse-to: hsla(var(--hsl), 0.3);
+  --pulse-from: 0.5;
+  --pulse-to: 0.4;
 
   position: relative;
   flex: auto;
@@ -45,6 +42,22 @@
     pointer-events: none;
   }
 
+  .synth-key-inner:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    background-color: var(--hover-background-color);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.1s;
+  }
+
+  &[aria-pressed='true'],
   &:focus,
   &:hover {
     outline: none;
@@ -53,9 +66,17 @@
     box-shadow: none;
   }
 
+  &:hover {
+    .synth-key-inner:before {
+      opacity: 0.12;
+    }
+  }
+
   &[aria-pressed='true'] {
-    background-color: var(--hover-background-color);
-    animation: pulse (0.1666s * 2) ease-in-out infinite alternate;
+    .synth-key-inner:before {
+      $vibrato-rate: 1s / 6;
+      animation: pulse ($vibrato-rate * 1) ease-in-out infinite alternate;
+    }
   }
 
   @media (min-width: 36em) {
@@ -118,16 +139,25 @@
 }
 
 .synth-keys._gamepad {
-  button {
-    --button-color: var(--contrast-darker);
-    --button-background-color: var(--contrast-lighter);
-    --button-hover-background-color: var(--button-background-color);
+  .synth-key {
+    --color: var(--contrast-darker);
+    --background-color: var(--contrast-lighter);
+    --hover-background-color: var(--background-color);
+
+    --pulse-from: 1;
+    --pulse-to: 0.8;
+
+    &:hover {
+      .synth-key-inner:before {
+        opacity: 0.3;
+      }
+    }
   }
 
   .synth-key-inner {
     position: relative;
-    color: var(--button-color);
-    background-color: var(--button-background-color);
+    color: var(--color);
+    background-color: var(--background-color);
     padding: em(72, 128);
     border-radius: 4em;
   }
@@ -135,28 +165,7 @@
   // Pressed style
 
   .synth-key-inner:before {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    margin: auto;
-  }
-
-  .synth-key-inner:before {
-    background-color: var(--contrast-light);
-    content: '';
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity 0.1s;
-  }
-
-  [aria-pressed='true'] {
-    animation: none;
-    .synth-key-inner:before {
-      opacity: 1;
-    }
+    background: var(--contrast-light);
   }
 
   // In-game buttons
@@ -169,7 +178,7 @@
   // A Button
 
   [data-note='D5'] {
-    --button-background-color: var(--color-button-a);
+    --background-color: var(--color-button-a);
 
     .synth-key-inner:after {
       content: 'A';
@@ -186,7 +195,7 @@
   [data-note='A5'],
   [data-note='B5'],
   [data-note='D6'] {
-    --button-background-color: var(--color-button-c);
+    --background-color: var(--color-button-c);
 
     .synth-key-inner:after {
       content: '▲';
