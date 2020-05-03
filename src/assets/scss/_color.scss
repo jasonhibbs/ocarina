@@ -1,10 +1,10 @@
 // Colour ——————————————————————————————————————————————————————————————
 
 $color-white: #fff;
-$color-black: hsl(220, 40%, 15%);
+$color-black: hsl(228, 40%, 15%);
 $color-red: hsl(353, 90%, 50%);
 $color-green: hsl(120, 60%, 50%);
-$color-blue: hsl(240, 100%, 66%);
+$color-blue: hsl(228, 100%, 66%);
 
 $color-key: $color-blue;
 $color-key-lighter: mix($color-white, $color-key, 20);

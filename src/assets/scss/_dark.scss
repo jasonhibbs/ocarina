@@ -2,6 +2,7 @@
 
 @media (prefers-color-scheme: dark) {
   $color-black: #000;
+  $color-black-mix: hsl(228, 40%, 3%);
 
   $shade-darkest: fade-out($color-black, 0.2);
   $shade-darker: fade-out($color-black, 0.4);
@@ -11,13 +12,13 @@
   $shade-lighter: fade-out($color-black, 0.9);
   $shade-lightest: fade-out($color-black, 0.94);
 
-  $grey-darkest: mix($color-black, $color-white, 20);
-  $grey-darker: mix($color-black, $color-white, 40);
-  $grey-dark: mix($color-black, $color-white, 66);
-  $grey-mid: mix($color-black, $color-white, 82);
-  $grey-light: mix($color-black, $color-white, 88);
-  $grey-lighter: mix($color-black, $color-white, 90);
-  $grey-lightest: mix($color-black, $color-white, 94);
+  $grey-darkest: mix($color-black-mix, $color-white, 20);
+  $grey-darker: mix($color-black-mix, $color-white, 40);
+  $grey-dark: mix($color-black-mix, $color-white, 66);
+  $grey-mid: mix($color-black-mix, $color-white, 76);
+  $grey-light: mix($color-black-mix, $color-white, 84);
+  $grey-lighter: mix($color-black-mix, $color-white, 90);
+  $grey-lightest: mix($color-black-mix, $color-white, 94);
 
   :root {
     --color-black: #{$color-black};
@@ -98,7 +99,7 @@
   }
 
   .drawer-card {
-    --color-root: var(--grey-light);
+    --color-root: var(--grey-lighter);
   }
   .screen-modal .screen {
     --color-root: var(--grey-mid);
