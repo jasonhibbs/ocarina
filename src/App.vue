@@ -17,7 +17,7 @@
       )
         template(#header)
           h1
-            icon-ocarina
+            icon-ocarina._gradient
             span {{ strings.appTitle }}
           button._inner(
             aria-controls="drawer"

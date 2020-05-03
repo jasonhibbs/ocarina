@@ -2,7 +2,7 @@
 
 @media (prefers-color-scheme: dark) {
   $color-black: #000;
-  $color-black-mix: hsl(228, 40%, 3%);
+  $color-black-mix: hsl(220, 40%, 3%);
 
   $shade-darkest: fade-out($color-black, 0.2);
   $shade-darker: fade-out($color-black, 0.4);
@@ -58,7 +58,7 @@
 
     --button-bad-focus-color: var(--color-bad-50);
 
-    --color-button-a: hsl(228, 60%, 16%);
+    --color-button-a: hsl(220, 60%, 16%);
     --color-button-c: hsl(42, 60%, 16%);
   }
 

@@ -68,7 +68,6 @@ export default class SynthKeys extends Vue {
 
   async checkStarted() {
     if (!this.isStarted) {
-      unmuteIosAudio()
       await start()
       this.setupSynth()
       this.isStarted = true
@@ -83,6 +82,7 @@ export default class SynthKeys extends Vue {
 
   mounted() {
     // this.setupSynth()
+    unmuteIosAudio()
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)
