@@ -1,5 +1,6 @@
 [[redirects]]
   from = "/serviceWorker.js"
+  to = "/serviceWorker.js"
   status = 200
 
 [[redirects]]
