@@ -31,7 +31,7 @@ import {
   start,
 } from 'tone'
 import SynthKey from '@/components/SynthKey.vue'
-import * as unmuteIosAudio from 'unmute-ios-audio'
+// import * as unmuteIosAudio from 'unmute-ios-audio'
 
 const defaultNotes = () => {
   const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
@@ -82,7 +82,7 @@ export default class SynthKeys extends Vue {
 
   mounted() {
     // this.setupSynth()
-    unmuteIosAudio()
+    // unmuteIosAudio()
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)
