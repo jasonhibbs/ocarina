@@ -11,9 +11,9 @@
 }
 
 .drawer .icon-ocarina {
-  --potato-color: var(--color-key-lighter);
-  --ring-color: var(--color-key-darker);
-  --symbol-color: var(--color-key-darker);
+  --potato-color: var(--color-key);
+  --ring-color: var(--color-key-lighter);
+  --symbol-color: var(--color-key);
 }
 
 .drawer-overlay {
@@ -22,7 +22,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-  // background: var(--shade-light);
 }
 
 .drawer-card-wrap {
