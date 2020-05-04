@@ -24,6 +24,7 @@
     main
       synth-keys(
         :class="synthLayoutClass"
+        @play="onPlay"
         @error="onError"
       )
 
@@ -93,6 +94,10 @@ export default class Home extends Vue {
   }
 
   // Errors
+
+  onPlay() {
+    this.ui.synthError = ''
+  }
 
   onError(e: any) {
     this.ui.synthError = e
