@@ -37,14 +37,11 @@
               label.form-block-label(for="layout-select") {{ strings.layoutFormLabel }}
               .form-block-controls
                 .form-block-control
-                  select(
+                  inline-select(
                     id="layout-select"
+                    :options="ui.synthLayouts"
                     v-model="ui.synthLayout"
                   )
-                    option(
-                      v-for="layout in ui.synthLayouts"
-                      :value="layout.value"
-                    ) {{ layout.label }}
 
           footer
             p Based on the #[a(href="https://zelda.gamepedia.com/Ocarina_of_Time_(Item)") Ocarina of Time]
@@ -61,12 +58,14 @@ import { mapState } from 'vuex'
 import Drawer from '@/components/Drawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconClose from '@/components/IconClose.vue'
+import InlineSelect from '@/components/InlineSelect.vue'
 
 @Component({
   components: {
     Drawer,
     IconOcarina,
     IconClose,
+    InlineSelect,
   },
   computed: mapState(['ui']),
 })

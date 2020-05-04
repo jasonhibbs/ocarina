@@ -126,3 +126,69 @@ input[type='time'] {
 select {
   @extend %select-base;
 }
+
+// Inline Select
+
+.inline-select {
+  display: contents;
+}
+
+.inline-select-field {
+  border: none;
+  padding: rem(2);
+
+  &,
+  &:focus,
+  &:hover {
+    box-shadow: none;
+  }
+
+  // &._focus {
+  //   border-color: var(--hover-border-color);
+  //   box-shadow: 0 0 0 3px var(--focus-color);
+  // }
+}
+
+.inline-select-options {
+  display: flex;
+  align-items: center;
+}
+
+.inline-select-option {
+  --padding-x: 12;
+  --padding-y: 8;
+
+  flex: auto;
+  border: 1px solid transparent;
+  border-radius: 1px;
+  cursor: pointer;
+  display: inline-block;
+  line-height: (20/16);
+  padding: rem(var(--padding-y)) rem(var(--padding-x));
+  text-align: center;
+  transition: border-color 0.1s, background-color 0.1s, box-shadow 0.1s,
+    opacity 0.1s;
+  opacity: (3/5);
+
+  &:hover,
+  &:focus,
+  &._focus {
+    outline: 0;
+    background-color: var(--tint-mid);
+    opacity: (4/5);
+  }
+
+  &:focus,
+  &._focus {
+    box-shadow: 0 0 0 3px var(--focus-color);
+  }
+
+  &._active {
+    background-color: var(--color-root);
+    opacity: 1;
+  }
+}
+
+.inline-select-control {
+  @extend .visuallyhidden;
+}
