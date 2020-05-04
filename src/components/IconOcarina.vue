@@ -26,7 +26,7 @@
   --symbol-color: #{mix(#fff, #000, 50)};
 
   --potato-stop-light: hsl(200, 100%, 70%);
-  --potato-stop-dark: hsl(232, 100%, 60%);
+  --potato-stop-dark: hsl(232, 100%, 64%);
   --ring-stop-light: hsl(216, 100%, 96%);
   --ring-stop-dark: hsl(216, 100%, 80%);
 
