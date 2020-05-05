@@ -292,6 +292,7 @@ export default class SynthKeys extends Vue {
     const code = e.code
     const index = this.keyboardKeyCodes.findIndex(k => k === code)
     if (index > -1) {
+      e.preventDefault()
       this.checkStarted()
       const key = this.keyboardKeys[index]
       this.pushActiveNote({ note: key.note, identifier: key.code })
