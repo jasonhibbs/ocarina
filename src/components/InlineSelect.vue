@@ -8,12 +8,13 @@
     )
       .inline-select-options
         .inline-select-option(
-          v-for="option in options"
+          v-for="(option, index) in options"
+          ref="options"
           :class="optionClasses(option)"
           :tabindex="option.value === value ? 0 : -1"
           @keydown.left="onKeyupLeft"
           @keydown.right="onKeyupRight"
-          @click="onClickOption(option)"
+          @click="onClickOption(index)"
         ) {{ option.label }}
 
     .inline-select-control
@@ -71,23 +72,28 @@ export default class InlineSelect extends Vue {
     }
   }
 
-  onClickOption(option: inlineSelectOption) {
-    this.$emit('input', option.value)
+  get currentIndex() {
+    return this.options.findIndex(o => this.value === o.value)
+  }
+
+  selectOptionByIndex(newIndex: number) {
+    const safeIndex = (this.options.length + newIndex) % this.options.length
+    const newValue = this.options[safeIndex].value
+    const newOptionEl = (this.$refs.options as HTMLElement[])[safeIndex]
+    newOptionEl.focus()
+    this.$emit('input', newValue)
+  }
+
+  onClickOption(index: number) {
+    this.selectOptionByIndex(index)
   }
 
   onKeyupLeft(e: any) {
-    const currentIndex = this.options.findIndex(o => this.value === o.value)
-    const nextIndex =
-      currentIndex === 0 ? this.options.length - 1 : currentIndex - 1
-    const nextValue = this.options[nextIndex].value
-    this.$emit('input', nextValue)
+    this.selectOptionByIndex(this.currentIndex - 1)
   }
 
   onKeyupRight(e: any) {
-    const currentIndex = this.options.findIndex(o => this.value === o.value)
-    const nextIndex = (currentIndex + 1) % this.options.length
-    const nextValue = this.options[nextIndex].value
-    this.$emit('input', nextValue)
+    this.selectOptionByIndex(this.currentIndex + 1)
   }
 }
 </script>
