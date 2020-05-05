@@ -130,7 +130,8 @@ select {
 // Inline Select
 
 .inline-select {
-  display: contents;
+  display: block;
+  flex: auto;
 }
 
 .inline-select-field {
@@ -171,19 +172,17 @@ select {
   opacity: (3/5);
 
   &:hover,
-  &:focus,
-  &._focus {
+  &:focus {
     outline: 0;
     background-color: var(--tint-mid);
     opacity: (4/5);
   }
 
-  &:focus,
-  &._focus {
+  &:focus {
     box-shadow: 0 0 0 3px var(--focus-color);
   }
 
-  &._active {
+  &[aria-checked='true'] {
     background-color: var(--color-root);
     opacity: 1;
   }
@@ -191,4 +190,5 @@ select {
 
 .inline-select-control {
   @extend .visuallyhidden;
+  margin-top: var(--space-rem-small);
 }

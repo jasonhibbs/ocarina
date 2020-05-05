@@ -3,14 +3,15 @@
   .inline-select
 
     .input.inline-select-field(
-      role="presentation"
-      :class="fieldClasses"
+      role="radiogroup"
+      :aria-labelledby="ariaLabelledby"
     )
       .inline-select-options
         .inline-select-option(
           v-for="(option, index) in options"
           ref="options"
-          :class="optionClasses(option)"
+          role="radio"
+          :aria-checked="option.value === value"
           :tabindex="option.value === value ? 0 : -1"
           @keydown.left="onKeyupLeft"
           @keydown.right="onKeyupRight"
@@ -46,29 +47,13 @@ interface inlineSelectOption {
 export default class InlineSelect extends Vue {
   @Prop() id?: string
   @Prop() value?: string
+  @Prop() ariaLabelledby?: string
   @Prop() options!: inlineSelectOption[]
 
   get listeners() {
     return {
       ...this.$listeners,
       input: (e: any) => this.$emit('input', e.target.value),
-      focus: () => (this.isFocussed = true),
-      blur: () => (this.isFocussed = false),
-    }
-  }
-
-  isFocussed: boolean = false
-
-  get fieldClasses() {
-    return {
-      _focus: this.isFocussed,
-    }
-  }
-
-  optionClasses(option: inlineSelectOption) {
-    return {
-      _active: option.value === this.value,
-      _focus: this.isFocussed && option.value === this.value,
     }
   }
 

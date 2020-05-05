@@ -5,7 +5,7 @@
       @click="$emit('clickoverlay')"
     )
     .drawer-card-wrap
-      nav.drawer-card(
+      .drawer-card(
         ref="card"
         @mousewheel="onWheel"
         @touchstart="onTouchstart"

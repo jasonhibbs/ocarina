@@ -32,7 +32,7 @@
             p {{ strings.reloadHint }}
             button(@click="onClickReload") {{ strings.reloadButtonLabel }}
 
-          .form-blocks
+          form.form-blocks(@submit.prevent)
             .form-block._select
               label.form-block-label(for="layout-select") {{ strings.layoutFormLabel }}
               .form-block-controls
