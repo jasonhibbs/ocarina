@@ -5,6 +5,7 @@ $color-black: hsl(220, 40%, 15%);
 $color-red: hsl(353, 90%, 50%);
 $color-green: hsl(120, 60%, 50%);
 $color-blue: hsl(220, 100%, 66%);
+$color-yellow: hsl(50, 100%, 60%);
 
 $color-key: $color-blue;
 $color-key-lighter: mix($color-white, $color-key, 20);
@@ -35,6 +36,16 @@ $color-bad-30: fade-out($color-bad, 0.7);
 $color-bad-20: fade-out($color-bad, 0.8);
 $color-bad-10: fade-out($color-bad, 0.9);
 $color-text-bad: darken($color-bad, 10);
+
+$color-caution: $color-yellow;
+$color-caution-lighter: lighten($color-caution, 12);
+$color-caution-darker: darken($color-caution, 6);
+$color-caution-50: fade-out($color-caution, 0.5);
+$color-caution-40: fade-out($color-caution, 0.6);
+$color-caution-30: fade-out($color-caution, 0.7);
+$color-caution-20: fade-out($color-caution, 0.8);
+$color-caution-10: fade-out($color-caution, 0.9);
+$color-text-caution: darken($color-caution, 10);
 
 $tint-darkest: fade-out($color-white, 0.4);
 $tint-darker: fade-out($color-white, 0.5);
@@ -99,6 +110,17 @@ $grey-lightest: mix($color-white, $color-black, 94);
   --color-bad-20: #{$color-bad-20};
   --color-bad-10: #{$color-bad-10};
   --color-text-bad: #{$color-text-bad};
+
+  --color-caution: #{$color-caution};
+  --color-caution-contrast: #{$color-black};
+  --color-caution-lighter: #{$color-caution-lighter};
+  --color-caution-darker: #{$color-caution-darker};
+  --color-caution-50: #{$color-caution-50};
+  --color-caution-40: #{$color-caution-40};
+  --color-caution-30: #{$color-caution-30};
+  --color-caution-20: #{$color-caution-20};
+  --color-caution-10: #{$color-caution-10};
+  --color-text-caution: #{$color-text-caution};
 
   --color-root: var(--color-white);
   --color-root-backdrop: #{$tint-darkest};

@@ -146,6 +146,10 @@ main {
     --color: var(--color-good);
   }
 
+  &[data-state='indeterminate'] {
+    --color: var(--color-caution);
+  }
+
   &[data-state='bad'] {
     --color: var(--color-bad);
   }

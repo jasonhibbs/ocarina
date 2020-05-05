@@ -74,9 +74,10 @@ export default class Home extends Vue {
   // Audio
 
   audio!: any
+  playState = ''
 
   get audioContextState() {
-    return this.audio.context?.state
+    return this.playState
   }
 
   get status() {
@@ -86,6 +87,10 @@ export default class Home extends Vue {
       state = 'good'
     }
 
+    if (!this.playState && this.audioContextState === 'suspended') {
+      state = 'indeterminate'
+    }
+
     if (this.ui.synthError) {
       state = 'bad'
     }
@@ -93,14 +98,13 @@ export default class Home extends Vue {
     return state
   }
 
-  // Errors
-
-  onPlay() {
+  onPlay(currentState: string) {
+    this.playState = currentState || this.playState
     this.ui.synthError = ''
   }
 
-  onError(e: any) {
-    this.ui.synthError = e
+  onError(catchError: any) {
+    this.ui.synthError = catchError
   }
 
   // Layout

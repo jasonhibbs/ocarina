@@ -30,15 +30,19 @@
   position: relative;
   flex: auto;
   display: flex;
+  align-items: center;
   justify-content: center;
   font-size: 2em;
   width: (100%/3);
   border: 1px solid var(--color-root);
   border-top: none;
   border-left: none;
+  border-radius: 0;
   padding: 0;
+  text-align: center;
 
   .synth-key-inner {
+    flex: none;
     pointer-events: none;
   }
 

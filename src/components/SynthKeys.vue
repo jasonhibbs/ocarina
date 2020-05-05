@@ -21,15 +21,7 @@
 <script lang="ts">
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator'
 import { mapState } from 'vuex'
-import {
-  Context,
-  Destination,
-  Reverb,
-  Synth,
-  Vibrato,
-  context,
-  start,
-} from 'tone'
+import * as Tone from 'tone'
 import SynthKey from '@/components/SynthKey.vue'
 // import * as unmuteIosAudio from 'unmute-ios-audio'
 
@@ -68,21 +60,20 @@ export default class SynthKeys extends Vue {
 
   async checkStarted() {
     if (!this.isStarted) {
-      await start()
-      this.setupSynth()
       this.isStarted = true
+      await Tone.start()
+      this.setupSynth()
       return
     }
 
-    if (this.audio.context?.state !== 'running') {
+    if (this.audio.context.state !== 'running') {
       this.$emit('error', 'Error: The audio was stopped by something.')
-      await start()
+      Tone.start()
     }
   }
 
   mounted() {
-    // this.setupSynth()
-    // unmuteIosAudio()
+    this.audio.context = new Tone.Context()
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)
@@ -127,20 +118,23 @@ export default class SynthKeys extends Vue {
   }
 
   async setupSynth() {
-    this.audio.context = context
-    this.synth = new Synth()
+    this.synth = new Tone.Synth()
     this.synth.set(this.synthOptions)
-    this.synthVibrato = new Vibrato(5, 0.1666)
-    this.synthReverb = new Reverb()
+    this.synthVibrato = new Tone.Vibrato(5, 0.1666)
+    this.synthReverb = new Tone.Reverb()
     this.synthReverb.set(this.synthReverbOptions)
-    this.synth.chain(this.synthVibrato, this.synthReverb, Destination)
+    this.synth.chain(this.synthVibrato, this.synthReverb, Tone.Destination)
   }
 
   playNote(note: string) {
+    if (this.audio.context.state !== 'running') {
+      this.audio.context.resume()
+    }
+
     if (this.synth) {
       try {
-        this.synth.triggerAttack(note, 0.00000001)
-        this.$emit('play')
+        this.synth.triggerAttack(note)
+        this.$emit('play', this.audio.context.state)
       } catch (error) {
         this.$emit('error', error)
       }
@@ -219,9 +213,9 @@ export default class SynthKeys extends Vue {
     e.preventDefault()
 
     // this doesn’t help
-    if (context.state !== 'running') {
-      context.resume()
-      start()
+    if (this.audio.context.state !== 'running') {
+      this.audio.context.resume()
+      // Tone.start()
     }
 
     const touches = e.changedTouches
