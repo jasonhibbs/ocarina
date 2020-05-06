@@ -94,6 +94,14 @@ export default class App extends Vue {
     }
   }
 
+  created() {
+    document.addEventListener('workerupdated', this.onWorkerUpdated)
+  }
+
+  onWorkerUpdated() {
+    this.ui.updateAvailable = true
+  }
+
   // Drawer
 
   @Watch('ui.drawerExpanded', { immediate: true })
