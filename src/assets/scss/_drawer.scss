@@ -111,3 +111,17 @@
     margin: var(--space-rem-small) 0;
   }
 }
+
+.drawer .message {
+  color: var(--color-text-key);
+  background-color: var(--color-key-10);
+  padding: var(--space-rem-mid) var(--space-rem-mid);
+
+  p {
+    margin: 0;
+
+    & + & {
+      margin-bottom: var(--space-rem-mid);
+    }
+  }
+}

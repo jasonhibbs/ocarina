@@ -15,7 +15,7 @@ $color-key-40: fade-out($color-key, 0.6);
 $color-key-30: fade-out($color-key, 0.7);
 $color-key-20: fade-out($color-key, 0.8);
 $color-key-10: fade-out($color-key, 0.9);
-$color-text-key: $color-key;
+$color-text-key: mix($color-black, $color-key, 20);
 
 $color-good: $color-green;
 $color-good-lighter: lighten($color-good, 12);

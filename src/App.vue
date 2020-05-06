@@ -32,6 +32,9 @@
             p {{ strings.reloadHint }}
             button(@click="onClickReload") {{ strings.reloadButtonLabel }}
 
+          .message._for-ios
+            p Install Ocarina by pressing 􀈂 and finding "Add to Home Screen 􀑍"
+
           form.form-blocks(@submit.prevent)
             .form-block._select
               label.form-block-label(
@@ -91,6 +94,9 @@ export default class App extends Vue {
   beforeCreate() {
     if (window.matchMedia('(display-mode: standalone)').matches) {
       document.documentElement.classList.add('is-app')
+    }
+    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+      document.documentElement.classList.add('is-ios')
     }
   }
 

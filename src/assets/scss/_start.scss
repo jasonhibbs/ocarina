@@ -12,6 +12,10 @@
   overflow: hidden;
 }
 
+html:not(.is-ios) ._for-ios {
+  display: none;
+}
+
 :root,
 body,
 #app,

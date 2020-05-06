@@ -174,8 +174,8 @@ select {
   &:hover,
   &:focus {
     outline: 0;
-    background-color: var(--tint-mid);
-    opacity: (4/5);
+    background-color: var(--color-root);
+    opacity: (3/5);
   }
 
   &:focus {

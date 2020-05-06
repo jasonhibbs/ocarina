@@ -4,6 +4,8 @@
   $color-black: #000;
   $color-black-mix: hsl(220, 40%, 3%);
 
+  $color-text-key: mix($color-white, $color-key, 10);
+
   $shade-darkest: fade-out($color-black, 0.2);
   $shade-darker: fade-out($color-black, 0.4);
   $shade-dark: fade-out($color-black, 0.5);
@@ -22,6 +24,8 @@
 
   :root {
     --color-black: #{$color-black};
+
+    --color-text-key: #{$color-text-key};
 
     --color-root: var(--color-black);
     --color-root-backdrop: #{$shade-darker};
