@@ -9,7 +9,8 @@ export default new Vuex.Store({
       context: null,
     },
     ui: {
-      updateAvailable: null,
+      worker: null,
+      updateAvailable: false,
       drawerExpanded: false,
       synthError: '',
       synthLayout: 'n64',

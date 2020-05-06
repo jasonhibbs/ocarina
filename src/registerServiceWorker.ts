@@ -21,7 +21,9 @@ if (process.env.NODE_ENV === 'production') {
     },
     updated(worker: any) {
       console.log('New content is available; please refresh.')
-      document.dispatchEvent(new CustomEvent('workerupdated', worker))
+      document.dispatchEvent(
+        new CustomEvent('workerupdated', { detail: worker })
+      )
     },
     offline() {
       console.log(
