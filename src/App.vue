@@ -98,8 +98,8 @@ export default class App extends Vue {
     document.addEventListener('workerupdated', this.onWorkerUpdated)
   }
 
-  onWorkerUpdated() {
-    this.ui.updateAvailable = true
+  onWorkerUpdated(worker: any) {
+    this.ui.updateAvailable = worker
   }
 
   // Drawer

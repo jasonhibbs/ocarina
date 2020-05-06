@@ -137,7 +137,11 @@ export default class Home extends Vue {
   }
 
   onClickReload() {
-    window.location.reload()
+    this.ui.updateAvailable &&
+      this.ui.updateAvailable.skipWaiting().then(() => {
+        location.reload(false)
+        this.ui.updateAvailable = null
+      })
   }
 }
 </script>
