@@ -11,6 +11,8 @@
           :class="ui.synthLayout === 'n64' ? '_circles' : '_squares'"
         )
 
+      h1.visuallyhidden Ocarina
+
       .status(:data-state="status")
         .visuallyhidden Audio Status: {{ audioContextState }}
 

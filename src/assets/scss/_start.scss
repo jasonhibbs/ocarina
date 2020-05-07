@@ -12,8 +12,10 @@
   overflow: hidden;
 }
 
-html.is-app ._not-app,
-html:not(.is-ios) ._for-ios {
+html.is-app ._isnt-app,
+html.is-ios ._isnt-ios,
+html:not(.is-app) ._is-app,
+html:not(.is-ios) ._is-ios {
   display: none;
 }
 

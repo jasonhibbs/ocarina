@@ -53,7 +53,7 @@
                     v-model="ui.synthLayout"
                   )
 
-          .message._for-ios
+          .message._is-ios._isnt-app
             img.message-thumbnail(src="/img/icons/apple-touch-icon-precomposed.png")
             .message-content
               p Install Ocarina by tapping #[icon-symbol(name="square.and.arrow.up")]
