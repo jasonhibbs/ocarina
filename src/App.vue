@@ -107,6 +107,11 @@ export default class App extends Vue {
 
   created() {
     document.addEventListener('workerupdated', this.onWorkerUpdated)
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (this.ui.reloading) return
+      this.ui.reloading = true
+      location.reload()
+    })
   }
 
   onWorkerUpdated(e: any) {

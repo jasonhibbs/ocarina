@@ -9,6 +9,7 @@ export default new Vuex.Store({
       context: null,
     },
     ui: {
+      reloading: false,
       worker: null,
       updateAvailable: false,
       drawerExpanded: false,

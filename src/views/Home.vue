@@ -138,12 +138,8 @@ export default class Home extends Vue {
 
   onClickReload() {
     console.log(this.ui.worker)
-
-    this.ui.worker &&
-      this.ui.worker.update().then(() => {
-        this.ui.updateAvailable = false
-        location.reload(false)
-      })
+    if (!this.ui.worker || !this.ui.worker) return
+    this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
   }
 }
 </script>
