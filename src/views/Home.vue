@@ -140,9 +140,9 @@ export default class Home extends Vue {
     console.log(this.ui.worker)
 
     this.ui.worker &&
-      this.ui.worker.skipWaiting().then(() => {
-        location.reload(false)
+      this.ui.worker.update().then(() => {
         this.ui.updateAvailable = false
+        location.reload(false)
       })
   }
 }
