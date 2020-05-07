@@ -25,6 +25,11 @@ import * as Tone from 'tone'
 import SynthKey from '@/components/SynthKey.vue'
 // import * as unmuteIosAudio from 'unmute-ios-audio'
 
+interface SynthNote {
+  note: string
+  identifier: string | number
+}
+
 const defaultNotes = () => {
   const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
   const firstLetterIndex = 3
@@ -305,10 +310,5 @@ export default class SynthKeys extends Vue {
       this.removeActiveNote(code)
     }
   }
-}
-
-interface SynthNote {
-  note: string
-  identifier: string | number
 }
 </script>
