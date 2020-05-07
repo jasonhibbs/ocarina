@@ -11,13 +11,6 @@
           :class="ui.synthLayout === 'n64' ? '_circles' : '_squares'"
         )
 
-      button._inner(
-        v-if="ui.updateAvailable"
-        title="Reload Ocarina"
-        style="position: relative; z-index: 99"
-        @click="onClickReload"
-      ) 🔄
-
       .status(:data-state="status")
         .visuallyhidden Audio Status: {{ audioContextState }}
 
@@ -134,11 +127,6 @@ export default class Home extends Vue {
   onClickLayoutToggle() {
     const nextIndex = (this.layoutsIndex + 1) % this.ui.synthLayouts.length
     this.ui.synthLayout = this.ui.synthLayouts[nextIndex].value
-  }
-
-  onClickReload() {
-    if (!this.ui.worker || !this.ui.worker) return
-    this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
   }
 }
 </script>

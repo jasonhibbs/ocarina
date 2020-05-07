@@ -36,7 +36,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 
-interface inlineSelectOption {
+interface InlineSelectOption {
   label: string
   value: string
 }
@@ -48,7 +48,7 @@ export default class InlineSelect extends Vue {
   @Prop() id?: string
   @Prop() value?: string
   @Prop() ariaLabelledby?: string
-  @Prop() options!: inlineSelectOption[]
+  @Prop() options!: InlineSelectOption[]
 
   get listeners() {
     return {

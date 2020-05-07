@@ -27,10 +27,16 @@
             icon-close
 
         template(#default)
-          .error(v-if="ui.synthError")
-            pre {{ ui.synthError }}
-            p {{ strings.reloadHint }}
-            button(@click="onClickReload") {{ strings.reloadButtonLabel }}
+          .message._error(v-if="ui.synthError")
+            .message-content
+              pre {{ ui.synthError }}
+              p {{ strings.reloadHint }}
+              button(@click="onClickReload") {{ strings.reloadButtonLabel }}
+
+          .message(v-if="ui.updateAvailable")
+            .message-content
+              p {{ strings.updateHint }}
+              button(@click="onClickUpdate") {{ strings.updateButtonLabel }}
 
           form.form-blocks(@submit.prevent)
             .form-block._select
@@ -91,6 +97,8 @@ export default class App extends Vue {
     appTitle: `Ocarina`,
     reloadHint: `Screws fall out all the time. Reloading Ocarina should get the sound going again.`,
     reloadButtonLabel: `Reload`,
+    updateHint: `This Ocarina is a little out-of-date, please take a moment to update it.`,
+    updateButtonLabel: `Update`,
     layoutFormLabel: `Layout`,
   }
 
@@ -141,6 +149,11 @@ export default class App extends Vue {
 
   onClickReload() {
     location.reload()
+  }
+
+  onClickUpdate() {
+    if (!this.ui.worker || !this.ui.worker) return
+    this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
   }
 }
 </script>
