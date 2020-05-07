@@ -180,12 +180,13 @@ svg.symbol {
   font-size: em(24);
   height: em(24, 24);
   width: auto;
-  margin: em(-6, 24) 0 em(-4, 24);
+  margin: em(-8, 24) 0 em(-4, 24);
   fill: currentColor;
   vertical-align: middle;
 }
 
 .message {
+  display: flex;
   color: var(--color-text-key);
   background-color: var(--color-key-10);
   padding: var(--space-rem-mid) var(--space-rem-mid);
@@ -200,7 +201,6 @@ svg.symbol {
 }
 
 .drawer .message._for-ios {
-  display: flex;
   align-items: center;
 
   p {
