@@ -137,6 +137,8 @@ export default class Home extends Vue {
   }
 
   onClickReload() {
+    console.log(this.ui.worker)
+
     this.ui.worker &&
       this.ui.worker.skipWaiting().then(() => {
         location.reload(false)
