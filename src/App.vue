@@ -48,6 +48,7 @@
                   )
 
           .message._for-ios
+            img.message-thumbnail(src="/img/icons/apple-touch-icon-precomposed.png")
             .message-content
               p Install Ocarina by tapping #[icon-symbol(name="square.and.arrow.up")]
                 |  and then "Add to Home Screen #[icon-symbol(name="plus.app")]"
