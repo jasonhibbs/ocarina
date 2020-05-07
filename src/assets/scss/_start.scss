@@ -12,6 +12,7 @@
   overflow: hidden;
 }
 
+html.is-app ._not-app,
 html:not(.is-ios) ._for-ios {
   display: none;
 }
@@ -172,5 +173,28 @@ main {
 
   button {
     @extend ._bad;
+  }
+}
+
+svg.symbol {
+  font-size: em(24);
+  height: em(24, 24);
+  width: auto;
+  margin: em(-6, 24) 0 em(-4, 24);
+  fill: currentColor;
+  vertical-align: middle;
+}
+
+.message {
+  color: var(--color-text-key);
+  background-color: var(--color-key-10);
+  padding: var(--space-rem-mid) var(--space-rem-mid);
+
+  p {
+    margin: 0;
+
+    & + & {
+      margin-bottom: var(--space-rem-mid);
+    }
   }
 }

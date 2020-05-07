@@ -32,9 +32,6 @@
             p {{ strings.reloadHint }}
             button(@click="onClickReload") {{ strings.reloadButtonLabel }}
 
-          .message._for-ios
-            p Install Ocarina by pressing 􀈂 and finding "Add to Home Screen 􀑍"
-
           form.form-blocks(@submit.prevent)
             .form-block._select
               label.form-block-label(
@@ -49,6 +46,11 @@
                     :options="ui.synthLayouts"
                     v-model="ui.synthLayout"
                   )
+
+          .message._for-ios
+            .message-content
+              p Install Ocarina by tapping #[icon-symbol(name="square.and.arrow.up")]
+                |  and then "Add to Home Screen #[icon-symbol(name="plus.app")]"
 
           footer
             p Based on the #[a(href="https://zelda.gamepedia.com/Ocarina_of_Time_(Item)") Ocarina of Time]
@@ -65,6 +67,7 @@ import { mapState } from 'vuex'
 import Drawer from '@/components/Drawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconClose from '@/components/IconClose.vue'
+import IconSymbol from '@/components/IconSymbol.vue'
 import InlineSelect from '@/components/InlineSelect.vue'
 
 @Component({
@@ -72,6 +75,7 @@ import InlineSelect from '@/components/InlineSelect.vue'
     Drawer,
     IconOcarina,
     IconClose,
+    IconSymbol,
     InlineSelect,
   },
   computed: mapState(['ui']),

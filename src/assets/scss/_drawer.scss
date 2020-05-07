@@ -103,25 +103,11 @@
 
 .drawer footer {
   @include font-size(13, 16);
-  border-top: 1px solid var(--shade-lightest);
+  box-shadow: 0 -1px 0 var(--shade-lightest);
   color: var(--color-text-light);
   padding: var(--space-rem-small) var(--space-rem-mid);
 
   p {
     margin: var(--space-rem-small) 0;
-  }
-}
-
-.drawer .message {
-  color: var(--color-text-key);
-  background-color: var(--color-key-10);
-  padding: var(--space-rem-mid) var(--space-rem-mid);
-
-  p {
-    margin: 0;
-
-    & + & {
-      margin-bottom: var(--space-rem-mid);
-    }
   }
 }
