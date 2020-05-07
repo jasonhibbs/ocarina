@@ -137,7 +137,6 @@ export default class Home extends Vue {
   }
 
   onClickReload() {
-    console.log(this.ui.worker)
     if (!this.ui.worker || !this.ui.worker) return
     this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
   }
