@@ -1,4 +1,9 @@
-# code
+# Ocarina
+
+[✨ Play the ocarina here](https://ocarina.netlify.app)
+
+A web-based playable synth based on the [Ocarina of Time](https://zelda.gamepedia.com/Ocarina_of_Time_(Item)"), built with [Tone](https://tonejs.github.io/) and [Vue CLI](https://vuejs.org/).
+
 
 ## Project setup
 ```
