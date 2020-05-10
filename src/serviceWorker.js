@@ -11,7 +11,7 @@
  * See https://goo.gl/2aRDsh
  */
 
-workbox.core.setCacheNameDetails({ prefix: 'code' })
+workbox.core.setCacheNameDetails({ prefix: 'ocarina' })
 
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {

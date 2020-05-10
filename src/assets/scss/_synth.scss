@@ -42,6 +42,9 @@
   text-align: center;
 
   .synth-key-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: none;
     pointer-events: none;
   }
@@ -151,6 +154,8 @@
     --pulse-from: 1;
     --pulse-to: 0.8;
 
+    background-color: transparent;
+
     &:hover {
       .synth-key-inner:before {
         opacity: 0.3;
@@ -162,7 +167,8 @@
     position: relative;
     color: var(--color);
     background-color: var(--background-color);
-    padding: em(72, 128);
+    width: em(88, 32);
+    height: em(88, 32);
     border-radius: 4em;
   }
 
@@ -172,20 +178,14 @@
     background: var(--contrast-light);
   }
 
-  // In-game buttons
-
-  .synth-key-inner:after {
-    display: block;
-    font-weight: 600;
-  }
-
   // A Button
 
   [data-note='D5'] {
     --background-color: var(--color-button-a);
 
     .synth-key-inner:after {
-      content: 'A';
+      content: '';
+      background-image: url('/img/buttons/button-a.svg');
     }
 
     .synth-key-inner:before {
@@ -202,7 +202,8 @@
     --background-color: var(--color-button-c);
 
     .synth-key-inner:after {
-      content: '▲';
+      content: '';
+      background-image: url('/img/buttons/button-c.svg');
     }
 
     .synth-key-inner:before {
@@ -264,17 +265,13 @@
   // In-game buttons
 
   .synth-key-inner:after {
-    display: block;
     position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    margin: auto;
-
-    font-size: em(72, 128);
-    line-height: calc(96 / 72);
     transform: rotateZ(45deg);
+    opacity: (1/4);
   }
 
   [data-note='F5'] .synth-key-inner:after {
