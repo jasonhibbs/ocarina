@@ -61,7 +61,8 @@
 
           footer
             p Based on the #[a(href="https://zelda.gamepedia.com/Ocarina_of_Time_(Item)") Ocarina of Time]
-            p Built with #[a(href="https://tonejs.github.io/") Tone] and #[a(href="https://vuejs.org/") Vue], running on #[a(href="https://www.netlify.com/") Netlify]
+            p Built with #[a(href="https://tonejs.github.io/") Tone] and #[a(href="https://vuejs.org/") Vue]
+            p Running on #[a(href="https://github.com/jasonhibbs/ocarina") GitHub] and #[a(href="https://www.netlify.com/") Netlify]
             p.vcard.h-card Made by #[a.p-name.u-url.fn.url(href="https://jasonhibbs.co.uk") Jason Hibbs]
 
 </template>

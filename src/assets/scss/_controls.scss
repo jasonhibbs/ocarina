@@ -185,6 +185,7 @@ select {
   &[aria-checked='true'] {
     background-color: var(--color-root);
     opacity: 1;
+    z-index: 1;
   }
 }
 

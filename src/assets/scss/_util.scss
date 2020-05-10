@@ -85,3 +85,21 @@
     box-shadow: inset 0 0 0 $width $color;
   }
 }
+
+.visuallyhidden {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+html.is-app ._isnt-app,
+html.is-ios ._isnt-ios,
+html:not(.is-app) ._is-app,
+html:not(.is-ios) ._is-ios {
+  display: none;
+}

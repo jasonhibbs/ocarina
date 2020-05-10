@@ -1,31 +1,5 @@
 // Start ———————————————————————————————————————————————————————————————
 
-* {
-  -webkit-touch-callout: none;
-  user-select: none;
-}
-
-:root {
-  --color-button-a: hsl(228, 100%, 72%);
-  --color-button-c: hsl(50, 100%, 60%);
-
-  overflow: hidden;
-}
-
-html.is-app ._isnt-app,
-html.is-ios ._isnt-ios,
-html:not(.is-app) ._is-app,
-html:not(.is-ios) ._is-ios {
-  display: none;
-}
-
-:root,
-body,
-#app,
-.screen {
-  height: 100%;
-}
-
 .screen {
   overflow: hidden;
   background-color: var(--color-root);

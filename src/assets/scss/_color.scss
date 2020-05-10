@@ -165,4 +165,7 @@ $grey-lightest: mix($color-white, $color-black, 94);
   --color-text-lighter: var(--contrast-light);
   --color-text-lightest: var(--contrast-mid);
   --color-focus: var(--color-key-40);
+
+  --color-button-a: hsl(228, 100%, 72%);
+  --color-button-c: hsl(50, 100%, 60%);
 }
