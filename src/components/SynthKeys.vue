@@ -78,7 +78,10 @@ export default class SynthKeys extends Vue {
   }
 
   mounted() {
-    this.audio.context = new Tone.Context()
+    this.$store.commit('audio', {
+      key: 'context',
+      value: new Tone.Context(),
+    })
     document.documentElement.addEventListener('touchend', this.onTouchend)
     document.documentElement.addEventListener('touchcancel', this.onTouchend)
     document.documentElement.addEventListener('mouseup', this.onMouseup)

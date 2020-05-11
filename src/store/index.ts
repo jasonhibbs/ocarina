@@ -3,6 +3,11 @@ import Vuex from 'vuex'
 
 Vue.use(Vuex)
 
+interface GenericMutation {
+  key: string
+  value: any
+}
+
 export default new Vuex.Store({
   state: {
     audio: {
@@ -21,7 +26,24 @@ export default new Vuex.Store({
       ],
     },
   },
-  mutations: {},
-  actions: {},
+  mutations: {
+    audio(state, m: GenericMutation) {
+      const audio = state.audio as any
+      audio[m.key] = m.value
+    },
+    ui(state, m: GenericMutation) {
+      const ui = state.ui as any
+      ui[m.key] = m.value
+    },
+    drawerExpanded(state, value) {
+      state.ui.drawerExpanded = value
+    },
+  },
+  actions: {
+    expandDrawer({ commit }, value) {
+      document.documentElement.classList.toggle('screen-modal', value)
+      commit('drawerExpanded', value)
+    },
+  },
   modules: {},
 })

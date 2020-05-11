@@ -12,8 +12,8 @@
         ref="drawer"
         role="dialog"
         :aria-label="strings.dialogAriaLabel"
-        @clickoverlay="ui.drawerExpanded = false"
-        @overscrolldown="ui.drawerExpanded = false"
+        @clickoverlay="drawerExpanded = false"
+        @overscrolldown="drawerExpanded = false"
       )
         template(#header)
           h1
@@ -22,7 +22,7 @@
           button._inner(
             aria-controls="drawer"
             :aria-expanded="ui.drawerExpanded"
-            @click="ui.drawerExpanded = false"
+            @click="drawerExpanded = false"
           )
             icon-close
 
@@ -40,11 +40,8 @@
 
           .message
             .message-content
-              h2 How to play
-              p Umute your device and tap the buttons to play the notes, little touchscreens are best.
-              p When the dot is green, audio is ready. Red means something broke.
-              p On a QWERTY keyboard, keys S to L play C5 to C6.
-              p The N64 layout exists for purely nostalgic reasons. The A button is D5, C-Up is D6.
+              h2 {{ strings.hintTextTitle }}
+              p(v-for="string in strings.hintText") {{ string }}
 
           form.form-blocks(@submit.prevent)
             .form-block._select
@@ -58,7 +55,8 @@
                     id="layout-select"
                     aria-labelledby="label-layout-select"
                     :options="ui.synthLayouts"
-                    v-model="ui.synthLayout"
+                    :value="ui.synthLayout"
+                    @input="onInputLayout"
                   )
 
           .message._is-ios._isnt-app
@@ -102,14 +100,23 @@ export default class App extends Vue {
 
   ui!: any
 
-  strings = {
-    dialogAriaLabel: `Ocarina Settings`,
-    appTitle: `Ocarina`,
-    reloadHint: `Screws fall out all the time. Reloading Ocarina should get the sound going again.`,
-    reloadButtonLabel: `Reload`,
-    updateHint: `This Ocarina is a little out-of-date, please take a moment to update it.`,
-    updateButtonLabel: `Update`,
-    layoutFormLabel: `Layout`,
+  get strings() {
+    return {
+      dialogAriaLabel: `Ocarina Settings`,
+      appTitle: `Ocarina`,
+      reloadHint: `Screws fall out all the time. Reloading Ocarina should get the sound going again.`,
+      reloadButtonLabel: `Reload`,
+      updateHint: `This Ocarina is a little out-of-date, please take a moment to update it.`,
+      updateButtonLabel: `Update`,
+      layoutFormLabel: `Layout`,
+      hintTextTitle: 'How to Play',
+      hintText: [
+        'Umute your device and tap the buttons to play the notes, little touchscreens are best.',
+        'When the dot is green, audio is ready. Red means something broke.',
+        'On a QWERTY keyboard, keys S to L play C5 to C6.',
+        'The N64 layout exists for purely nostalgic reasons. The A button is D5, C-Up is D6.',
+      ],
+    }
   }
 
   // Lifecycle
@@ -133,24 +140,24 @@ export default class App extends Vue {
   }
 
   onWorkerUpdated(e: any) {
-    this.ui.worker = e.detail
-    this.ui.updateAvailable = true
+    this.$store.commit('ui', {
+      key: 'worker',
+      value: e.detail,
+    })
+    this.$store.commit('ui', {
+      key: 'updateAvailable',
+      value: true,
+    })
   }
 
   // Drawer
 
-  @Watch('ui.drawerExpanded', { immediate: true })
-  onDrawerChanged(newVal: boolean, oldVal: boolean) {
-    const root = document.documentElement
-    const appleTitle = root.querySelector(
-      'meta[name="apple-mobile-web-app-status-bar-style"]'
-    )
+  get drawerExpanded() {
+    return this.ui.drawerExpanded
+  }
 
-    if (newVal) {
-      root.classList.add('screen-modal')
-    } else {
-      document.documentElement.classList.remove('screen-modal')
-    }
+  set drawerExpanded(value) {
+    this.$store.dispatch('expandDrawer', value)
   }
 
   afterDrawerEnter() {
@@ -164,6 +171,13 @@ export default class App extends Vue {
   onClickUpdate() {
     if (!this.ui.worker || !this.ui.worker) return
     this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
+  }
+
+  onInputLayout(value: string) {
+    this.$store.commit('ui', {
+      key: 'synthLayout',
+      value: value,
+    })
   }
 }
 </script>

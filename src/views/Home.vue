@@ -4,7 +4,7 @@
 
     header
       button._inner(
-        :title="`Layout: ${synthLayoutLabel}`"
+        :title="strings.layoutToggleLabel"
         @click="onClickLayoutToggle"
       )
         icon-layout(
@@ -14,10 +14,10 @@
       h1.visuallyhidden Ocarina
 
       .status(:data-state="status")
-        .visuallyhidden Audio Status: {{ audioContextState }}
+        .visuallyhidden {{ strings.audioStatusLabel }}
 
       button._inner(
-        title="About Ocarina"
+        :title="strings.aboutButtonTitle"
         aria-controls="drawer"
         :aria-expanded="drawerExpanded"
         @click="drawerExpanded = true"
@@ -66,12 +66,20 @@ const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
 export default class Home extends Vue {
   ui!: any
 
+  get strings() {
+    return {
+      layoutToggleLabel: `Layout: ${this.synthLayoutLabel}`,
+      audioStatusLabel: `Audio Status: ${this.audioContextState}`,
+      aboutButtonTitle: `About Ocarina`,
+    }
+  }
+
   get drawerExpanded() {
     return this.ui.drawerExpanded
   }
 
   set drawerExpanded(value) {
-    this.ui.drawerExpanded = value
+    this.$store.dispatch('expandDrawer', value)
   }
 
   // Audio
@@ -103,11 +111,19 @@ export default class Home extends Vue {
 
   onPlay(currentState: string) {
     this.playState = currentState || this.playState
-    this.ui.synthError = ''
+    if (this.ui.synthError) {
+      this.$store.commit('ui', {
+        key: 'synthError',
+        value: '',
+      })
+    }
   }
 
   onError(catchError: any) {
-    this.ui.synthError = catchError
+    this.$store.commit('ui', {
+      key: 'synthError',
+      value: catchError,
+    })
   }
 
   // Layout
@@ -129,7 +145,10 @@ export default class Home extends Vue {
 
   onClickLayoutToggle() {
     const nextIndex = (this.layoutsIndex + 1) % this.ui.synthLayouts.length
-    this.ui.synthLayout = this.ui.synthLayouts[nextIndex].value
+    this.$store.commit('ui', {
+      key: 'synthLayout',
+      value: this.ui.synthLayouts[nextIndex].value,
+    })
   }
 }
 </script>
