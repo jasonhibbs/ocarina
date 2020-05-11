@@ -55,8 +55,7 @@
                     id="layout-select"
                     aria-labelledby="label-layout-select"
                     :options="ui.synthLayouts"
-                    :value="ui.synthLayout"
-                    @input="onInputLayout"
+                    v-model="synthLayout"
                   )
 
           .message._is-ios._isnt-app
@@ -173,7 +172,11 @@ export default class App extends Vue {
     this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
   }
 
-  onInputLayout(value: string) {
+  get synthLayout() {
+    return this.ui.synthLayout
+  }
+
+  set synthLayout(value) {
     this.$store.commit('ui', {
       key: 'synthLayout',
       value: value,
