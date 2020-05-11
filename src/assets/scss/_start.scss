@@ -164,8 +164,6 @@ svg.symbol {
 .message {
   display: flex;
   align-items: center;
-  color: var(--color-text-key);
-  background-color: var(--color-key-10);
   padding: var(--space-rem-mid) var(--space-rem-mid);
 
   pre {
@@ -175,11 +173,15 @@ svg.symbol {
 
   p {
     line-height: (24/16);
-    margin: 0;
   }
 
   button {
     @extend ._key;
+  }
+
+  &._key {
+    color: var(--color-text-key);
+    background-color: var(--color-key-10);
   }
 
   &._error {
@@ -194,6 +196,10 @@ svg.symbol {
 
 .message-content {
   flex: auto;
+
+  > * {
+    margin: 0;
+  }
 
   > * + * {
     margin-top: var(--space-rem-mid);

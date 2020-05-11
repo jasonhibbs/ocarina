@@ -97,8 +97,10 @@
 }
 
 .drawer .form-blocks {
-  padding: 0 var(--space-rem-mid);
-  margin: 0 0 var(--space-rem-big);
+  padding-left: var(--space-rem-mid);
+  padding-right: var(--space-rem-mid);
+  margin: 0;
+  box-shadow: 0 -1px 0 var(--shade-lightest);
 }
 
 .drawer footer {

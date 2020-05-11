@@ -33,10 +33,18 @@
               p {{ strings.reloadHint }}
               button(@click="onClickReload") {{ strings.reloadButtonLabel }}
 
-          .message(v-if="ui.updateAvailable")
+          .message._key(v-if="ui.updateAvailable")
             .message-content
               p {{ strings.updateHint }}
               button(@click="onClickUpdate") {{ strings.updateButtonLabel }}
+
+          .message
+            .message-content
+              h2 How to play
+              p Umute your device and tap the buttons to play the notes, little touchscreens are best.
+              p When the dot is green, audio is ready. Red means something broke.
+              p On a QWERTY keyboard, keys S to L play C5 to C6.
+              p The N64 layout exists for purely nostalgic reasons. The A button is D5, C-Up is D6.
 
           form.form-blocks(@submit.prevent)
             .form-block._select
@@ -58,6 +66,7 @@
             .message-content
               p Install Ocarina by tapping #[icon-symbol(name="square.and.arrow.up")]
                 |  and then "Add to Home Screen #[icon-symbol(name="plus.app")]"
+
 
           footer
             p Based on the #[a(href="https://zelda.gamepedia.com/Ocarina_of_Time_(Item)") Ocarina of Time]

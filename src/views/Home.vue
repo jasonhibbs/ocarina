@@ -4,7 +4,7 @@
 
     header
       button._inner(
-        :aria-label="`Layout: ${synthLayoutLabel}`"
+        :title="`Layout: ${synthLayoutLabel}`"
         @click="onClickLayoutToggle"
       )
         icon-layout(
@@ -17,6 +17,7 @@
         .visuallyhidden Audio Status: {{ audioContextState }}
 
       button._inner(
+        title="About Ocarina"
         aria-controls="drawer"
         :aria-expanded="drawerExpanded"
         @click="drawerExpanded = true"

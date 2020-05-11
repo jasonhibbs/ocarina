@@ -75,7 +75,7 @@ export default class Drawer extends Vue {
 
   onWheel(e: WheelEvent) {
     const isAtTop = this.cardElement?.scrollTop === 0
-    if (isAtTop && e.deltaY < -40) {
+    if (isAtTop && e.deltaY < -42) {
       this.$emit('overscrolldown')
     }
   }

@@ -1,11 +1,14 @@
 // Forms ———————————————————————————————————————————————————————————————
 
 .form-blocks {
+  padding: var(--space-rem-big) 0;
   margin-bottom: rem(#{'var(--space-biggest) * 2'});
 }
 
 .form-block {
-  margin-top: var(--space-rem-big);
+  + & {
+    margin-top: var(--space-rem-big);
+  }
 
   &._submit {
     margin-top: rem(var(--space-biggest));
