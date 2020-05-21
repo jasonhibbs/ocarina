@@ -1,18 +1,5 @@
 // Transitions —————————————————————————————————————————————————————————
-$slide-duration: 0.3s;
-
-.slide-left-enter-active {
-  transition: transform $slide-duration ease-out;
-}
-
-.slide-left-leave-active {
-  transition: transform $slide-duration ease-in;
-}
-
-.slide-left-enter,
-.slide-left-leave-to {
-  transform: translateX(100%);
-}
+$slide-duration: 0.5s;
 
 .drawer-slide-enter-active,
 .drawer-slide-leave-active {
@@ -23,11 +10,9 @@ $slide-duration: 0.3s;
   }
 }
 
-.drawer-slide-enter-active .drawer-card {
-  transition: transform $slide-duration cubic-bezier(0.2, 0, 0, 1);
-}
+.drawer-slide-enter-active .drawer-card,
 .drawer-slide-leave-active .drawer-card {
-  transition: transform $slide-duration ease-in;
+  transition: transform $slide-duration cubic-bezier(0.24, 0.84, 0.1, 1);
 }
 
 .drawer-slide-enter,
