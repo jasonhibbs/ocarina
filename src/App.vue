@@ -58,7 +58,7 @@
                     v-model="synthLayout"
                   )
 
-          .message._is-ios._isnt-app
+          .message._key._is-ios._isnt-app
             img.message-thumbnail(src="/img/icons/apple-touch-icon-precomposed.png")
             .message-content
               p Install Ocarina by tapping #[icon-symbol(name="square.and.arrow.up")]
@@ -110,10 +110,10 @@ export default class App extends Vue {
       layoutFormLabel: `Layout`,
       hintTextTitle: 'How to Play',
       hintText: [
-        'Umute your device and tap the buttons to play the notes, little touchscreens are best.',
-        'When the dot is green, audio is ready. Red means something broke.',
-        'On a QWERTY keyboard, keys S to L play C5 to C6.',
-        'The N64 layout exists for purely nostalgic reasons. The A button is D5, C-Up is D6.',
+        'Umute your device and tap the buttons to play the notes, little touchscreens are best.',
+        'Audio is ready when the dot is green. Red means something broke.',
+        'On a QWERTY keyboard, keys S to L play C5 to C6.',
+        'The N64 layout is wholly nostalgic. The A button is D5, C-Up is D6.',
       ],
     }
   }

@@ -82,6 +82,10 @@
       background-color: var(--contrast-lighter);
     }
 
+    .synth-key-inner:after {
+      filter: invert(1);
+    }
+
     // A Button
 
     [data-note='D5'] {
