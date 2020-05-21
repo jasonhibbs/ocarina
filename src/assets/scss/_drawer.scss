@@ -56,10 +56,10 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 20vh;
-  box-shadow: 0 0 rem(24) var(--shade-mid);
+  box-shadow: 0 0 24px var(--shade-mid);
 
   .is-app & {
-    box-shadow: 0 0 rem(10) var(--shade-light);
+    box-shadow: 0 6px 12px var(--shade-light);
   }
 }
 
