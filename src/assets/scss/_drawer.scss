@@ -59,7 +59,7 @@
   box-shadow: 0 0 24px var(--shade-mid);
 
   .is-app & {
-    box-shadow: 0 6px 12px var(--shade-light);
+    box-shadow: 0 4px 12px var(--shade-light), 0 0 0 0.5px var(--shade-lighter);
   }
 }
 
