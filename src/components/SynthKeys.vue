@@ -278,18 +278,25 @@ export default class SynthKeys extends Vue {
 
   // prettier-ignore
   keyboardKeys: any[] = [
-    { code: 'KeyA',      note: 'B4', },
-    { code: 'KeyS',      note: 'C5', },
-    { code: 'KeyD',      note: 'D5', },
-    { code: 'KeyF',      note: 'E5', },
-    { code: 'KeyG',      note: 'F5', },
-    { code: 'KeyH',      note: 'G5', },
-    { code: 'KeyJ',      note: 'A5', },
-    { code: 'KeyK',      note: 'B5', },
-    { code: 'KeyL',      note: 'C6', },
-    { code: 'Semicolon', note: 'D6', },
-    { code: 'Quote',     note: 'E6', },
-    { code: 'Backslash', note: 'F6', },
+    { code: 'KeyA',        note: 'B4'  },
+    { code: 'KeyS',        note: 'C5'  },
+    { code: 'KeyD',        note: 'D5'  },
+    { code: 'KeyF',        note: 'E5'  },
+    { code: 'KeyG',        note: 'F5'  },
+    { code: 'KeyH',        note: 'G5'  },
+    { code: 'KeyJ',        note: 'A5'  },
+    { code: 'KeyK',        note: 'B5'  },
+    { code: 'KeyL',        note: 'C6'  },
+    { code: 'Semicolon',   note: 'D6'  },
+    { code: 'Quote',       note: 'E6'  },
+    { code: 'Backslash',   note: 'F6'  },
+    { code: 'KeyE',        note: 'C#5' },
+    { code: 'KeyR',        note: 'D#5' },
+    { code: 'KeyY',        note: 'F#5' },
+    { code: 'KeyU',        note: 'G#5' },
+    { code: 'KeyI',        note: 'A#5' },
+    { code: 'KeyP',        note: 'C#6' },
+    { code: 'BracketLeft', note: 'D#6' },
   ]
 
   get keyboardKeyCodes() {
