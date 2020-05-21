@@ -12,6 +12,7 @@
         ref="keys"
         :key="note"
         :note="note"
+        :title="synthKeyTitle(note)"
         :aria-pressed="isAriaPressed(note)"
         @mousedown.native="onMousedown(note)"
         @mouseenter.native="onMouseenter(note)"
@@ -298,6 +299,14 @@ export default class SynthKeys extends Vue {
     { code: 'KeyP',        note: 'C#6' },
     { code: 'BracketLeft', note: 'D#6' },
   ]
+
+  synthKeyTitle(note: string) {
+    const keyForNote = this.keyboardKeys.find(k => k.note === note)
+    const keyLabel = keyForNote
+      ? keyForNote.code.replace(/([A-Z])/g, ' $1').slice(1)
+      : ''
+    return !keyLabel ? note : `${note} (${keyLabel})`
+  }
 
   get keyboardKeyCodes() {
     return this.keyboardKeys.map(k => k.code)

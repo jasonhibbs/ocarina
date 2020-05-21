@@ -1,7 +1,6 @@
 <template lang="pug">
 
   .button.synth-key(
-    :title="note"
     :data-note="note"
     :data-freq="frequency"
     :style="style"
