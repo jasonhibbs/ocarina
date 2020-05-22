@@ -120,11 +120,15 @@ export default class App extends Vue {
 
   // Lifecycle
 
+  queryStandalone = window.matchMedia('(display-mode: standalone)')
+  queryDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
+  isIos = /iPhone|iPad|iPod/.test(navigator.userAgent)
+
   beforeCreate() {
-    if (window.matchMedia('(display-mode: standalone)').matches) {
+    if (this.queryStandalone.matches) {
       document.documentElement.classList.add('is-app')
     }
-    if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+    if (this.isIos) {
       document.documentElement.classList.add('is-ios')
     }
   }
@@ -138,6 +142,11 @@ export default class App extends Vue {
     })
   }
 
+  mounted() {
+    this.onDarkModeChange(this.queryDarkMode)
+    this.queryDarkMode.addListener(this.onDarkModeChange)
+  }
+
   onWorkerUpdated(e: any) {
     this.$store.commit('ui', {
       key: 'worker',
@@ -147,6 +156,17 @@ export default class App extends Vue {
       key: 'updateAvailable',
       value: true,
     })
+  }
+
+  onDarkModeChange(query: any) {
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
+    if (metaThemeColor) {
+      if (query.matches) {
+        metaThemeColor.setAttribute('content', '#000')
+      } else {
+        metaThemeColor.setAttribute('content', '#fff')
+      }
+    }
   }
 
   // Drawer
