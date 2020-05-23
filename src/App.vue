@@ -120,12 +120,12 @@ export default class App extends Vue {
 
   // Lifecycle
 
-  queryStandalone = window.matchMedia('(display-mode: standalone)')
   queryDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
+  isStandalone = window.matchMedia('(display-mode: standalone)').matches
   isIos = /iPhone|iPad|iPod/.test(navigator.userAgent)
 
   beforeCreate() {
-    if (this.queryStandalone.matches) {
+    if (this.isStandalone) {
       document.documentElement.classList.add('is-app')
     }
     if (this.isIos) {
