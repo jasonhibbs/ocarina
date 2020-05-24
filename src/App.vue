@@ -124,16 +124,13 @@ export default class App extends Vue {
   isStandalone = window.matchMedia('(display-mode: standalone)').matches
   isIos = /iPhone|iPad|iPod/.test(navigator.userAgent)
 
-  beforeCreate() {
+  created() {
     if (this.isStandalone) {
       document.documentElement.classList.add('is-app')
     }
     if (this.isIos) {
       document.documentElement.classList.add('is-ios')
     }
-  }
-
-  created() {
     document.addEventListener('workerupdated', this.onWorkerUpdated)
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (this.ui.reloading) return
