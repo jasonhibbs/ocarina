@@ -12,7 +12,7 @@ $slide-duration: 0.5s;
 
 .drawer-slide-enter-active .drawer-card,
 .drawer-slide-leave-active .drawer-card {
-  transition: transform $slide-duration cubic-bezier((1/4), (10/12), 0.1, 1);
+  transition: transform $slide-duration cubic-bezier((1/4), (10/12), (1/10), 1);
 }
 
 .drawer-slide-enter,

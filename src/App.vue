@@ -110,7 +110,7 @@ export default class App extends Vue {
       layoutFormLabel: `Layout`,
       hintTextTitle: 'How to Play',
       hintText: [
-        'Umute your device and tap the buttons to play the notes, little touchscreens are best.',
+        'Unmute your device and tap the buttons to play the notes, little touchscreens are best.',
         'Audio is ready when the dot is green. Red means something broke.',
         'On a QWERTY keyboard, keys S to L play C5 to C6.',
         'The N64 layout is wholly nostalgic. The A button is D5, C-Up is D6.',
