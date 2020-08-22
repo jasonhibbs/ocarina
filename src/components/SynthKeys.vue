@@ -129,10 +129,14 @@ export default class SynthKeys extends Vue {
   async setupSynth() {
     this.synth = new Tone.Synth()
     this.synth.set(this.synthOptions)
-    this.synthVibrato = new Tone.Vibrato(5, 0.1666)
-    this.synthReverb = new Tone.Reverb()
-    this.synthReverb.set(this.synthReverbOptions)
-    this.synth.chain(this.synthVibrato, this.synthReverb, Tone.Destination)
+    try {
+      this.synthReverb = new Tone.Reverb(this.synthReverbOptions)
+      this.synthVibrato = new Tone.Vibrato(5, 0.1666)
+      this.synth.chain(this.synthReverb, this.synthVibrato, Tone.Destination)
+    } catch (e) {
+      console.warn('Couldn’t add reverb or vibrato:', e)
+      this.synth.toDestination()
+    }
   }
 
   playNote(note: string) {
@@ -313,6 +317,9 @@ export default class SynthKeys extends Vue {
   }
 
   onKeydown(e: KeyboardEvent) {
+    if (e.ctrlKey || e.metaKey) {
+      return
+    }
     const code = e.code
     const index = this.keyboardKeyCodes.findIndex(k => k === code)
     if (index > -1) {

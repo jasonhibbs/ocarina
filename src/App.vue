@@ -132,11 +132,14 @@ export default class App extends Vue {
       document.documentElement.classList.add('is-ios')
     }
     document.addEventListener('workerupdated', this.onWorkerUpdated)
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (this.ui.reloading) return
-      this.ui.reloading = true
-      location.reload()
-    })
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (this.ui.reloading) return
+        this.ui.reloading = true
+        location.reload()
+      })
+    }
   }
 
   mounted() {
@@ -196,7 +199,7 @@ export default class App extends Vue {
   set synthLayout(value) {
     this.$store.commit('ui', {
       key: 'synthLayout',
-      value: value,
+      value,
     })
   }
 }
