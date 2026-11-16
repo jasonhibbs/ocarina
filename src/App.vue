@@ -10,6 +10,7 @@ import IconOcarina from '@/components/IconOcarina.vue'
 import IconClose from '@/components/IconClose.vue'
 import IconSymbol from '@/components/IconSymbol.vue'
 import InlineSelect from '@/components/InlineSelect.vue'
+import { copyDebugLog, debugEnabled, debugLines, rawBeep } from '@/debug'
 
 const strings = {
   dialogAriaLabel: 'Ocarina Settings',
@@ -179,4 +180,44 @@ function onClickUpdate() {
       </footer>
     </AppDrawer>
   </Transition>
+
+  <div v-if="debugEnabled" class="debug-panel">
+    <div class="debug-buttons">
+      <button @click="rawBeep">Raw beep</button>
+      <button @click="copyDebugLog">Copy log</button>
+    </div>
+    <pre>{{ debugLines.join('\n') }}</pre>
+  </div>
 </template>
+
+<style>
+.debug-panel {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 1000;
+  height: 35vh;
+  overflow: auto;
+  padding: 8px;
+  background: rgb(0 0 0 / 0.85);
+  color: #0f0;
+  font:
+    10px/1.3 ui-monospace,
+    monospace;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.debug-panel pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.debug-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.debug-buttons button {
+  font-size: 14px;
+  padding: 6px 10px;
+}
+</style>

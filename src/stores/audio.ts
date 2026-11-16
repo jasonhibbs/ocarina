@@ -1,6 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import * as Tone from 'tone'
+import { debugLog } from '@/debug'
 
 export type AudioStatus = 'good' | 'bad' | null
 
@@ -58,7 +59,9 @@ export const useAudioStore = defineStore('audio', () => {
     contextState.value = context.state
     // Track the real state, so the status reflects iOS interruptions (calls,
     // backgrounding) rather than whatever it was at the last note.
+    debugLog('init: context', context.state, 'sampleRate', context.sampleRate)
     context.on('statechange', (state: AudioContextState) => {
+      debugLog('statechange', state)
       contextState.value = state
       if (state === 'running') {
         hasRun = true
@@ -76,14 +79,21 @@ export const useAudioStore = defineStore('audio', () => {
   // Ask to start audio on every gesture until it runs. Don't wait on an
   // earlier attempt: WebKit can leave a resume() from a gesture it didn't
   // accept pending forever, rather than rejecting it.
+  const state = () => window.event?.type ?? 'code'
+
   function unlock() {
     if (Tone.getContext().state === 'running') return
+    debugLog('unlock: Tone.start() from', state())
     if (hasRun) {
       error.value = stoppedError
     }
-    Tone.start().catch((e: unknown) => {
-      error.value = String(e)
-    })
+    Tone.start().then(
+      () => debugLog('Tone.start resolved', Tone.getContext().state),
+      (e: unknown) => {
+        debugLog('Tone.start rejected', e)
+        error.value = String(e)
+      }
+    )
   }
 
   function start() {
@@ -95,8 +105,10 @@ export const useAudioStore = defineStore('audio', () => {
     if (!voice) return
     try {
       voice.triggerAttack(note)
+      debugLog('play', note, Tone.getContext().state)
       error.value = ''
     } catch (e) {
+      debugLog('play ERROR', note, e)
       error.value = String(e)
     }
   }
