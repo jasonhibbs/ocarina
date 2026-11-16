@@ -1,3 +1,13 @@
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+  # tone's dependencies need Node >=18.2, but Vue CLI 4 (webpack 4) needs
+  # the legacy OpenSSL provider on Node 17+.
+  [build.environment]
+    NODE_VERSION = "18"
+    NODE_OPTIONS = "--openssl-legacy-provider"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
