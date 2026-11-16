@@ -35,6 +35,14 @@ npm run build
 npm run preview # serve the built app, including the service worker
 ```
 
+### Test
+
+```sh
+npm run test:unit                # Vitest, in watch mode
+npx playwright install chromium  # once
+npm run test:e2e                 # Playwright, against a production build
+```
+
 ### Lint and format
 
 ```sh

@@ -1,5 +1,5 @@
 <script lang="ts">
-// F4 up to F7: twenty natural notes
+// F4 up to D7: twenty natural notes
 function defaultNotes() {
   const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B']
   const firstLetterIndex = 3
@@ -15,85 +15,40 @@ function defaultNotes() {
 </script>
 
 <script setup lang="ts">
-import { reactive, watch } from 'vue'
+import { watch } from 'vue'
 import { useEventListener } from '@vueuse/core'
-import { useSynth } from '@/composables/useSynth'
+import { useAudioStore } from '@/stores/audio'
+import { useActiveNotes } from '@/composables/useActiveNotes'
 import SynthKey from '@/components/SynthKey.vue'
-
-interface ActiveNote {
-  note: string
-  identifier: string | number
-}
 
 const { notes = defaultNotes(), zelda = false } = defineProps<{
   notes?: string[]
   zelda?: boolean
 }>()
 
-const emit = defineEmits<{
-  play: [contextState: AudioContextState]
-  stop: []
-  error: [message: string]
-}>()
+const audio = useAudioStore()
+const { current, press, move, release, isPressed } = useActiveNotes()
 
-const synth = useSynth({
-  onPlay: (state) => emit('play', state),
-  onError: (message) => emit('error', message),
-})
-
-// Active notes: the most recent press wins (monophonic)
-
-const activeNotes = reactive<ActiveNote[]>([])
-
-function pushActiveNote(note: ActiveNote) {
-  if (!activeNotes.some((n) => n.identifier === note.identifier)) {
-    activeNotes.push(note)
-  }
-}
-
-function updateActiveNote(newNote: ActiveNote) {
-  const index = activeNotes.findIndex(
-    (n) => n.identifier === newNote.identifier
-  )
-  const activeNote = activeNotes[index]
-  if (activeNote && activeNote.note !== newNote.note) {
-    activeNotes.splice(index, 1, newNote)
-  }
-}
-
-function removeActiveNote(identifier: ActiveNote['identifier']) {
-  const index = activeNotes.findIndex((n) => n.identifier === identifier)
-  if (index > -1) {
-    activeNotes.splice(index, 1)
-  }
-}
-
-function playLatest() {
-  const lastNote = activeNotes.at(-1)
-  if (lastNote) {
-    synth.play(lastNote.note)
+watch(current, (note) => {
+  if (note) {
+    audio.play(note)
   } else {
-    synth.stop()
-    emit('stop')
+    audio.stop()
     if (document.activeElement instanceof HTMLElement) {
       document.activeElement.blur()
     }
   }
-}
-
-watch(activeNotes, playLatest, { immediate: true })
+})
 
 async function start() {
-  const isFirstStart = !synth.synth.value
-  await synth.start()
-  // The synth is created asynchronously on the first gesture; play whatever
+  const wasReady = audio.isReady
+  await audio.start()
+  // The voice is created asynchronously on the first gesture; play whatever
   // is still held down once it's ready.
-  if (isFirstStart && activeNotes.length) {
-    playLatest()
+  if (!wasReady && current.value) {
+    audio.play(current.value)
   }
 }
-
-const isPressed = (note: string) => activeNotes.some((n) => n.note === note)
 
 // Touch
 
@@ -109,7 +64,7 @@ function onTouchstart(e: TouchEvent) {
   e.preventDefault()
   for (const touch of e.changedTouches) {
     const note = getNoteFromPoint(touch.clientX, touch.clientY)
-    if (note) pushActiveNote({ note, identifier: touch.identifier })
+    if (note) press(touch.identifier, note)
   }
 }
 
@@ -117,13 +72,13 @@ function onTouchmove(e: TouchEvent) {
   e.preventDefault()
   for (const touch of e.changedTouches) {
     const note = getNoteFromPoint(touch.clientX, touch.clientY)
-    if (note) updateActiveNote({ note, identifier: touch.identifier })
+    if (note) move(touch.identifier, note)
   }
 }
 
 useEventListener(document.documentElement, ['touchend', 'touchcancel'], (e) => {
   for (const touch of e.changedTouches) {
-    removeActiveNote(touch.identifier)
+    release(touch.identifier)
   }
 })
 
@@ -134,18 +89,18 @@ let isMousedown = false
 function onMousedown(note: string) {
   start()
   isMousedown = true
-  pushActiveNote({ note, identifier: 'mouse' })
+  press('mouse', note)
 }
 
 function onMouseenter(note: string) {
   if (isMousedown) {
-    updateActiveNote({ note, identifier: 'mouse' })
+    move('mouse', note)
   }
 }
 
 useEventListener(document.documentElement, 'mouseup', () => {
   isMousedown = false
-  removeActiveNote('mouse')
+  release('mouse')
 })
 
 // Keyboard
@@ -185,13 +140,13 @@ useEventListener(document.documentElement, 'keydown', (e) => {
   if (key) {
     e.preventDefault()
     start()
-    pushActiveNote({ note: key.note, identifier: key.code })
+    press(key.code, key.note)
   }
 })
 
 useEventListener(document.documentElement, 'keyup', (e) => {
   if (keyboardKeys.some((k) => k.code === e.code)) {
-    removeActiveNote(e.code)
+    release(e.code)
   }
 })
 </script>

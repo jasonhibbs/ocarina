@@ -19,10 +19,18 @@ export default defineConfig({
       // being stranded on a worker whose script now 404s.
       filename: 'serviceWorker.js',
       manifestFilename: 'manifest.json',
+      // Browsers download manifest icons themselves when installing.
+      includeManifestIcons: false,
       workbox: {
         cacheId: 'ocarina',
         cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,svg}', 'img/icons/*.png'],
+        // Only what the app itself shows offline: the favicons and the
+        // install hint's icon. Splash screens, tiles and the Open Graph image
+        // are fetched by the OS or other sites, never by the page.
+        globPatterns: [
+          '**/*.{js,css,html,svg}',
+          'img/icons/{favicon-*,apple-touch-icon-precomposed}.png',
+        ],
       },
       manifest: {
         name: 'Ocarina',

@@ -38,3 +38,9 @@ __screenshots__/
 # Vite
 *.timestamp-*-*.mjs
 dev-dist
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

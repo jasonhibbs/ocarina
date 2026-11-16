@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUiStore } from '@/stores/ui'
+import { useAudioStore } from '@/stores/audio'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
@@ -22,27 +23,9 @@ import SynthKeys from '@/components/SynthKeys.vue'
 // const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
 
 const ui = useUiStore()
-const { drawerExpanded, synthError, synthLayout, synthLayoutLabel } =
-  storeToRefs(ui)
+const { drawerExpanded, synthLayout, synthLayoutLabel } = storeToRefs(ui)
 
-// Audio
-
-const audioContextState = ref<AudioContextState | ''>('')
-
-const status = computed(() => {
-  if (synthError.value) return 'bad'
-  if (audioContextState.value === 'running') return 'good'
-  return null
-})
-
-function onPlay(contextState: AudioContextState) {
-  audioContextState.value = contextState || audioContextState.value
-  synthError.value = ''
-}
-
-function onError(message: string) {
-  synthError.value = message
-}
+const audio = useAudioStore()
 
 // Layout
 
@@ -52,7 +35,7 @@ const synthLayoutClass = computed(() =>
 
 const strings = computed(() => ({
   layoutToggleLabel: `Layout: ${synthLayoutLabel.value}`,
-  audioStatusLabel: `Audio Status: ${audioContextState.value}`,
+  audioStatusLabel: `Audio Status: ${audio.contextState}`,
   aboutButtonTitle: 'About Ocarina',
 }))
 </script>
@@ -70,7 +53,7 @@ const strings = computed(() => ({
 
       <h1 class="visuallyhidden">Ocarina</h1>
 
-      <div class="status" :data-state="status">
+      <div class="status" :data-state="audio.status">
         <div class="visuallyhidden">{{ strings.audioStatusLabel }}</div>
       </div>
 
@@ -86,7 +69,7 @@ const strings = computed(() => ({
     </header>
 
     <main>
-      <SynthKeys :class="synthLayoutClass" @play="onPlay" @error="onError" />
+      <SynthKeys :class="synthLayoutClass" />
     </main>
   </div>
 </template>

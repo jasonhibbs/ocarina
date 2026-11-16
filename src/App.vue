@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useTemplateRef, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useMediaQuery, usePreferredDark } from '@vueuse/core'
+import { useMediaQuery } from '@vueuse/core'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { useUiStore } from '@/stores/ui'
+import { synthLayouts, useUiStore } from '@/stores/ui'
+import { useAudioStore } from '@/stores/audio'
 import AppDrawer from '@/components/AppDrawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconClose from '@/components/IconClose.vue'
@@ -30,7 +31,8 @@ const strings = {
 }
 
 const ui = useUiStore()
-const { drawerExpanded, synthError, synthLayout } = storeToRefs(ui)
+const { drawerExpanded, synthLayout } = storeToRefs(ui)
+const audio = useAudioStore()
 
 // Environment classes used by the stylesheet
 
@@ -39,13 +41,6 @@ const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent)
 document.documentElement.classList.toggle('is-ios', isIos)
 watchEffect(() => {
   document.documentElement.classList.toggle('is-app', isStandalone.value)
-})
-
-const isDark = usePreferredDark()
-watchEffect(() => {
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', isDark.value ? '#000' : '#fff')
 })
 
 // Service worker updates
@@ -97,9 +92,9 @@ function onClickUpdate() {
         </button>
       </template>
 
-      <div v-if="synthError" class="message _error">
+      <div v-if="audio.error" class="message _error">
         <div class="message-content">
-          <pre>{{ synthError }}</pre>
+          <pre>{{ audio.error }}</pre>
           <p>{{ strings.reloadHint }}</p>
           <button @click="onClickReload">
             {{ strings.reloadButtonLabel }}
@@ -137,7 +132,7 @@ function onClickUpdate() {
                 id="layout-select"
                 v-model="synthLayout"
                 aria-labelledby="label-layout-select"
-                :options="ui.synthLayouts"
+                :options="synthLayouts"
               />
             </div>
           </div>
