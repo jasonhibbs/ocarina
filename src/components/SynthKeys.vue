@@ -40,15 +40,8 @@ watch(current, (note) => {
   }
 })
 
-async function start() {
-  const wasReady = audio.isReady
-  await audio.start()
-  // The voice is created asynchronously on the first gesture; play whatever
-  // is still held down once it's ready.
-  if (!wasReady && current.value) {
-    audio.play(current.value)
-  }
-}
+// Call synchronously at the start of every gesture handler.
+const start = () => audio.start()
 
 // Touch
 

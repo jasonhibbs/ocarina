@@ -26,20 +26,26 @@ function createVoice() {
   return voice
 }
 
+// Events that let a page start audio. A touch only counts when it ends (and
+// iOS has enforced that since iOS 9), so a touchstart alone may not be
+// enough to unlock audio.
+const unlockEvents = ['touchend', 'pointerup', 'click', 'keydown'] as const
+
+const stoppedError = 'Error: The audio was stopped by something.'
+
 /**
  * A single monophonic ocarina voice: sine synth → reverb → vibrato.
  *
  * Browsers only allow audio to start from a user gesture, so call `start()`
- * from the first pointer/key handler before playing.
+ * synchronously from every pointer/key handler, before playing.
  */
 export const useAudioStore = defineStore('audio', () => {
   // Empty until the first gesture creates the audio context.
   const contextState = ref<AudioContextState | ''>('')
   const error = ref('')
-  const isReady = ref(false)
 
   let voice: Tone.Synth | undefined
-  let starting: Promise<void> | undefined
+  let hasRun = false
 
   const status = computed<AudioStatus>(() => {
     if (error.value) return 'bad'
@@ -47,37 +53,46 @@ export const useAudioStore = defineStore('audio', () => {
     return null
   })
 
-  async function setup() {
+  function init() {
     const context = Tone.getContext()
+    contextState.value = context.state
     // Track the real state, so the status reflects iOS interruptions (calls,
     // backgrounding) rather than whatever it was at the last note.
     context.on('statechange', (state: AudioContextState) => {
       contextState.value = state
+      if (state === 'running') {
+        hasRun = true
+        if (error.value === stoppedError) error.value = ''
+      }
     })
-    await Tone.start()
-    contextState.value = context.state
+    // Nodes can be built while the context is suspended: notes played before
+    // it runs are heard as soon as it does.
     voice = createVoice()
-    isReady.value = true
+    for (const type of unlockEvents) {
+      document.addEventListener(type, unlock, { capture: true, passive: true })
+    }
   }
 
-  async function start() {
-    if (!starting) {
-      starting = setup()
-      return starting
+  // Ask to start audio on every gesture until it runs. Don't wait on an
+  // earlier attempt: WebKit can leave a resume() from a gesture it didn't
+  // accept pending forever, rather than rejecting it.
+  function unlock() {
+    if (Tone.getContext().state === 'running') return
+    if (hasRun) {
+      error.value = stoppedError
     }
-    await starting
-    if (Tone.getContext().state !== 'running') {
-      error.value = 'Error: The audio was stopped by something.'
-      Tone.start()
-    }
+    Tone.start().catch((e: unknown) => {
+      error.value = String(e)
+    })
+  }
+
+  function start() {
+    if (!voice) init()
+    unlock()
   }
 
   function play(note: string) {
     if (!voice) return
-    const context = Tone.getContext()
-    if (context.state !== 'running') {
-      context.resume()
-    }
     try {
       voice.triggerAttack(note)
       error.value = ''
@@ -90,5 +105,5 @@ export const useAudioStore = defineStore('audio', () => {
     voice?.triggerRelease()
   }
 
-  return { contextState, error, isReady, status, start, play, stop }
+  return { contextState, error, status, start, play, stop }
 })
