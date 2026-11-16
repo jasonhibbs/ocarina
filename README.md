@@ -2,33 +2,42 @@
 
 [✨ Play the ocarina here](https://ocarina.netlify.app)
 
-A web-based playable synth based on the [Ocarina of Time](https://zelda.gamepedia.com/Ocarina_of_Time_(Item)"), built with [Tone](https://tonejs.github.io/) and [Vue CLI](https://vuejs.org/).
+A web-based playable synth based on the [Ocarina of Time](<https://zelda.gamepedia.com/Ocarina_of_Time_(Item)>), built with [Tone](https://tonejs.github.io/) and [Vue](https://vuejs.org/).
 
+## Stack
+
+- [Vue 3](https://vuejs.org/) with `<script setup>` and TypeScript
+- [Vite](https://vite.dev/) for dev server and builds
+- [Pinia](https://pinia.vuejs.org/) for state, [VueUse](https://vueuse.org/) for browser APIs
+- [vite-plugin-pwa](https://vite-pwa-org.netlify.app/) for the offline service worker and manifest
+- Deployed on [Netlify](https://www.netlify.com/) (see `netlify.toml`)
+
+Requires Node 22.18+ or 24.12+ (`.nvmrc` pins 24).
 
 ## Project setup
-```
-yarn install
+
+```sh
+npm install
 ```
 
-### Compiles and hot-reloads for development
-```
-yarn run serve
+### Develop
+
+```sh
+npm run dev
 ```
 
-### Compiles and minifies for production
-```
-yarn run build
+The dev server listens on your local network too, so you can open it on a phone to test touch.
+
+### Type-check and build for production
+
+```sh
+npm run build
+npm run preview # serve the built app, including the service worker
 ```
 
-### Run your tests
-```
-yarn run test
-```
+### Lint and format
 
-### Lints and fixes files
+```sh
+npm run lint
+npm run format
 ```
-yarn run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

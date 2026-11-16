@@ -6,7 +6,7 @@
 }
 
 .form-block {
-  + & {
+  & + & {
     margin-top: var(--space-rem-big);
   }
 

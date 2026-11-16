@@ -1,11 +1,16 @@
-<template lang="pug">
+<script setup lang="ts">
+const { ariaLabel = 'Close' } = defineProps<{ ariaLabel?: string }>()
+</script>
 
-  i.icon-close(:aria-label="ariaLabel")
-    div.--background
-      span.--element
-      span.--element
-
+<template>
+  <i class="icon-close" :aria-label="ariaLabel">
+    <div class="--background">
+      <span class="--element"></span>
+      <span class="--element"></span>
+    </div>
+  </i>
 </template>
+
 <style lang="scss">
 .icon-close {
   $size: 1em;
@@ -65,11 +70,3 @@
   }
 }
 </style>
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-
-@Component
-export default class IconClose extends Vue {
-  @Prop({ default: 'Close' }) ariaLabel!: string
-}
-</script>

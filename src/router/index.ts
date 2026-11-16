@@ -1,25 +1,12 @@
-import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
-import Home from '../views/Home.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import HomeView from '@/views/HomeView.vue'
 
-Vue.use(VueRouter)
-
-const routes: RouteConfig[] = [
-  {
-    path: '*',
-    redirect: '/',
-  },
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-  },
-]
-
-const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes,
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: '/', name: 'home', component: HomeView },
+    { path: '/:pathMatch(.*)*', redirect: '/' },
+  ],
 })
 
 export default router

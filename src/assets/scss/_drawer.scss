@@ -1,5 +1,7 @@
 // Drawer ——————————————————————————————————————————————————————————————
 
+@use 'sass:math';
+
 .drawer {
   --color-root: var(--color-white);
   position: absolute;
@@ -32,7 +34,7 @@
   left: 0;
   overflow: hidden;
   pointer-events: none;
-  padding-top: percentage(35/375);
+  padding-top: percentage(math.div(35, 375));
 
   .is-app & {
     padding-top: rem(10);
@@ -59,7 +61,9 @@
   box-shadow: 0 0 24px var(--shade-mid);
 
   .is-app & {
-    box-shadow: 0 4px 12px var(--shade-light), 0 0 0 0.5px var(--shade-lighter);
+    box-shadow:
+      0 4px 12px var(--shade-light),
+      0 0 0 0.5px var(--shade-lighter);
   }
 }
 

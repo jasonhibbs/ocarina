@@ -1,13 +1,14 @@
-<template lang="pug">
-
-  i.icon-layout
-    div.--background
-      div.--element
-      div.--element
-      div.--element
-      div.--element
-
+<template>
+  <i class="icon-layout">
+    <div class="--background">
+      <div class="--element"></div>
+      <div class="--element"></div>
+      <div class="--element"></div>
+      <div class="--element"></div>
+    </div>
+  </i>
 </template>
+
 <style lang="scss">
 .icon-layout {
   $size: 1em;
@@ -80,9 +81,3 @@
   }
 }
 </style>
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
-
-@Component
-export default class IconLayout extends Vue {}
-</script>

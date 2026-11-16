@@ -1,206 +1,187 @@
-<template lang="pug">
-
-  #app
-    router-view
-
-    transition(
-      name="drawer-slide"
-      @after-enter="afterDrawerEnter"
-    )
-      drawer#drawer(
-        v-if="ui.drawerExpanded"
-        ref="drawer"
-        role="dialog"
-        :aria-label="strings.dialogAriaLabel"
-        @clickoverlay="drawerExpanded = false"
-        @overscrolldown="drawerExpanded = false"
-      )
-        template(#header)
-          h1
-            icon-ocarina._gradient
-            span {{ strings.appTitle }}
-          button._inner(
-            aria-controls="drawer"
-            :aria-expanded="ui.drawerExpanded"
-            @click="drawerExpanded = false"
-          )
-            icon-close
-
-        template(#default)
-          .message._error(v-if="ui.synthError")
-            .message-content
-              pre {{ ui.synthError }}
-              p {{ strings.reloadHint }}
-              button(@click="onClickReload") {{ strings.reloadButtonLabel }}
-
-          .message._key(v-if="ui.updateAvailable")
-            .message-content
-              p {{ strings.updateHint }}
-              button(@click="onClickUpdate") {{ strings.updateButtonLabel }}
-
-          .message
-            .message-content
-              h2 {{ strings.hintTextTitle }}
-              p(v-for="string in strings.hintText") {{ string }}
-
-          form.form-blocks(@submit.prevent)
-            .form-block._select
-              label.form-block-label(
-                id="label-layout-select"
-                for="layout-select"
-              ) {{ strings.layoutFormLabel }}
-              .form-block-controls
-                .form-block-control
-                  inline-select(
-                    id="layout-select"
-                    aria-labelledby="label-layout-select"
-                    :options="ui.synthLayouts"
-                    v-model="synthLayout"
-                  )
-
-          .message._key._is-ios._isnt-app
-            img.message-thumbnail(src="/img/icons/apple-touch-icon-precomposed.png")
-            .message-content
-              p Install Ocarina by tapping #[icon-symbol(name="square.and.arrow.up")]
-                |  and then "Add to Home Screen #[icon-symbol(name="plus.app")]"
-
-
-          footer
-            p Based on the #[a(href="https://zelda.gamepedia.com/Ocarina_of_Time_(Item)") Ocarina of Time]
-            p Built with #[a(href="https://tonejs.github.io/") Tone] and #[a(href="https://vuejs.org/") Vue]
-            p Running on #[a(href="https://github.com/jasonhibbs/ocarina") GitHub] and #[a(href="https://www.netlify.com/") Netlify]
-            p.vcard.h-card Made by #[a.p-name.u-url.fn.url(href="https://jasonhibbs.co.uk") Jason Hibbs]
-
-</template>
-
-<style lang="scss" src="@/assets/scss/style.scss"></style>
-
-<script lang="ts">
-import { Component, Ref, Watch, Vue } from 'vue-property-decorator'
-import { mapState } from 'vuex'
-import Drawer from '@/components/Drawer.vue'
+<script setup lang="ts">
+import { useTemplateRef, watchEffect } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useMediaQuery, usePreferredDark } from '@vueuse/core'
+import { useRegisterSW } from 'virtual:pwa-register/vue'
+import { useUiStore } from '@/stores/ui'
+import AppDrawer from '@/components/AppDrawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconClose from '@/components/IconClose.vue'
 import IconSymbol from '@/components/IconSymbol.vue'
 import InlineSelect from '@/components/InlineSelect.vue'
 
-@Component({
-  components: {
-    Drawer,
-    IconOcarina,
-    IconClose,
-    IconSymbol,
-    InlineSelect,
-  },
-  computed: mapState(['ui']),
+const strings = {
+  dialogAriaLabel: 'Ocarina Settings',
+  appTitle: 'Ocarina',
+  reloadHint:
+    'Screws fall out all the time. Reloading Ocarina should get the sound going again.',
+  reloadButtonLabel: 'Reload',
+  updateHint:
+    'This Ocarina is a little out-of-date, please take a moment to update it.',
+  updateButtonLabel: 'Update',
+  layoutFormLabel: 'Layout',
+  hintTextTitle: 'How to Play',
+  hintText: [
+    'Unmute your device and tap the buttons to play the notes, little touchscreens are best.',
+    'Audio is ready when the dot is green. Red means something broke.',
+    'On a QWERTY keyboard, keys S to L play C5 to C6.',
+    'The N64 layout is wholly nostalgic. The A button is D5, C-Up is D6.',
+  ],
+}
+
+const ui = useUiStore()
+const { drawerExpanded, synthError, synthLayout } = storeToRefs(ui)
+
+// Environment classes used by the stylesheet
+
+const isStandalone = useMediaQuery('(display-mode: standalone)')
+const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent)
+document.documentElement.classList.toggle('is-ios', isIos)
+watchEffect(() => {
+  document.documentElement.classList.toggle('is-app', isStandalone.value)
 })
-export default class App extends Vue {
-  @Ref() readonly drawer!: Drawer
 
-  ui!: any
+const isDark = usePreferredDark()
+watchEffect(() => {
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', isDark.value ? '#000' : '#fff')
+})
 
-  get strings() {
-    return {
-      dialogAriaLabel: `Ocarina Settings`,
-      appTitle: `Ocarina`,
-      reloadHint: `Screws fall out all the time. Reloading Ocarina should get the sound going again.`,
-      reloadButtonLabel: `Reload`,
-      updateHint: `This Ocarina is a little out-of-date, please take a moment to update it.`,
-      updateButtonLabel: `Update`,
-      layoutFormLabel: `Layout`,
-      hintTextTitle: 'How to Play',
-      hintText: [
-        'Unmute your device and tap the buttons to play the notes, little touchscreens are best.',
-        'Audio is ready when the dot is green. Red means something broke.',
-        'On a QWERTY keyboard, keys S to L play C5 to C6.',
-        'The N64 layout is wholly nostalgic. The A button is D5, C-Up is D6.',
-      ],
-    }
-  }
+// Service worker updates
 
-  // Lifecycle
+const { needRefresh: updateAvailable, updateServiceWorker } = useRegisterSW()
 
-  queryDarkMode = window.matchMedia('(prefers-color-scheme: dark)')
-  isStandalone = window.matchMedia('(display-mode: standalone)').matches
-  isIos = /iPhone|iPad|iPod/.test(navigator.userAgent)
+// Drawer
 
-  created() {
-    if (this.isStandalone) {
-      document.documentElement.classList.add('is-app')
-    }
-    if (this.isIos) {
-      document.documentElement.classList.add('is-ios')
-    }
-    document.addEventListener('workerupdated', this.onWorkerUpdated)
+const drawer = useTemplateRef('drawer')
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (this.ui.reloading) return
-        this.ui.reloading = true
-        location.reload()
-      })
-    }
-  }
+function afterDrawerEnter() {
+  drawer.value?.focusFirstInContent()
+}
 
-  mounted() {
-    this.onDarkModeChange(this.queryDarkMode)
-    this.queryDarkMode.addListener(this.onDarkModeChange)
-  }
+function onClickReload() {
+  location.reload()
+}
 
-  onWorkerUpdated(e: any) {
-    this.$store.commit('ui', {
-      key: 'worker',
-      value: e.detail,
-    })
-    this.$store.commit('ui', {
-      key: 'updateAvailable',
-      value: true,
-    })
-  }
-
-  onDarkModeChange(query: any) {
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]')
-    if (metaThemeColor) {
-      if (query.matches) {
-        metaThemeColor.setAttribute('content', '#000')
-      } else {
-        metaThemeColor.setAttribute('content', '#fff')
-      }
-    }
-  }
-
-  // Drawer
-
-  get drawerExpanded() {
-    return this.ui.drawerExpanded
-  }
-
-  set drawerExpanded(value) {
-    this.$store.dispatch('expandDrawer', value)
-  }
-
-  afterDrawerEnter() {
-    this.drawer.focusFirstinContent()
-  }
-
-  onClickReload() {
-    location.reload()
-  }
-
-  onClickUpdate() {
-    if (!this.ui.worker || !this.ui.worker) return
-    this.ui.worker.waiting.postMessage({ type: 'SKIP_WAITING' })
-  }
-
-  get synthLayout() {
-    return this.ui.synthLayout
-  }
-
-  set synthLayout(value) {
-    this.$store.commit('ui', {
-      key: 'synthLayout',
-      value,
-    })
-  }
+function onClickUpdate() {
+  updateServiceWorker()
 }
 </script>
+
+<template>
+  <RouterView />
+
+  <Transition name="drawer-slide" @after-enter="afterDrawerEnter">
+    <AppDrawer
+      v-if="drawerExpanded"
+      id="drawer"
+      ref="drawer"
+      role="dialog"
+      :aria-label="strings.dialogAriaLabel"
+      @click-overlay="drawerExpanded = false"
+      @overscroll-down="drawerExpanded = false"
+    >
+      <template #header>
+        <h1>
+          <IconOcarina class="_gradient" />
+          <span>{{ strings.appTitle }}</span>
+        </h1>
+        <button
+          class="_inner"
+          aria-controls="drawer"
+          :aria-expanded="drawerExpanded"
+          @click="drawerExpanded = false"
+        >
+          <IconClose />
+        </button>
+      </template>
+
+      <div v-if="synthError" class="message _error">
+        <div class="message-content">
+          <pre>{{ synthError }}</pre>
+          <p>{{ strings.reloadHint }}</p>
+          <button @click="onClickReload">
+            {{ strings.reloadButtonLabel }}
+          </button>
+        </div>
+      </div>
+
+      <div v-if="updateAvailable" class="message _key">
+        <div class="message-content">
+          <p>{{ strings.updateHint }}</p>
+          <button @click="onClickUpdate">
+            {{ strings.updateButtonLabel }}
+          </button>
+        </div>
+      </div>
+
+      <div class="message">
+        <div class="message-content">
+          <h2>{{ strings.hintTextTitle }}</h2>
+          <p v-for="string in strings.hintText" :key="string">{{ string }}</p>
+        </div>
+      </div>
+
+      <form class="form-blocks" @submit.prevent>
+        <div class="form-block _select">
+          <label
+            id="label-layout-select"
+            class="form-block-label"
+            for="layout-select"
+            >{{ strings.layoutFormLabel }}</label
+          >
+          <div class="form-block-controls">
+            <div class="form-block-control">
+              <InlineSelect
+                id="layout-select"
+                v-model="synthLayout"
+                aria-labelledby="label-layout-select"
+                :options="ui.synthLayouts"
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="message _key _is-ios _isnt-app">
+        <img
+          class="message-thumbnail"
+          src="/img/icons/apple-touch-icon-precomposed.png"
+          alt=""
+        />
+        <div class="message-content">
+          <p>
+            Install Ocarina by tapping
+            <IconSymbol name="square.and.arrow.up" /> and then "Add to
+            Home Screen <IconSymbol name="plus.app" />"
+          </p>
+        </div>
+      </div>
+
+      <footer>
+        <p>
+          Based on the
+          <a href="https://zelda.gamepedia.com/Ocarina_of_Time_(Item)"
+            >Ocarina of Time</a
+          >
+        </p>
+        <p>
+          Built with <a href="https://tonejs.github.io/">Tone</a> and
+          <a href="https://vuejs.org/">Vue</a>
+        </p>
+        <p>
+          Running on
+          <a href="https://github.com/jasonhibbs/ocarina">GitHub</a> and
+          <a href="https://www.netlify.com/">Netlify</a>
+        </p>
+        <p class="vcard h-card">
+          Made by
+          <a class="p-name u-url fn url" href="https://jasonhibbs.co.uk"
+            >Jason Hibbs</a
+          >
+        </p>
+      </footer>
+    </AppDrawer>
+  </Transition>
+</template>

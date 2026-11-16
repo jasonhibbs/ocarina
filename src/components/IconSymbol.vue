@@ -1,20 +1,42 @@
-<template lang="pug">
+<script setup lang="ts">
+import { computed } from 'vue'
 
-  inline-svg.symbol(
-    :src="src"
-  )
+// SF Symbols exported as SVG, inlined at build time so they inherit
+// `currentColor` and work offline without a fetch.
+const files = import.meta.glob<string>('@/assets/symbols/*.svg', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
 
-</template>
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
-import InlineSvg from 'vue-inline-svg'
+const symbols = Object.fromEntries(
+  Object.entries(files).map(([path, raw]) => {
+    const name = path
+      .split('/')
+      .pop()!
+      .replace(/\.svg$/, '')
+    const viewBox = raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 0 0'
+    const inner = raw.replace(/^[\s\S]*?<svg[^>]*>|<\/svg>\s*$/g, '')
+    return [name, { viewBox, inner }]
+  })
+)
 
-@Component({ components: { InlineSvg } })
-export default class IconSymbol extends Vue {
-  @Prop() name!: string
+const props = defineProps<{ name: string }>()
 
-  get src() {
-    return `/img/symbols/${this.name}.svg`
-  }
-}
+const symbol = computed(() => symbols[props.name])
 </script>
+
+<template>
+  <!-- eslint-disable vue/no-v-html -- trusted local assets -->
+  <svg
+    v-if="symbol"
+    class="symbol"
+    :viewBox="symbol.viewBox"
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    stroke-linejoin="round"
+    stroke-miterlimit="2"
+    aria-hidden="true"
+    v-html="symbol.inner"
+  />
+</template>
