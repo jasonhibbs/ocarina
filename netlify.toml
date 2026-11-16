@@ -1,3 +1,11 @@
+[build]
+  command = "yarn build"
+  publish = "dist"
+
+  # Vue CLI 4 uses webpack 4, which breaks on Node 17+ (OpenSSL 3).
+  [build.environment]
+    NODE_VERSION = "16"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
