@@ -1,5 +1,7 @@
 // Controls ————————————————————————————————————————————————————————————
 
+@use 'sass:math';
+
 $icon_arrow-down-dark: url(data:image/svg+xml;base64,PHN2ZyBkYXRhLW5hbWU9ImFycm93LWRvd24tYmxhY2siIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDY0IDQwIj48ZyBvcGFjaXR5PSIwLjM1Ij48cGF0aCBkPSJNNjMuMzYsOC40N0wzMy40NywzOC4zNmEyLDIsMCwwLDEtMi45NSwwTDAuNjQsOC40N0EyLjIxLDIuMjEsMCwwLDEsMCw3LDIuMjEsMi4yMSwwLDAsMSwuNjQsNS41M0wzLjg1LDIuMzJhMi4wOSwyLjA5LDAsMCwxLDEuNDctLjY0LDIuMjEsMi4yMSwwLDAsMSwxLjQ3LjY0TDMyLDI3LjUyLDU3LjIsMi4zMmEyLDIsMCwwLDEsMi45NSwwbDMuMjEsMy4yMUEyLjIxLDIuMjEsMCwwLDEsNjQsNywyLjIxLDIuMjEsMCwwLDEsNjMuMzYsOC40N1oiIGZpbGw9IiMwMDAiLz48L2c+PC9zdmc+Cg==);
 $icon_arrow-down-light: url(data:image/svg+xml;base64,PHN2ZyBkYXRhLW5hbWU9ImFycm93LWRvd24td2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDY0IDQwIj48ZyBvcGFjaXR5PSIwLjM1Ij48cGF0aCBkPSJNNjMuMzYsOC40N0wzMy40NywzOC4zNmEyLDIsMCwwLDEtMi45NSwwTDAuNjQsOC40N0EyLjIxLDIuMjEsMCwwLDEsMCw3LDIuMjEsMi4yMSwwLDAsMSwuNjQsNS41M0wzLjg1LDIuMzJhMi4wOSwyLjA5LDAsMCwxLDEuNDctLjY0LDIuMjEsMi4yMSwwLDAsMSwxLjQ3LjY0TDMyLDI3LjUyLDU3LjIsMi4zMmEyLDIsMCwwLDEsMi45NSwwbDMuMjEsMy4yMUEyLjIxLDIuMjEsMCwwLDEsNjQsNywyLjIxLDIuMjEsMCwwLDEsNjMuMzYsOC40N1oiIGZpbGw9IiNmZmYiLz48L2c+PC9zdmc+Cg==);
 
@@ -19,7 +21,7 @@ $icon_arrow-down-light: url(data:image/svg+xml;base64,PHN2ZyBkYXRhLW5hbWU9ImFycm
 
 %placeholder {
   color: inherit;
-  opacity: (2/5);
+  opacity: (2 * 0.2);
 }
 
 ::placeholder {
@@ -54,9 +56,12 @@ textarea {
   background-color: var(--background-color);
   border: 1px solid var(--border-color);
   border-radius: var(--radius);
-  line-height: (20/16);
+  line-height: math.div(20, 16);
   padding: rem(var(--padding-y)) rem(var(--padding-x));
-  transition: border-color 0.1s, background-color 0.1s, box-shadow 0.1s;
+  transition:
+    border-color 0.1s,
+    background-color 0.1s,
+    box-shadow 0.1s;
 
   &:focus,
   &:hover {
@@ -164,18 +169,21 @@ select {
   border-radius: 1px;
   cursor: pointer;
   display: inline-block;
-  line-height: (20/16);
+  line-height: math.div(20, 16);
   padding: rem(var(--padding-y)) rem(var(--padding-x));
   text-align: center;
-  transition: border-color 0.1s, background-color 0.1s, box-shadow 0.1s,
+  transition:
+    border-color 0.1s,
+    background-color 0.1s,
+    box-shadow 0.1s,
     opacity 0.1s;
-  opacity: (3/5);
+  opacity: (3 * 0.2);
 
   &:hover,
   &:focus {
     outline: 0;
     background-color: var(--color-root);
-    opacity: (3/5);
+    opacity: (3 * 0.2);
   }
 
   &:focus {

@@ -1,34 +1,22 @@
-<template lang="pug">
-
-  .button.synth-key(
-    :data-note="note"
-    :data-freq="frequency"
-    :style="style"
-  )
-    .synth-key-inner
-      .synth-key-label {{ note }}
-
-</template>
-<script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { Frequency } from 'tone'
 
-@Component
-export default class SynthKey extends Vue {
-  @Prop() note!: string
+const props = defineProps<{ note: string }>()
 
-  get frequency() {
-    return Frequency(this.note).toFrequency()
-  }
-
-  get pitchClass() {
-    return Frequency(this.note).toMidi() % 12
-  }
-
-  get style() {
-    return {
-      '--pitch-class': this.pitchClass,
-    }
-  }
-}
+const frequency = computed(() => Frequency(props.note).toFrequency())
+const pitchClass = computed(() => Frequency(props.note).toMidi() % 12)
 </script>
+
+<template>
+  <div
+    class="button synth-key"
+    :data-note="note"
+    :data-freq="frequency"
+    :style="{ '--pitch-class': pitchClass }"
+  >
+    <div class="synth-key-inner">
+      <div class="synth-key-label">{{ note }}</div>
+    </div>
+  </div>
+</template>

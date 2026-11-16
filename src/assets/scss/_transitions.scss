@@ -1,4 +1,6 @@
 // Transitions —————————————————————————————————————————————————————————
+@use 'sass:math';
+
 $slide-duration: 0.5s;
 
 .drawer-slide-enter-active,
@@ -12,7 +14,8 @@ $slide-duration: 0.5s;
 
 .drawer-slide-enter-active .drawer-card,
 .drawer-slide-leave-active .drawer-card {
-  transition: transform $slide-duration cubic-bezier((1/4), (10/12), (1/10), 1);
+  transition: transform $slide-duration
+    cubic-bezier((1 * 0.25), math.div(10, 12), (1 * 0.1), 1);
 }
 
 .drawer-slide-enter,

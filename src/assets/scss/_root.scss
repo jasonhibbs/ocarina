@@ -1,13 +1,16 @@
 // Root ————————————————————————————————————————————————————————————————
 
+@use 'sass:math';
+
 :root {
-  --font-base: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  --font-base:
+    'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
   --font-body: var(--font-base);
 
   font-family: var(--font-body);
   font-weight: 400;
-  line-height: (20/16);
+  line-height: math.div(20, 16);
 
   overflow: hidden;
   box-sizing: border-box;
@@ -48,7 +51,10 @@ body,
 a {
   color: var(--color-key);
   text-decoration: none;
-  transition: color 0.1s, background-color 0.1s, outline-color 0.1s;
+  transition:
+    color 0.1s,
+    background-color 0.1s,
+    outline-color 0.1s;
 
   &:focus,
   &:hover {

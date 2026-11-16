@@ -1,5 +1,7 @@
 // Start ———————————————————————————————————————————————————————————————
 
+@use 'sass:math';
+
 .screen {
   overflow: hidden;
   background-color: var(--color-root);
@@ -17,12 +19,12 @@
 .screen-modal {
   .screen {
     --color-root: var(--grey-lightest);
-    $scale: (345/375);
+    $scale: math.div(345, 375);
     transform: scale3d($scale, $scale, 1);
     border-radius: rem(9);
 
     @media (min-width: 40em) {
-      $scale: (620/640);
+      $scale: math.div(620, 640);
       transform: scale3d($scale, $scale, 1);
     }
 
@@ -172,7 +174,7 @@ svg.symbol {
   }
 
   p {
-    line-height: (24/16);
+    line-height: math.div(24, 16);
   }
 
   button {

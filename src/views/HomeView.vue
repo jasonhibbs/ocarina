@@ -1,0 +1,92 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useUiStore } from '@/stores/ui'
+import IconOcarina from '@/components/IconOcarina.vue'
+import IconLayout from '@/components/IconLayout.vue'
+import SynthKeys from '@/components/SynthKeys.vue'
+
+// Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
+// Saria’s Song        https://youtu.be/3QvlxoX1GjI?t=2988
+// Sun Song            https://youtu.be/3QvlxoX1GjI?t=3452
+// Song of Time        https://youtu.be/3QvlxoX1GjI?t=7830
+// Epona’s Song        https://youtu.be/fq8pAK5tlUc?t=53
+// Minuet of Forest    https://youtu.be/3QvlxoX1GjI?t=9139
+// Bolero of Fire      https://youtu.be/3QvlxoX1GjI?t=11894
+// Serenade of Water   https://youtu.be/3QvlxoX1GjI?t=14642
+// Nocturne of Shadow  https://youtu.be/3QvlxoX1GjI?t=17061
+// Prelude of Light    https://youtu.be/3QvlxoX1GjI?t=17257
+// Song of Storms      https://youtu.be/3QvlxoX1GjI?t=17424
+// Requiem of Spirit   https://youtu.be/3QvlxoX1GjI?t=22509
+
+// const zeldaNotes = ['A4', 'B4', 'D5', 'F5', 'A5', 'B5', 'D6', 'F6', 'A6']
+
+const ui = useUiStore()
+const { drawerExpanded, synthError, synthLayout, synthLayoutLabel } =
+  storeToRefs(ui)
+
+// Audio
+
+const audioContextState = ref<AudioContextState | ''>('')
+
+const status = computed(() => {
+  if (synthError.value) return 'bad'
+  if (audioContextState.value === 'running') return 'good'
+  return null
+})
+
+function onPlay(contextState: AudioContextState) {
+  audioContextState.value = contextState || audioContextState.value
+  synthError.value = ''
+}
+
+function onError(message: string) {
+  synthError.value = message
+}
+
+// Layout
+
+const synthLayoutClass = computed(() =>
+  synthLayout.value === 'n64' ? '_rotated _gamepad' : ''
+)
+
+const strings = computed(() => ({
+  layoutToggleLabel: `Layout: ${synthLayoutLabel.value}`,
+  audioStatusLabel: `Audio Status: ${audioContextState.value}`,
+  aboutButtonTitle: 'About Ocarina',
+}))
+</script>
+
+<template>
+  <div class="screen">
+    <header>
+      <button
+        class="_inner"
+        :title="strings.layoutToggleLabel"
+        @click="ui.cycleSynthLayout()"
+      >
+        <IconLayout :class="synthLayout === 'n64' ? '_circles' : '_squares'" />
+      </button>
+
+      <h1 class="visuallyhidden">Ocarina</h1>
+
+      <div class="status" :data-state="status">
+        <div class="visuallyhidden">{{ strings.audioStatusLabel }}</div>
+      </div>
+
+      <button
+        class="_inner"
+        :title="strings.aboutButtonTitle"
+        aria-controls="drawer"
+        :aria-expanded="drawerExpanded"
+        @click="drawerExpanded = true"
+      >
+        <IconOcarina />
+      </button>
+    </header>
+
+    <main>
+      <SynthKeys :class="synthLayoutClass" @play="onPlay" @error="onError" />
+    </main>
+  </div>
+</template>
