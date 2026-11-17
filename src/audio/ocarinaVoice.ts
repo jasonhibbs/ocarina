@@ -8,7 +8,8 @@ import * as Tone from 'tone'
  * - Almost a pure sine: the next harmonics sit about 45 dB down.
  * - A note speaks at once (5 ms), starts a few cents flat and rises into
  *   tune over about 180 ms, and stops quickly (about 70 ms).
- * - Slurred notes change pitch only: no new attack, and no flat start.
+ * - Slurred notes change pitch only, gliding there in about 20 ms: no new
+ *   attack, and no flat start.
  * - Vibrato comes from the breath. A note is held steady for about 1.2 s,
  *   then dips regularly, about 4.5 times a second: the pitch sits on the
  *   note, then drops about 50 cents and back in roughly 0.1 s, and the
@@ -24,6 +25,8 @@ export const ocarina = {
     release: 0.12,
     releaseCurve: 'exponential',
   },
+  // Slurred notes glide to the new pitch (portamento); fresh notes don't
+  glide: 0.02, // s
   // A fresh note starts flat and rises into tune
   onsetDetune: -8, // cents
   onsetSettle: 0.18, // s
@@ -108,6 +111,7 @@ export function createOcarinaVoice(): Voice {
 
   return {
     triggerAttack(note, time) {
+      tone.portamento = 0
       tone.triggerAttack(note, time)
       tone.detune.cancelScheduledValues(time)
       tone.detune.setValueAtTime(ocarina.onsetDetune, time)
@@ -115,6 +119,7 @@ export function createOcarinaVoice(): Voice {
       restartVibrato(time)
     },
     slideTo(note, time) {
+      tone.portamento = ocarina.glide
       tone.setNote(note, time)
       restartVibrato(time)
     },
