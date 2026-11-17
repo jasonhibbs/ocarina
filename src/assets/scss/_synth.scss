@@ -333,20 +333,25 @@
       background-color: hsl(0, 0%, 100%, 0.14);
     }
 
+    // A block sized to the letter, centred in the button
     .synth-key-inner:after {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: block;
+      inset: auto;
+      top: 50%;
+      left: 50%;
       background-image: none;
       color: var(--color);
       font-family: var(--font-base);
       font-size: em(50, 128);
       font-weight: 300;
       line-height: 1;
+      // Trim the text to the capital height, so the letters centre
+      // exactly whatever the font (SF Pro on Apple devices).
+      text-box: trim-both cap alphabetic;
       opacity: 1;
       filter: none;
-      // Upright, undoing the container's turn
-      transform: rotateZ(45deg);
+      // Centred, and upright, undoing the container's turn
+      transform: translate(-50%, -50%) rotateZ(45deg);
     }
   }
 
