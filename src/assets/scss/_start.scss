@@ -44,6 +44,8 @@ main {
 
 header {
   position: relative;
+  // Above the audio start cover, so settings stay reachable.
+  z-index: 3;
   display: flex;
   flex: none;
   align-items: center;
@@ -106,18 +108,21 @@ header button[aria-controls='drawer'] {
 }
 
 main {
-  position: relative;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-// Covers the keys until audio is running: one tap starts it.
+// Covers the screen until audio is running: a tap anywhere starts it.
+.screen {
+  position: relative;
+}
+
 button.audio-start {
-  --background-color: color-mix(in srgb, var(--color-root) 70%, transparent);
+  --background-color: color-mix(in srgb, var(--color-root) 15%, transparent);
   --hover-background-color: var(--background-color);
 
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   place-items: center;
   width: 100%;
@@ -126,8 +131,8 @@ button.audio-start {
   border-radius: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
 
   &:focus {
     box-shadow: none;

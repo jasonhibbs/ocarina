@@ -71,15 +71,13 @@ const strings = computed(() => ({
 
     <main>
       <SynthKeys :class="synthLayoutClass" />
-      <!-- Browsers only start audio from a gesture they count as user
-           activation, and iOS doesn't count holding a key, so offer a tap. -->
-      <button
-        v-if="audio.needsStart"
-        class="audio-start"
-        @click="audio.start()"
-      >
-        <span class="audio-start-label">{{ strings.audioStartLabel }}</span>
-      </button>
     </main>
+
+    <!-- Browsers only start audio from a gesture they count as user
+         activation, and iOS doesn't count holding a key, so offer a tap
+         anywhere. -->
+    <button v-if="audio.needsStart" class="audio-start" @click="audio.start()">
+      <span class="audio-start-label">{{ strings.audioStartLabel }}</span>
+    </button>
   </div>
 </template>
