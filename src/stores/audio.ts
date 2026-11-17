@@ -2,33 +2,25 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import * as Tone from 'tone'
 import { debugLog } from '@/debug'
+import {
+  createOcarinaVoice,
+  createPlainVoice,
+  type Voice,
+} from '@/audio/ocarinaVoice'
 
 export type AudioStatus = 'good' | 'bad' | null
 
-function createVoice() {
-  const voice = new Tone.Synth({
-    oscillator: { type: 'sine' },
-    envelope: {
-      attack: 0.2,
-      attackCurve: 'linear',
-      decay: 0.8,
-      sustain: 0.8,
-      release: 0.8,
-    },
-  })
+function createVoice(): Voice {
   try {
-    const reverb = new Tone.Reverb({ decay: 0.6, wet: 0.6 })
-    const vibrato = new Tone.Vibrato(5, 0.1666)
-    voice.chain(reverb, vibrato, Tone.getDestination())
+    return createOcarinaVoice()
   } catch (e) {
-    console.warn('Couldn’t add reverb or vibrato:', e)
-    voice.toDestination()
+    console.warn('Couldn’t build the ocarina, playing a plain tone:', e)
+    return createPlainVoice()
   }
-  return voice
 }
 
 /**
- * A single monophonic ocarina voice: sine synth → reverb → vibrato.
+ * A single monophonic ocarina voice (see ocarinaVoice.ts).
  *
  * Follows Tone's documented pattern: call `Tone.start()` from a user-gesture
  * listener, and only play once it has resolved. Browsers decide which
@@ -49,7 +41,7 @@ export const useAudioStore = defineStore('audio', () => {
     if (state === 'running') hasRun.value = true
   })
 
-  let voice: Tone.Synth | undefined
+  let voice: Voice | undefined
   // A note asked for before audio was running, played once it is.
   let pendingNote: string | undefined
 
@@ -61,6 +53,8 @@ export const useAudioStore = defineStore('audio', () => {
   // note stuck.
   const minGap = 0.001
   let lastAttackTime = -Infinity
+  // Whether a note is sounding (attacked and not yet released)
+  let sounding = false
   const afterLastAttack = () => Math.max(Tone.now(), lastAttackTime + minGap)
 
   const status = computed<AudioStatus>(() => {
@@ -98,9 +92,14 @@ export const useAudioStore = defineStore('audio', () => {
     pendingNote = undefined
     try {
       const time = afterLastAttack()
-      voice.triggerAttack(note, time)
+      // Moving to another note while one sounds slurs to it, as on an
+      // ocarina when only the fingering changes
+      const slur = sounding
+      if (slur) voice.slideTo(note, time)
+      else voice.triggerAttack(note, time)
+      sounding = true
       lastAttackTime = time
-      debugLog('play', note, time)
+      debugLog(slur ? 'slide' : 'play', note, time)
     } catch (e) {
       debugLog('play ERROR', note, e)
       error.value = String(e)
@@ -109,6 +108,8 @@ export const useAudioStore = defineStore('audio', () => {
 
   function stop() {
     pendingNote = undefined
+    if (!sounding) return
+    sounding = false
     voice?.triggerRelease(afterLastAttack())
   }
 
