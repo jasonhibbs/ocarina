@@ -345,8 +345,9 @@
       line-height: 1;
       opacity: 1;
       filter: none;
-      // Upright, undoing the container's turn
-      transform: rotateZ(45deg);
+      // Upright, undoing the container's turn. Then nudged down: centring
+      // the line box leaves capitals high, as it saves room for descenders.
+      transform: rotateZ(45deg) translateY(0.05em);
     }
   }
 
