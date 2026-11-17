@@ -5,8 +5,8 @@ import * as Tone from 'tone'
  * Healing), measured note by note. The recording's background noise is
  * left out: the tone itself is clean.
  *
- * - Almost a pure sine: the harmonics above it fade from about 40 dB down,
- *   and a held note wobbles very slightly, as breath does.
+ * - Almost a pure sine, with faint 2nd and 3rd harmonics, and a held note
+ *   wobbles very slightly, as breath does.
  * - A note speaks at once (5 ms), starts a few cents flat and rises into
  *   tune over about 180 ms, and stops quickly (about 70 ms).
  * - Slurred notes change pitch only, gliding there in about 20 ms: no new
@@ -17,11 +17,10 @@ import * as Tone from 'tone'
  *   loudness drops about 8 dB with it.
  */
 export const ocarina = {
-  // Harmonics matching the reference's E5, from the 2nd to the 9th: -39,
-  // -43, -51, -50, -56, -62, -65 and -67 dB. Set a little higher than that
-  // (more so further up), as the wobble below spreads each harmonic and
-  // lowers its peak, so the rendered voice measures those levels.
-  partials: [1, 0.0115, 0.0078, 0.0033, 0.0039, 0.002, 0.001, 0.00078, 0.00062],
+  // Just the 2nd and 3rd harmonics, about 40 and 44 dB down, as on the
+  // reference's E5. Its fainter harmonics above those were left out: by
+  // ear, the tone is softer and more natural without them.
+  partials: [1, 0.0115, 0.0078],
   // A held breath is never quite still: slow, random wobble in pitch and
   // loudness (measured on the reference: ±1.5 cents, ±0.3 dB)
   wobble: {
