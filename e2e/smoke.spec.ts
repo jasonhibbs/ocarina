@@ -87,6 +87,14 @@ test.describe('touch', { tag: '@mobile' }, () => {
   })
 })
 
+test('slides the drawer up when it opens', async ({ page }) => {
+  await page.getByTitle('About Ocarina').click()
+  const card = page.locator('.drawer-card')
+  const top = async () => (await card.boundingBox())!.y
+  const first = await top()
+  await expect.poll(top).toBeLessThan(first - 100)
+})
+
 test('switches layout from the drawer and remembers it', async ({ page }) => {
   const keys = page.locator('.synth-keys')
   await expect(keys).toHaveClass(/_gamepad/)
