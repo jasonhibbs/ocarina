@@ -11,7 +11,7 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps<{
   id?: string
   ariaLabelledby?: string
-  options: InlineSelectOption<T>[]
+  options: readonly InlineSelectOption<T>[]
 }>()
 
 const model = defineModel<T>()

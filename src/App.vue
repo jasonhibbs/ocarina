@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { useTemplateRef, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useMediaQuery, usePreferredDark } from '@vueuse/core'
-import { useRegisterSW } from 'virtual:pwa-register/vue'
-import { useUiStore } from '@/stores/ui'
+import { useMediaQuery } from '@vueuse/core'
+import { synthLayouts, useUiStore } from '@/stores/ui'
+import { useAudioStore } from '@/stores/audio'
 import AppDrawer from '@/components/AppDrawer.vue'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconClose from '@/components/IconClose.vue'
 import IconSymbol from '@/components/IconSymbol.vue'
 import InlineSelect from '@/components/InlineSelect.vue'
+import { copyDebugLog, debugEnabled, debugLines, rawBeep } from '@/debug'
 
 const strings = {
   dialogAriaLabel: 'Ocarina Settings',
@@ -16,9 +17,6 @@ const strings = {
   reloadHint:
     'Screws fall out all the time. Reloading Ocarina should get the sound going again.',
   reloadButtonLabel: 'Reload',
-  updateHint:
-    'This Ocarina is a little out-of-date, please take a moment to update it.',
-  updateButtonLabel: 'Update',
   layoutFormLabel: 'Layout',
   hintTextTitle: 'How to Play',
   hintText: [
@@ -30,7 +28,8 @@ const strings = {
 }
 
 const ui = useUiStore()
-const { drawerExpanded, synthError, synthLayout } = storeToRefs(ui)
+const { drawerExpanded, synthLayout } = storeToRefs(ui)
+const audio = useAudioStore()
 
 // Environment classes used by the stylesheet
 
@@ -40,17 +39,6 @@ document.documentElement.classList.toggle('is-ios', isIos)
 watchEffect(() => {
   document.documentElement.classList.toggle('is-app', isStandalone.value)
 })
-
-const isDark = usePreferredDark()
-watchEffect(() => {
-  document
-    .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', isDark.value ? '#000' : '#fff')
-})
-
-// Service worker updates
-
-const { needRefresh: updateAvailable, updateServiceWorker } = useRegisterSW()
 
 // Drawer
 
@@ -62,10 +50,6 @@ function afterDrawerEnter() {
 
 function onClickReload() {
   location.reload()
-}
-
-function onClickUpdate() {
-  updateServiceWorker()
 }
 </script>
 
@@ -97,21 +81,12 @@ function onClickUpdate() {
         </button>
       </template>
 
-      <div v-if="synthError" class="message _error">
+      <div v-if="audio.error" class="message _error">
         <div class="message-content">
-          <pre>{{ synthError }}</pre>
+          <pre>{{ audio.error }}</pre>
           <p>{{ strings.reloadHint }}</p>
           <button @click="onClickReload">
             {{ strings.reloadButtonLabel }}
-          </button>
-        </div>
-      </div>
-
-      <div v-if="updateAvailable" class="message _key">
-        <div class="message-content">
-          <p>{{ strings.updateHint }}</p>
-          <button @click="onClickUpdate">
-            {{ strings.updateButtonLabel }}
           </button>
         </div>
       </div>
@@ -137,7 +112,7 @@ function onClickUpdate() {
                 id="layout-select"
                 v-model="synthLayout"
                 aria-labelledby="label-layout-select"
-                :options="ui.synthLayouts"
+                :options="synthLayouts"
               />
             </div>
           </div>
@@ -184,4 +159,44 @@ function onClickUpdate() {
       </footer>
     </AppDrawer>
   </Transition>
+
+  <div v-if="debugEnabled" class="debug-panel">
+    <div class="debug-buttons">
+      <button @click="rawBeep">Raw beep</button>
+      <button @click="copyDebugLog">Copy log</button>
+    </div>
+    <pre>{{ debugLines.join('\n') }}</pre>
+  </div>
 </template>
+
+<style>
+.debug-panel {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 1000;
+  height: 35vh;
+  overflow: auto;
+  padding: 8px;
+  background: rgb(0 0 0 / 0.85);
+  color: #0f0;
+  font:
+    10px/1.3 ui-monospace,
+    monospace;
+  -webkit-user-select: text;
+  user-select: text;
+}
+.debug-panel pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.debug-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.debug-buttons button {
+  font-size: 14px;
+  padding: 6px 10px;
+}
+</style>
