@@ -12,6 +12,10 @@ vi.mock('tone', async () => {
   return createToneModule(tone)
 })
 
+vi.mock('@/audio/ocarinaVoice', () => ({
+  createOcarinaVoice: () => tone.voice,
+}))
+
 describe('audio store', () => {
   beforeEach(() => {
     tone.context.reset()
@@ -73,7 +77,10 @@ describe('audio store', () => {
     expect(tone.voice.triggerAttack).not.toHaveBeenCalled()
 
     await audio.start()
-    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5', expect.any(Number))
+    expect(tone.voice.triggerAttack).toHaveBeenCalledWith(
+      'C5',
+      expect.any(Number)
+    )
     expect(tone.voice.triggerAttack).toHaveBeenCalledTimes(1)
   })
 
@@ -92,7 +99,10 @@ describe('audio store', () => {
     await audio.start()
     audio.play('C5')
     audio.stop()
-    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5', expect.any(Number))
+    expect(tone.voice.triggerAttack).toHaveBeenCalledWith(
+      'C5',
+      expect.any(Number)
+    )
     expect(tone.voice.triggerRelease).toHaveBeenCalled()
   })
 

@@ -26,8 +26,6 @@ export function createTone() {
   const voice = {
     triggerAttack: vi.fn((note: string, time?: number) => void [note, time]),
     triggerRelease: vi.fn((time?: number) => void time),
-    chain: () => {},
-    toDestination: () => {},
   }
   // Like a resume() from a gesture the browser accepted.
   const startNow = async () => context.setState('running')
@@ -49,8 +47,6 @@ export function createToneModule(tone: ToneStub) {
     Synth: vi.fn(function () {
       return tone.voice
     }),
-    Reverb: vi.fn(),
-    Vibrato: vi.fn(),
     Frequency: (note: string) => ({
       toFrequency: () => 440,
       toMidi: () => note.length,

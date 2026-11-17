@@ -2,33 +2,21 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import * as Tone from 'tone'
 import { debugLog } from '@/debug'
+import { createOcarinaVoice, type Voice } from '@/audio/ocarinaVoice'
 
 export type AudioStatus = 'good' | 'bad' | null
 
-function createVoice() {
-  const voice = new Tone.Synth({
-    oscillator: { type: 'sine' },
-    envelope: {
-      attack: 0.2,
-      attackCurve: 'linear',
-      decay: 0.8,
-      sustain: 0.8,
-      release: 0.8,
-    },
-  })
+function createVoice(): Voice {
   try {
-    const reverb = new Tone.Reverb({ decay: 0.6, wet: 0.6 })
-    const vibrato = new Tone.Vibrato(5, 0.1666)
-    voice.chain(reverb, vibrato, Tone.getDestination())
+    return createOcarinaVoice()
   } catch (e) {
-    console.warn('Couldn’t add reverb or vibrato:', e)
-    voice.toDestination()
+    console.warn('Couldn’t build the ocarina, playing a plain tone:', e)
+    return new Tone.Synth().toDestination()
   }
-  return voice
 }
 
 /**
- * A single monophonic ocarina voice: sine synth → reverb → vibrato.
+ * A single monophonic ocarina voice (see ocarinaVoice.ts).
  *
  * Follows Tone's documented pattern: call `Tone.start()` from a user-gesture
  * listener, and only play once it has resolved. Browsers decide which
@@ -49,7 +37,7 @@ export const useAudioStore = defineStore('audio', () => {
     if (state === 'running') hasRun.value = true
   })
 
-  let voice: Tone.Synth | undefined
+  let voice: Voice | undefined
   // A note asked for before audio was running, played once it is.
   let pendingNote: string | undefined
 
