@@ -307,45 +307,37 @@
 }
 
 // Switch 2 — the N64 layout with Switch 2 face and shoulder buttons:
-// dark grey buttons, black rings and thin light grey letters.
+// flat dark grey with thin light grey letters. The other keys stay faded,
+// as in the N64 layout.
 
 .synth-keys._rotated._gamepad._switch {
-  .synth-key {
+  [data-note='D5'],
+  [data-note='F5'],
+  [data-note='B5'],
+  [data-note='D6'],
+  [data-note='A5'] {
     --background-color: var(--color-button-switch);
     --color: var(--color-button-switch-label);
-  }
 
-  .synth-key-inner {
-    // The keys sit in a container turned -45°, so 225° points down the
-    // screen: lighter at the top, like the real buttons.
-    background-image: linear-gradient(
-      225deg,
-      hsl(0, 0%, 100%, 0.07),
-      hsl(0, 0%, 0%, 0.12)
-    );
-    box-shadow:
-      0 0 0 em(4, 128) var(--color-button-switch-ring),
-      em(3, 128) em(3, 128) em(6, 128) hsl(0, 0%, 0%, 0.25);
-  }
+    .synth-key-inner:before {
+      background-color: hsl(0, 0%, 100%, 0.14);
+    }
 
-  .synth-key-inner:before {
-    background-color: hsl(0, 0%, 100%, 0.14);
-  }
-
-  .synth-key-inner:after {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-image: none;
-    color: var(--color);
-    font-family: var(--font-base);
-    font-size: em(50, 128);
-    font-weight: 300;
-    line-height: 1;
-    opacity: 1;
-    filter: none;
-    // Upright, undoing the container's turn
-    transform: rotateZ(45deg);
+    .synth-key-inner:after {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: none;
+      color: var(--color);
+      font-family: var(--font-base);
+      font-size: em(50, 128);
+      font-weight: 300;
+      line-height: 1;
+      opacity: 1;
+      filter: none;
+      // Upright, undoing the container's turn
+      transform: rotateZ(45deg);
+    }
   }
 
   // Which note each button plays is unchanged from the N64 layout
