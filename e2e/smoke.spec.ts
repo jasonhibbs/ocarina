@@ -1,4 +1,12 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
+
+// Browsers only start audio from a gesture, like a real visitor's first tap.
+async function startAudio(page: Page) {
+  const start = page.getByRole('button', { name: 'Tap to play' })
+  await start.click()
+  await expect(start).toBeHidden()
+  await expect(page.locator('.status')).toHaveAttribute('data-state', 'good')
+}
 
 let errors: string[] = []
 
@@ -22,38 +30,41 @@ test('shows twenty keys from F4 to D7', async ({ page }) => {
   await expect(keys.last()).toHaveAttribute('data-note', 'D7')
 })
 
-test.describe('mouse and keyboard', { tag: '@desktop' }, () => {
-  test('plays a note with the mouse and turns the status dot green', async ({
-    page,
-  }) => {
-    const key = page.locator('.synth-key[data-note="C5"]')
-    const status = page.locator('.status')
-    await expect(status).not.toHaveAttribute('data-state', /./)
+test('asks for a tap before playing, then gets out of the way', async ({
+  page,
+}) => {
+  await expect(page.locator('.status')).not.toHaveAttribute('data-state', /./)
+  await startAudio(page)
+})
 
+test.describe('mouse and keyboard', { tag: '@desktop' }, () => {
+  test('plays a note with the mouse', async ({ page }) => {
+    await startAudio(page)
+    const key = page.locator('.synth-key[data-note="C5"]')
     await key.hover()
     await page.mouse.down()
     await expect(key).toHaveAttribute('aria-pressed', 'true')
-    await expect(status).toHaveAttribute('data-state', 'good')
     await page.mouse.up()
     await expect(key).toHaveAttribute('aria-pressed', 'false')
   })
 
-  test('plays from the keyboard', async ({ page }) => {
+  test('starts audio and plays from the keyboard, without the button', async ({
+    page,
+  }) => {
     const key = page.locator('.synth-key[data-note="C5"]')
     await page.keyboard.down('s')
     await expect(key).toHaveAttribute('aria-pressed', 'true')
+    await expect(page.locator('.status')).toHaveAttribute('data-state', 'good')
+    await expect(page.getByRole('button', { name: 'Tap to play' })).toBeHidden()
     await page.keyboard.up('s')
     await expect(key).toHaveAttribute('aria-pressed', 'false')
   })
 })
 
 test.describe('touch', { tag: '@mobile' }, () => {
-  test('plays a note by touch and turns the status dot green', async ({
-    page,
-  }) => {
+  test('plays a note by touch', async ({ page }) => {
+    await startAudio(page)
     const key = page.locator('.synth-key[data-note="C5"]')
-    const status = page.locator('.status')
-    await expect(status).not.toHaveAttribute('data-state', /./)
 
     // Raw touch events: Playwright's tap() releases immediately.
     const box = (await key.boundingBox())!
@@ -65,7 +76,6 @@ test.describe('touch', { tag: '@mobile' }, () => {
       touchPoints: [point],
     })
     await expect(key).toHaveAttribute('aria-pressed', 'true')
-    await expect(status).toHaveAttribute('data-state', 'good')
 
     await cdp.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',

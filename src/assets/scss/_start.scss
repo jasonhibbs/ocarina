@@ -106,7 +106,45 @@ header button[aria-controls='drawer'] {
 }
 
 main {
+  position: relative;
   padding-bottom: env(safe-area-inset-bottom);
+}
+
+// Covers the keys until audio is running: one tap starts it.
+button.audio-start {
+  --background-color: color-mix(in srgb, var(--color-root) 70%, transparent);
+  --hover-background-color: var(--background-color);
+
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+
+  &:focus {
+    box-shadow: none;
+  }
+}
+
+.audio-start-label {
+  color: var(--button-key-color);
+  background-color: var(--button-key-background-color);
+  border-radius: 999px;
+  padding: rem(12) rem(24);
+  font-weight: 600;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.15);
+
+  .audio-start:focus-visible & {
+    box-shadow: 0 0 0 3px var(--button-key-focus-color);
+  }
 }
 
 .status {

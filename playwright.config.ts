@@ -13,8 +13,6 @@ export default defineConfig({
     baseURL: `http://localhost:${port}`,
     trace: 'on-first-retry',
     launchOptions: {
-      // Let the synth start in headless browsers without a real gesture.
-      args: ['--autoplay-policy=no-user-gesture-required'],
       // Use a preinstalled browser instead of Playwright's own, if set.
       executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined,
     },

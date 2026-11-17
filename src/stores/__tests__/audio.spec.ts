@@ -20,10 +20,26 @@ describe('audio store', () => {
     setActivePinia(createPinia())
   })
 
-  it('has no status until the first gesture', () => {
+  it('needs starting until the first gesture', () => {
     const audio = useAudioStore()
-    expect(audio.contextState).toBe('')
+    expect(audio.contextState).toBe('suspended')
     expect(audio.status).toBeNull()
+    expect(audio.needsStart).toBe(true)
+    expect(audio.hasRun).toBe(false)
+  })
+
+  it('doesn’t need starting where the browser lets audio run straight away', () => {
+    tone.context.state = 'running'
+    expect(useAudioStore().needsStart).toBe(false)
+  })
+
+  it('needs starting again after an interruption', async () => {
+    const audio = useAudioStore()
+    await audio.start()
+    expect(audio.needsStart).toBe(false)
+    tone.context.setState('interrupted' as AudioContextState)
+    expect(audio.needsStart).toBe(true)
+    expect(audio.hasRun).toBe(true)
   })
 
   it('starts audio', async () => {

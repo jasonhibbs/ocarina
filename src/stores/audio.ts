@@ -31,12 +31,23 @@ function createVoice() {
  * A single monophonic ocarina voice: sine synth → reverb → vibrato.
  *
  * Follows Tone's documented pattern: call `Tone.start()` from a user-gesture
- * listener, and only play once it has resolved.
+ * listener, and only play once it has resolved. Browsers decide which
+ * gestures count: iOS doesn't count a held press, so the UI also offers a
+ * start button while `needsStart` (a button's click always counts).
  */
 export const useAudioStore = defineStore('audio', () => {
-  // Empty until the first gesture creates the audio context.
-  const contextState = ref<AudioContextState | ''>('')
+  const context = Tone.getContext()
+  const contextState = ref<AudioContextState>(context.state)
   const error = ref('')
+  const hasRun = ref(contextState.value === 'running')
+
+  // Follow the real state, so the UI reflects iOS interruptions (calls,
+  // backgrounding) rather than whatever it was at the last note.
+  context.on('statechange', (state: AudioContextState) => {
+    debugLog('statechange', state)
+    contextState.value = state
+    if (state === 'running') hasRun.value = true
+  })
 
   let voice: Tone.Synth | undefined
   // A note asked for before audio was running, played once it is.
@@ -48,7 +59,8 @@ export const useAudioStore = defineStore('audio', () => {
     return null
   })
 
-  const isRunning = () => Tone.getContext().state === 'running'
+  const isRunning = () => context.state === 'running'
+  const needsStart = computed(() => contextState.value !== 'running')
 
   /** Call from every user-gesture listener. */
   async function start() {
@@ -61,18 +73,9 @@ export const useAudioStore = defineStore('audio', () => {
       error.value = String(e)
       return
     }
-    debugLog('Tone.start resolved', Tone.getContext().state)
-    if (!voice) {
-      const context = Tone.getContext()
-      // Follow the real state, so the status dot reflects iOS interruptions
-      // (calls, backgrounding) rather than whatever it was at the last note.
-      context.on('statechange', (state: AudioContextState) => {
-        debugLog('statechange', state)
-        contextState.value = state
-      })
-      voice = createVoice()
-    }
-    contextState.value = Tone.getContext().state
+    debugLog('Tone.start resolved', context.state)
+    voice ??= createVoice()
+    contextState.value = context.state
     error.value = ''
     if (pendingNote) play(pendingNote)
   }
@@ -97,5 +100,14 @@ export const useAudioStore = defineStore('audio', () => {
     voice?.triggerRelease()
   }
 
-  return { contextState, error, status, start, play, stop }
+  return {
+    contextState,
+    error,
+    hasRun,
+    needsStart,
+    status,
+    start,
+    play,
+    stop,
+  }
 })
