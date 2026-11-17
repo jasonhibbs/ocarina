@@ -18,7 +18,7 @@ $slide-duration: 0.5s;
     cubic-bezier((1 * 0.25), math.div(10, 12), (1 * 0.1), 1);
 }
 
-.drawer-slide-enter,
+.drawer-slide-enter-from,
 .drawer-slide-leave-to {
   .drawer-overlay {
     opacity: 0;
