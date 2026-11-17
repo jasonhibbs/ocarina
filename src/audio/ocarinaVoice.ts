@@ -33,7 +33,8 @@ export const ocarina = {
     attackCurve: 'linear',
     decay: 0.01,
     sustain: 1,
-    release: 0.12,
+    // Twice what matched the reference (0.12): by ear, a breathier tail
+    release: 0.24,
     releaseCurve: 'exponential',
   },
   // Slurred notes glide to the new pitch (portamento); fresh notes don't
