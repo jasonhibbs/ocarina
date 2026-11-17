@@ -1,122 +1,135 @@
 import * as Tone from 'tone'
 
 /**
- * An ocarina, roughly, from what's known of how one sounds:
+ * An ocarina, matched to a reference recording of a player (the Song of
+ * Healing), measured note by note. The recording's background noise is
+ * left out: the tone itself is clean.
  *
- * - It's a Helmholtz resonator (a vessel flute), so the tone is almost a pure
- *   sine: just a trace of the next two harmonics.
- * - It speaks quickly, with a short breathy "chiff" as the air jet catches,
- *   and the pitch settles up into tune as breath pressure builds.
- * - Breath noise sits quietly under the note.
- * - Vibrato comes from the breath, so it moves pitch and loudness together.
- *   Players start a note plain and let vibrato grow as it's held. Woodwind
- *   vibrato is narrow: 10–15 cents already counts as intense.
+ * - Almost a pure sine: the next harmonics sit about 45 dB down.
+ * - A note speaks at once (5 ms), starts a few cents flat and rises into
+ *   tune over about 180 ms, and stops quickly (about 70 ms).
+ * - Slurred notes change pitch only: no new attack, and no flat start.
+ * - Vibrato comes from the breath. A note is held steady for about 1.2 s,
+ *   then dips regularly, about 4.5 times a second: the pitch sits on the
+ *   note, then drops about 50 cents and back in roughly 0.1 s, and the
+ *   loudness drops about 8 dB with it.
  */
 export const ocarina = {
-  partials: [1, 0.025, 0.012],
+  partials: [1, 0.006, 0.0056],
   envelope: {
-    attack: 0.045,
-    attackCurve: 'sine',
-    decay: 0.25,
-    sustain: 0.9,
-    release: 0.25,
+    attack: 0.005,
+    attackCurve: 'linear',
+    decay: 0.01,
+    sustain: 1,
+    release: 0.12,
     releaseCurve: 'exponential',
   },
-  // Pitch at the start of a note, settling into tune
-  onsetDetune: -12, // cents
-  onsetSettle: 0.07, // s
+  // A fresh note starts flat and rises into tune
+  onsetDetune: -8, // cents
+  onsetSettle: 0.18, // s
   vibrato: {
-    rate: 5.5, // Hz
-    // Plain, then growing to its fullest as the note is held
-    plainFor: 0.35, // s
-    growFor: 1.3, // s
-    startCents: 2,
-    fullCents: 15,
-    // Loudness moves with it, ±8% at its fullest
-    fullTremolo: 0.08,
-  },
-  // Measured in offline renders, F4 to D7: about 31 dB under the tone
-  // while sustaining, and 22 dB under it through the chiff
-  breath: {
-    level: 0.05, // sustaining…
-    chiffLevel: 0.35, // …and at the onset, both scaled by the noise's volume
-    chiffDecay: 0.08, // s
-    volume: 19, // dB
+    rate: 4.55, // Hz
+    plainFor: 1.1, // s steady, after each new or slurred note
+    reachFor: 0.25, // s to near its full depth…
+    firstDipAfter: 0.12, // s: the first dip comes in at about half depth
+    deepenFor: 1.5, // s …then a little deeper
+    nearShare: 0.85,
+    // The dips: pitch down this far, and loudness to this share
+    dipCents: 50,
+    dipLoudness: 0.68, // a dip to about -8.5 dB
+    // How sharp the dips are: higher is narrower, with a longer steady top
+    dipSharpness: 4,
+    // The top of each cycle sits a little sharp of the note, as measured
+    topShare: 0.07,
   },
 } as const
 
 export interface Voice {
+  /** A fresh note, from silence */
   triggerAttack(note: string, time: number): void
+  /** Slur to another note, while one is sounding */
+  slideTo(note: string, time: number): void
   triggerRelease(time: number): void
 }
 
 export function createOcarinaVoice(): Voice {
-  const { vibrato: v, breath: b } = ocarina
+  const v = ocarina.vibrato
 
   const tone = new Tone.Synth({
     oscillator: { type: 'custom', partials: [...ocarina.partials] },
     envelope: { ...ocarina.envelope },
   })
 
-  // One breath, swaying pitch and loudness together: an LFO from -1 to 1,
-  // scaled to cents of detune, and to a share of the gain around 1.
-  // (A plain Gain feeding a parameter adds to it, so the onset automation
-  // on detune still works.)
-  const sway = new Tone.LFO({ frequency: v.rate, min: -1, max: 1 }).start()
-  const vibrato = new Tone.Gain(0)
-  const tremolo = new Tone.Gain(0)
+  // The breath's dips: a sine LFO shaped so that it rests near the top and
+  // dips sharply once a cycle, from about +topShare down to -1. It sways
+  // pitch (in cents of detune) and loudness (as a share of the gain around
+  // 1) together. A plain Gain feeding a parameter adds to it, so the onset
+  // automation on detune still works.
+  const lfo = new Tone.LFO({ frequency: v.rate, min: -1, max: 1 })
+  const dip = new Tone.WaveShaper(
+    (x) => v.topShare - ((1 - x) / 2) ** v.dipSharpness,
+    1024
+  )
+  const pitchDip = new Tone.Gain(0)
+  const loudnessDip = new Tone.Gain(0)
   const loudness = new Tone.Gain(1)
-  sway.fan(vibrato, tremolo)
-  vibrato.connect(tone.detune)
-  tremolo.connect(loudness.gain)
+  lfo.connect(dip)
+  dip.fan(pitchDip, loudnessDip)
+  pitchDip.connect(tone.detune)
+  loudnessDip.connect(loudness.gain)
+
   const reverb = new Tone.Reverb({ decay: 0.6, wet: 0.4 })
-  // As loud as the earlier, plainer voice, with headroom for the chiff
+  // As loud as the earlier, plainer voice
   const output = new Tone.Volume(-3.5)
-
-  // Breath: pink noise, band-passed around the note, behind its own envelope
-  const breathFilter = new Tone.Filter({ type: 'bandpass', Q: 1.2 })
-  const breathEnvelope = new Tone.AmplitudeEnvelope({
-    attack: 0.005,
-    decay: b.chiffDecay,
-    sustain: b.level / b.chiffLevel,
-    release: ocarina.envelope.release,
-  })
-  const breath = new Tone.Noise({ type: 'pink', volume: b.volume }).start()
-  const breathLevel = new Tone.Gain(b.chiffLevel)
-  breath.chain(breathFilter, breathEnvelope, breathLevel, reverb)
-
   tone.chain(loudness, reverb, output, Tone.getDestination())
 
   // Long enough to glide out of a held note's vibrato without a click
   const settle = 0.06
 
+  // Each new or slurred note starts steady, then its vibrato comes in.
+  // The LFO restarts so the first dip always lands firstDipAfter into the
+  // vibrato. Tone's LFO, restarted, reaches its trough a quarter of a cycle
+  // in (measured); restarting one cycle earlier still, while the vibrato is
+  // at zero, keeps the jump in its phase silent.
+  function restartVibrato(time: number) {
+    const start = time + v.plainFor
+    lfo.start(start + v.firstDipAfter - 1.25 / v.rate)
+    for (const [param, full] of [
+      [pitchDip.gain, v.dipCents],
+      [loudnessDip.gain, v.dipLoudness],
+    ] as const) {
+      param.cancelAndHoldAtTime(time)
+      param.linearRampToValueAtTime(0, time + settle)
+      param.setValueAtTime(0, start)
+      param.linearRampToValueAtTime(full * v.nearShare, start + v.reachFor)
+      param.linearRampToValueAtTime(full, start + v.reachFor + v.deepenFor)
+    }
+  }
+
   return {
     triggerAttack(note, time) {
       tone.triggerAttack(note, time)
-
       tone.detune.cancelScheduledValues(time)
       tone.detune.setValueAtTime(ocarina.onsetDetune, time)
       tone.detune.linearRampToValueAtTime(0, time + ocarina.onsetSettle)
-
-      const frequency = Tone.Frequency(note).toFrequency()
-      breathFilter.frequency.setValueAtTime(frequency * 1.5, time)
-      breathEnvelope.triggerAttack(time)
-
-      // Each note starts plain, then its vibrato grows
-      const grow = time + v.plainFor
-      for (const [param, plain, full] of [
-        [vibrato.gain, v.startCents, v.fullCents],
-        [tremolo.gain, 0, v.fullTremolo],
-      ] as const) {
-        param.cancelAndHoldAtTime(time)
-        param.linearRampToValueAtTime(plain, time + settle)
-        param.setValueAtTime(plain, grow)
-        param.linearRampToValueAtTime(full, grow + v.growFor)
-      }
+      restartVibrato(time)
+    },
+    slideTo(note, time) {
+      tone.setNote(note, time)
+      restartVibrato(time)
     },
     triggerRelease(time) {
       tone.triggerRelease(time)
-      breathEnvelope.triggerRelease(time)
     },
+  }
+}
+
+/** A plain tone, if the ocarina can't be built */
+export function createPlainVoice(): Voice {
+  const tone = new Tone.Synth().toDestination()
+  return {
+    triggerAttack: (note, time) => tone.triggerAttack(note, time),
+    slideTo: (note, time) => tone.setNote(note, time),
+    triggerRelease: (time) => tone.triggerRelease(time),
   }
 }

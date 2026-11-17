@@ -25,6 +25,7 @@ export function createTone() {
   const clock = { now: 0 }
   const voice = {
     triggerAttack: vi.fn((note: string, time?: number) => void [note, time]),
+    slideTo: vi.fn((note: string, time?: number) => void [note, time]),
     triggerRelease: vi.fn((time?: number) => void time),
   }
   // Like a resume() from a gesture the browser accepted.
