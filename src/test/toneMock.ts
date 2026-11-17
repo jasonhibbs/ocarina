@@ -18,11 +18,14 @@ export function createTone() {
     reset() {
       this.state = 'suspended'
       listeners.length = 0
+      clock.now = 0
     },
   }
+  // The audio clock, which tests move on by hand. Tone's now().
+  const clock = { now: 0 }
   const voice = {
-    triggerAttack: vi.fn((note: string) => void note),
-    triggerRelease: vi.fn(),
+    triggerAttack: vi.fn((note: string, time?: number) => void [note, time]),
+    triggerRelease: vi.fn((time?: number) => void time),
     chain: () => {},
     toDestination: () => {},
   }
@@ -31,7 +34,7 @@ export function createTone() {
   // Like WebKit with a gesture it didn't accept: the promise never settles.
   const neverStarts = () => new Promise<void>(() => {})
   const start = vi.fn(startNow)
-  return { context, voice, start, startNow, neverStarts }
+  return { context, clock, voice, start, startNow, neverStarts }
 }
 
 export type ToneStub = ReturnType<typeof createTone>
@@ -42,6 +45,7 @@ export function createToneModule(tone: ToneStub) {
     getContext: () => tone.context,
     getDestination: () => ({}),
     start: () => tone.start(),
+    now: () => tone.clock.now,
     Synth: vi.fn(function () {
       return tone.voice
     }),

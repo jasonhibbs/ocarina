@@ -73,7 +73,7 @@ describe('audio store', () => {
     expect(tone.voice.triggerAttack).not.toHaveBeenCalled()
 
     await audio.start()
-    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5')
+    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5', expect.any(Number))
     expect(tone.voice.triggerAttack).toHaveBeenCalledTimes(1)
   })
 
@@ -92,7 +92,7 @@ describe('audio store', () => {
     await audio.start()
     audio.play('C5')
     audio.stop()
-    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5')
+    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5', expect.any(Number))
     expect(tone.voice.triggerRelease).toHaveBeenCalled()
   })
 
@@ -105,6 +105,34 @@ describe('audio store', () => {
     await audio.start()
     expect(tone.start).toHaveBeenCalledTimes(2)
     expect(audio.status).toBe('good')
+  })
+
+  it('keeps notes in the same audio block strictly in order', async () => {
+    const audio = useAudioStore()
+    await audio.start()
+    tone.clock.now = 5
+    audio.play('C5')
+    audio.play('D5')
+    audio.play('E5')
+    audio.stop()
+
+    const attacks = tone.voice.triggerAttack.mock.calls.map(([, t]) => t!)
+    const [release] = tone.voice.triggerRelease.mock.calls[0]!
+    expect(attacks[0]).toBe(5)
+    expect(attacks[1]).toBeGreaterThan(attacks[0]!)
+    expect(attacks[2]).toBeGreaterThan(attacks[1]!)
+    expect(release).toBeGreaterThan(attacks[2]!)
+    expect(audio.error).toBe('')
+  })
+
+  it('plays at Tone’s now once the clock has moved on', async () => {
+    const audio = useAudioStore()
+    await audio.start()
+    tone.clock.now = 5
+    audio.play('C5')
+    tone.clock.now = 6
+    audio.play('D5')
+    expect(tone.voice.triggerAttack).toHaveBeenLastCalledWith('D5', 6)
   })
 
   it('reports a failed start', async () => {
