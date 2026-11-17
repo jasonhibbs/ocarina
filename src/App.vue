@@ -24,6 +24,7 @@ const strings = {
     'Audio is ready when the dot is green. Red means something broke.',
     'On a QWERTY keyboard, keys S to L play C5 to C6.',
     'The N64 layout is wholly nostalgic. The A button is D5, C-Up is D6.',
+    'The Switch 2 layout moves A to L, and the C buttons to R, Y, X and A.',
   ],
 }
 

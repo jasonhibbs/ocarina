@@ -29,9 +29,13 @@ const audio = useAudioStore()
 
 // Layout
 
-const synthLayoutClass = computed(() =>
-  synthLayout.value === 'n64' ? '_rotated _gamepad' : ''
-)
+const synthLayoutClasses = {
+  pad: '',
+  n64: '_rotated _gamepad',
+  switch2: '_rotated _gamepad _switch',
+} as const
+
+const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
 
 const strings = computed(() => ({
   layoutToggleLabel: `Layout: ${synthLayoutLabel.value}`,
@@ -49,7 +53,7 @@ const strings = computed(() => ({
         :title="strings.layoutToggleLabel"
         @click="ui.cycleSynthLayout()"
       >
-        <IconLayout :class="synthLayout === 'n64' ? '_circles' : '_squares'" />
+        <IconLayout :class="synthLayout === 'pad' ? '_squares' : '_circles'" />
       </button>
 
       <h1 class="visuallyhidden">Ocarina</h1>
