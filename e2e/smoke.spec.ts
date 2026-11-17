@@ -110,3 +110,21 @@ test('switches layout from the drawer and remembers it', async ({ page }) => {
   await page.getByTitle('Layout: Pad').click()
   await expect(page.locator('.synth-keys')).toHaveClass(/_gamepad/)
 })
+
+test('labels the Switch 2 buttons L, R, Y, X and A', async ({ page }) => {
+  await page.getByTitle('Layout: N64').click()
+  await expect(page.locator('.synth-keys')).toHaveClass(/_switch/)
+
+  // Same notes as the N64's A, C-down, C-left, C-up and C-right
+  for (const [note, letter] of [
+    ['D5', 'L'],
+    ['F5', 'R'],
+    ['B5', 'Y'],
+    ['D6', 'X'],
+    ['A5', 'A'],
+  ]) {
+    await expect(
+      page.locator(`.synth-key[data-note="${note}"] .synth-key-inner`)
+    ).toHaveCSS('content', `"${letter}"`, { pseudo: 'after' })
+  }
+})

@@ -20,6 +20,9 @@ describe('ui store', () => {
   it('cycles through the layouts and wraps around', () => {
     const ui = useUiStore()
     ui.cycleSynthLayout()
+    expect(ui.synthLayout).toBe('switch2')
+    expect(ui.synthLayoutLabel).toBe('Switch 2')
+    ui.cycleSynthLayout()
     expect(ui.synthLayout).toBe('pad')
     expect(ui.synthLayoutLabel).toBe('Pad')
     ui.cycleSynthLayout()

@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 
-export type SynthLayout = 'pad' | 'n64'
+export type SynthLayout = 'pad' | 'n64' | 'switch2'
 
 export interface LayoutOption {
   label: string
@@ -12,6 +12,7 @@ export interface LayoutOption {
 export const synthLayouts: readonly LayoutOption[] = [
   { label: 'Pad', value: 'pad' },
   { label: 'N64', value: 'n64' },
+  { label: 'Switch 2', value: 'switch2' },
 ]
 
 const defaultSynthLayout: SynthLayout = 'n64'
