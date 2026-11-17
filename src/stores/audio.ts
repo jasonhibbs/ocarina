@@ -53,6 +53,16 @@ export const useAudioStore = defineStore('audio', () => {
   // A note asked for before audio was running, played once it is.
   let pendingNote: string | undefined
 
+  // Tone won't restart the oscillator at the time it last started it, and
+  // "now" only moves on in audio blocks (coarser on iOS, and stalled after
+  // an interruption), so quick notes can share it. Keep each attack, and
+  // each release, strictly after the last attack: a release at the attack's
+  // own time finds the envelope still silent and does nothing, leaving the
+  // note stuck.
+  const minGap = 0.001
+  let lastAttackTime = -Infinity
+  const afterLastAttack = () => Math.max(Tone.now(), lastAttackTime + minGap)
+
   const status = computed<AudioStatus>(() => {
     if (error.value) return 'bad'
     if (contextState.value === 'running') return 'good'
@@ -87,8 +97,10 @@ export const useAudioStore = defineStore('audio', () => {
     }
     pendingNote = undefined
     try {
-      voice.triggerAttack(note)
-      debugLog('play', note)
+      const time = afterLastAttack()
+      voice.triggerAttack(note, time)
+      lastAttackTime = time
+      debugLog('play', note, time)
     } catch (e) {
       debugLog('play ERROR', note, e)
       error.value = String(e)
@@ -97,7 +109,7 @@ export const useAudioStore = defineStore('audio', () => {
 
   function stop() {
     pendingNote = undefined
-    voice?.triggerRelease()
+    voice?.triggerRelease(afterLastAttack())
   }
 
   return {

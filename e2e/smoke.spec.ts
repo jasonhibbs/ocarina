@@ -61,6 +61,32 @@ test.describe('mouse and keyboard', { tag: '@desktop' }, () => {
     await page.keyboard.up('s')
     await expect(key).toHaveAttribute('aria-pressed', 'false')
   })
+
+  test('plays notes in quick succession without an error', async ({ page }) => {
+    await startAudio(page)
+    // Notes a millisecond apart share an audio block, so share Tone's "now"
+    await page.evaluate(async () => {
+      const tick = () => new Promise((r) => setTimeout(r, 0))
+      const key = (type: string, code: string) =>
+        document.documentElement.dispatchEvent(
+          new KeyboardEvent(type, { code, bubbles: true })
+        )
+      for (const [a, b] of [
+        ['KeyS', 'KeyD'],
+        ['KeyF', 'KeyG'],
+        ['KeyH', 'KeyJ'],
+      ] as const) {
+        key('keydown', a)
+        await tick()
+        key('keydown', b)
+        await tick()
+        key('keyup', b)
+        key('keyup', a)
+        await tick()
+      }
+    })
+    await expect(page.locator('.status')).toHaveAttribute('data-state', 'good')
+  })
 })
 
 test.describe('touch', { tag: '@mobile' }, () => {

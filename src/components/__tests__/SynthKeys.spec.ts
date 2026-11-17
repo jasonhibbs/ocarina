@@ -46,7 +46,7 @@ describe('SynthKeys', () => {
     // The browser accepts the next gesture while the key is still held.
     document.dispatchEvent(new Event('click'))
     await flushPromises()
-    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('D5')
+    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('D5', expect.any(Number))
     expect(tone.voice.triggerAttack).toHaveBeenCalledTimes(1)
   })
 
@@ -55,7 +55,7 @@ describe('SynthKeys', () => {
       new KeyboardEvent('keydown', { code: 'KeyS', bubbles: true })
     )
     await flushPromises()
-    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5')
+    expect(tone.voice.triggerAttack).toHaveBeenCalledWith('C5', expect.any(Number))
     expect(tone.voice.triggerAttack).toHaveBeenCalledTimes(1)
   })
 })
