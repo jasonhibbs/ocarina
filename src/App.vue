@@ -2,7 +2,6 @@
 import { useTemplateRef, watchEffect } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useMediaQuery } from '@vueuse/core'
-import { useRegisterSW } from 'virtual:pwa-register/vue'
 import { synthLayouts, useUiStore } from '@/stores/ui'
 import { useAudioStore } from '@/stores/audio'
 import AppDrawer from '@/components/AppDrawer.vue'
@@ -18,9 +17,6 @@ const strings = {
   reloadHint:
     'Screws fall out all the time. Reloading Ocarina should get the sound going again.',
   reloadButtonLabel: 'Reload',
-  updateHint:
-    'This Ocarina is a little out-of-date, please take a moment to update it.',
-  updateButtonLabel: 'Update',
   layoutFormLabel: 'Layout',
   hintTextTitle: 'How to Play',
   hintText: [
@@ -44,10 +40,6 @@ watchEffect(() => {
   document.documentElement.classList.toggle('is-app', isStandalone.value)
 })
 
-// Service worker updates
-
-const { needRefresh: updateAvailable, updateServiceWorker } = useRegisterSW()
-
 // Drawer
 
 const drawer = useTemplateRef('drawer')
@@ -58,10 +50,6 @@ function afterDrawerEnter() {
 
 function onClickReload() {
   location.reload()
-}
-
-function onClickUpdate() {
-  updateServiceWorker()
 }
 </script>
 
@@ -99,15 +87,6 @@ function onClickUpdate() {
           <p>{{ strings.reloadHint }}</p>
           <button @click="onClickReload">
             {{ strings.reloadButtonLabel }}
-          </button>
-        </div>
-      </div>
-
-      <div v-if="updateAvailable" class="message _key">
-        <div class="message-content">
-          <p>{{ strings.updateHint }}</p>
-          <button @click="onClickUpdate">
-            {{ strings.updateButtonLabel }}
           </button>
         </div>
       </div>
