@@ -307,8 +307,8 @@
 }
 
 // Switch 2 — the N64 layout with Switch 2 face and shoulder buttons:
-// flat dark grey with thin light grey letters. The other keys stay faded,
-// as in the N64 layout.
+// grey with thin light grey letters, lit from above. The other keys stay
+// faded, as in the N64 layout.
 
 .synth-keys._rotated._gamepad._switch {
   [data-note='D5'],
@@ -318,6 +318,16 @@
   [data-note='A5'] {
     --background-color: var(--color-button-switch);
     --color: var(--color-button-switch-label);
+
+    // The keys sit in a container turned -45°, so 225° points down the
+    // screen: lighter at the top, like the real buttons.
+    .synth-key-inner {
+      background-image: linear-gradient(
+        225deg,
+        hsl(0, 0%, 100%, 0.08),
+        hsl(0, 0%, 0%, 0.12)
+      );
+    }
 
     .synth-key-inner:before {
       background-color: hsl(0, 0%, 100%, 0.14);
