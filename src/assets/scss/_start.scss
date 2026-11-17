@@ -131,11 +131,17 @@ button.audio-start {
   border-radius: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  -webkit-backdrop-filter: blur(1.5px);
-  backdrop-filter: blur(1.5px);
+  -webkit-backdrop-filter: blur(1.5px) grayscale(1);
+  backdrop-filter: blur(1.5px) grayscale(1);
 
   &:focus {
     box-shadow: none;
+  }
+
+  // On touchscreens, put the label within reach of a thumb.
+  @media (pointer: coarse) {
+    align-items: end;
+    padding-bottom: calc(env(safe-area-inset-bottom) + #{rem(48)});
   }
 }
 

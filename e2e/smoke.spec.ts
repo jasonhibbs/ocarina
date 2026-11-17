@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 // Browsers only start audio from a gesture, like a real visitor's first tap.
 async function startAudio(page: Page) {
-  const start = page.getByRole('button', { name: 'Tap to play' })
+  const start = page.getByRole('button', { name: 'Tap to activate' })
   await start.click()
   await expect(start).toBeHidden()
   await expect(page.locator('.status')).toHaveAttribute('data-state', 'good')
@@ -55,7 +55,9 @@ test.describe('mouse and keyboard', { tag: '@desktop' }, () => {
     await page.keyboard.down('s')
     await expect(key).toHaveAttribute('aria-pressed', 'true')
     await expect(page.locator('.status')).toHaveAttribute('data-state', 'good')
-    await expect(page.getByRole('button', { name: 'Tap to play' })).toBeHidden()
+    await expect(
+      page.getByRole('button', { name: 'Tap to activate' })
+    ).toBeHidden()
     await page.keyboard.up('s')
     await expect(key).toHaveAttribute('aria-pressed', 'false')
   })

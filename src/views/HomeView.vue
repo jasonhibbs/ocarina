@@ -37,7 +37,7 @@ const strings = computed(() => ({
   layoutToggleLabel: `Layout: ${synthLayoutLabel.value}`,
   audioStatusLabel: `Audio Status: ${audio.contextState}`,
   aboutButtonTitle: 'About Ocarina',
-  audioStartLabel: audio.hasRun ? 'Tap to resume sound' : 'Tap to play',
+  audioStartLabel: audio.hasRun ? 'Tap to reactivate' : 'Tap to activate',
 }))
 </script>
 
