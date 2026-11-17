@@ -5,7 +5,8 @@ import * as Tone from 'tone'
  * Healing), measured note by note. The recording's background noise is
  * left out: the tone itself is clean.
  *
- * - Almost a pure sine: the next harmonics sit about 45 dB down.
+ * - Almost a pure sine: the harmonics above it fade from about 40 dB down,
+ *   and a held note wobbles very slightly, as breath does.
  * - A note speaks at once (5 ms), starts a few cents flat and rises into
  *   tune over about 180 ms, and stops quickly (about 70 ms).
  * - Slurred notes change pitch only, gliding there in about 20 ms: no new
@@ -16,7 +17,18 @@ import * as Tone from 'tone'
  *   loudness drops about 8 dB with it.
  */
 export const ocarina = {
-  partials: [1, 0.006, 0.0056],
+  // Harmonics matching the reference's E5, from the 2nd to the 9th: -39,
+  // -43, -51, -50, -56, -62, -65 and -67 dB. Set a little higher than that
+  // (more so further up), as the wobble below spreads each harmonic and
+  // lowers its peak, so the rendered voice measures those levels.
+  partials: [1, 0.0115, 0.0078, 0.0033, 0.0039, 0.002, 0.001, 0.00078, 0.00062],
+  // A held breath is never quite still: slow, random wobble in pitch and
+  // loudness (measured on the reference: ±1.5 cents, ±0.3 dB)
+  wobble: {
+    speed: 6, // Hz, the fastest it wanders
+    cents: 1.5,
+    loudness: 0.037, // ±3.7%, about ±0.3 dB
+  },
   envelope: {
     attack: 0.005,
     attackCurve: 'linear',
@@ -46,6 +58,10 @@ export const ocarina = {
     topShare: 0.07,
   },
 } as const
+
+// 1 ÷ the standard deviation of brown noise low-passed as above (0.0327,
+// measured in offline renders)
+const wobbleScale = 1 / 0.0327
 
 export interface Voice {
   /** A fresh note, from silence */
@@ -80,6 +96,22 @@ export function createOcarinaVoice(): Voice {
   dip.fan(pitchDip, loudnessDip)
   pitchDip.connect(tone.detune)
   loudnessDip.connect(loudness.gain)
+
+  // The breath's wobble: brown noise, low-passed until it only wanders,
+  // into the same pitch and loudness. Scaled to the measured wobble by
+  // wobbleScale (the filtered noise's own level, measured).
+  const wobble = new Tone.Noise({ type: 'brown' }).start()
+  const wobbleFilter = new Tone.Filter({
+    type: 'lowpass',
+    frequency: ocarina.wobble.speed,
+    rolloff: -24,
+  })
+  const pitchWobble = new Tone.Gain(ocarina.wobble.cents * wobbleScale)
+  const loudnessWobble = new Tone.Gain(ocarina.wobble.loudness * wobbleScale)
+  wobble.chain(wobbleFilter)
+  wobbleFilter.fan(pitchWobble, loudnessWobble)
+  pitchWobble.connect(tone.detune)
+  loudnessWobble.connect(loudness.gain)
 
   const reverb = new Tone.Reverb({ decay: 0.6, wet: 0.4 })
   // As loud as the earlier, plainer voice
