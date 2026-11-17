@@ -40,8 +40,16 @@ watch(current, (note) => {
   }
 })
 
-// Call synchronously at the start of every gesture handler.
+// Tone's documented pattern is to call Tone.start() from a "click" or
+// "keydown" listener. Touches here cancel touchstart (no scrolling or zooming
+// while playing), which also cancels the click, so a touch's equivalent is
+// touchend.
 const start = () => audio.start()
+
+useEventListener(document, ['touchend', 'click', 'keydown'], start, {
+  capture: true,
+  passive: true,
+})
 
 // Touch
 
@@ -132,7 +140,6 @@ useEventListener(document.documentElement, 'keydown', (e) => {
   const key = keyboardKeys.find((k) => k.code === e.code)
   if (key) {
     e.preventDefault()
-    start()
     press(key.code, key.note)
   }
 })
