@@ -392,8 +392,8 @@
     font-weight: 600;
   }
 
-  // Labels set like notation: the letter, a small raised sharp, and a
-  // faded octave
+  // Labels set like notation: the letter, a small raised sharp, and the
+  // octave, faded
   .synth-key-label {
     display: flex;
     align-items: baseline;
@@ -407,8 +407,7 @@
   }
 
   .synth-key-octave {
-    margin-left: 0.12em;
-    font-size: 0.5em;
+    margin-left: 0.04em;
     opacity: 0.55;
   }
 }
