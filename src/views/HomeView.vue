@@ -39,7 +39,7 @@ const synthLayoutClasses = {
 const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
 
 // A4 to A6 in major thirds; the gamepad layouts use the keys' default notes.
-// For trying the alternative while choosing: ?grid=fourths
+// ?grid=fourths picks the alternative grid, ready to become a setting.
 const padNotes =
   new URLSearchParams(location.search).get('grid') === 'fourths'
     ? fourthsGrid()

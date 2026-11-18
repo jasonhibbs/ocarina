@@ -210,3 +210,12 @@ test.describe('the Pad grid', () => {
     }
   })
 })
+
+test('offers the fourths grid with ?grid=fourths', async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem('ocarina.synthLayout', 'pad'))
+  await page.goto('/?grid=fourths')
+  const keys = page.locator('.synth-key')
+  await expect(keys).toHaveCount(25)
+  await expect(keys.nth(5)).toHaveAttribute('data-note', 'D5')
+  await expect(keys.last()).toHaveAttribute('data-note', 'A6')
+})

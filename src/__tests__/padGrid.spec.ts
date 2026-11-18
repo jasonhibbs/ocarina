@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { majorThirdsGrid } from '../padGrid'
+import { fourthsGrid, majorThirdsGrid } from '../padGrid'
 
 describe('the Pad grid', () => {
   const notes = majorThirdsGrid()
@@ -35,5 +35,23 @@ describe('the Pad grid', () => {
     expect(rows[3]![0]).toBe('A5')
     expect(rows[5]![4]).toBe('A6')
     expect(rows[2]![4]).toBe('A5')
+  })
+})
+
+describe('the fourths grid', () => {
+  const notes = fourthsGrid()
+  const rows = Array.from({ length: 5 }, (_, r) =>
+    notes.slice(r * 5, r * 5 + 5)
+  )
+
+  it('runs from A4 to A6, in 5 rows of 5, with no duplicates', () => {
+    expect(notes).toHaveLength(25)
+    expect(notes[0]).toBe('A4')
+    expect(notes.at(-1)).toBe('A6')
+    expect(new Set(notes).size).toBe(25)
+  })
+
+  it('starts each row a fourth above the last', () => {
+    expect(rows.map((row) => row[0])).toEqual(['A4', 'D5', 'G5', 'C6', 'F6'])
   })
 })
