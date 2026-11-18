@@ -35,6 +35,18 @@ if (debugEnabled) {
       ? `audioSession=${(navigator as { audioSession?: { type: string } }).audioSession?.type}`
       : 'no audioSession'
   )
+  // How much of the top the status bar covers: 0 when iOS keeps the app
+  // below it, as it should
+  const logSafeArea = (when: string) => {
+    const probe = document.createElement('div')
+    probe.style.paddingTop = 'env(safe-area-inset-top)'
+    document.body.append(probe)
+    debugLog('safe-area-inset-top', when, getComputedStyle(probe).paddingTop)
+    probe.remove()
+  }
+  logSafeArea('load')
+  addEventListener('resize', () => logSafeArea('resize'))
+  addEventListener('pageshow', () => logSafeArea('pageshow'))
   for (const type of [
     'touchstart',
     'touchend',

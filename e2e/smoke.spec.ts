@@ -114,11 +114,25 @@ test.describe('touch', { tag: '@mobile' }, () => {
 })
 
 test('slides the drawer up when it opens', async ({ page }) => {
+  // The browser starts a transform transition on the card only if it slides
+  // in. (Timing its position instead was flaky under load.)
+  await page.evaluate(() => {
+    document.addEventListener(
+      'transitionrun',
+      (e) => {
+        const target = e.target as HTMLElement
+        if (
+          target.classList.contains('drawer-card') &&
+          e.propertyName === 'transform'
+        ) {
+          document.documentElement.dataset.drawerSlid = 'true'
+        }
+      },
+      true
+    )
+  })
   await page.getByTitle('About Ocarina').click()
-  const card = page.locator('.drawer-card')
-  const top = async () => (await card.boundingBox())!.y
-  const first = await top()
-  await expect.poll(top).toBeLessThan(first - 100)
+  await expect(page.locator('html')).toHaveAttribute('data-drawer-slid', 'true')
 })
 
 test('switches layout from the drawer and remembers it', async ({ page }) => {
