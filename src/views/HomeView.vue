@@ -6,7 +6,7 @@ import { useAudioStore } from '@/stores/audio'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
-import { majorThirdsGrid } from '@/padGrid'
+import { fourthsGrid, majorThirdsGrid } from '@/padGrid'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
 // Saria’s Song        https://youtu.be/3QvlxoX1GjI?t=2988
@@ -38,8 +38,12 @@ const synthLayoutClasses = {
 
 const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
 
-// A4 to A6 in major thirds; the gamepad layouts use the keys' default notes
-const padNotes = majorThirdsGrid()
+// A4 to A6 in major thirds; the gamepad layouts use the keys' default notes.
+// For trying the alternative while choosing: ?grid=fourths
+const padNotes =
+  new URLSearchParams(location.search).get('grid') === 'fourths'
+    ? fourthsGrid()
+    : majorThirdsGrid()
 const synthNotes = computed(() =>
   synthLayout.value === 'pad' ? padNotes : undefined
 )
