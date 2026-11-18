@@ -23,6 +23,7 @@ const strings = {
     'Unmute your device and tap the buttons to play the notes, little touchscreens are best.',
     'Audio is ready when the dot is green. Red means something broke.',
     'On a QWERTY keyboard, keys S to L play C5 to C6.',
+    'The Pad layout runs in semitones left to right, each row a major third above the last, so octaves are three rows straight up.',
     'The N64 layout is wholly nostalgic. The A button is D5, C-Up is D6.',
     'The Switch 2 layout moves A to L, and the C buttons to R, Y, X and A.',
   ],

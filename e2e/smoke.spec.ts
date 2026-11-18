@@ -168,3 +168,45 @@ test('labels the Switch 2 buttons L, R, Y, X and A', async ({ page }) => {
     ).toHaveCSS('content', `"${letter}"`, { pseudo: 'after' })
   }
 })
+
+test.describe('the Pad grid', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.evaluate(() =>
+      localStorage.setItem('ocarina.synthLayout', 'pad')
+    )
+    await page.reload()
+  })
+
+  test('runs A4 to A6 in major thirds, octaves straight up', async ({
+    page,
+  }) => {
+    const keys = page.locator('.synth-key')
+    await expect(keys).toHaveCount(30)
+    await expect(keys.first()).toHaveAttribute('data-note', 'A4')
+    await expect(keys.last()).toHaveAttribute('data-note', 'A6')
+
+    const box = async (i: number) => (await keys.nth(i).boundingBox())!
+    const [a4, a5, row2] = [await box(0), await box(15), await box(5)]
+    // A5 starts the fourth row: straight above A4, three rows up
+    expect(Math.abs(a5.x - a4.x)).toBeLessThan(1)
+    expect(a4.y - a5.y).toBeCloseTo(3 * (a4.y - row2.y), 0)
+    // Every key a comfortable touch target
+    for (const i of [0, 7, 29]) {
+      const b = await box(i)
+      expect(Math.min(b.width, b.height)).toBeGreaterThanOrEqual(44)
+    }
+  })
+
+  test('plays a note from either of its keys', async ({ page }) => {
+    await startAudio(page)
+    const f5 = page.locator('.synth-key[data-note="F5"]')
+    await expect(f5).toHaveCount(2)
+    for (const i of [0, 1]) {
+      await f5.nth(i).hover()
+      await page.mouse.down()
+      await expect(f5.nth(i)).toHaveAttribute('aria-pressed', 'true')
+      await page.mouse.up()
+      await expect(f5.nth(i)).toHaveAttribute('aria-pressed', 'false')
+    }
+  })
+})

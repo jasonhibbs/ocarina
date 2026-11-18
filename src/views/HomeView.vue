@@ -6,6 +6,7 @@ import { useAudioStore } from '@/stores/audio'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
+import { majorThirdsGrid } from '@/padGrid'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
 // Saria’s Song        https://youtu.be/3QvlxoX1GjI?t=2988
@@ -30,12 +31,18 @@ const audio = useAudioStore()
 // Layout
 
 const synthLayoutClasses = {
-  pad: '',
+  pad: '_grid',
   n64: '_rotated _gamepad',
   switch2: '_rotated _gamepad _switch',
 } as const
 
 const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
+
+// A4 to A6 in major thirds; the gamepad layouts use the keys' default notes
+const padNotes = majorThirdsGrid()
+const synthNotes = computed(() =>
+  synthLayout.value === 'pad' ? padNotes : undefined
+)
 
 const strings = computed(() => ({
   layoutToggleLabel: `Layout: ${synthLayoutLabel.value}`,
@@ -74,7 +81,7 @@ const strings = computed(() => ({
     </header>
 
     <main>
-      <SynthKeys :class="synthLayoutClass" />
+      <SynthKeys :class="synthLayoutClass" :notes="synthNotes" />
     </main>
 
     <!-- Browsers only start audio from a gesture they count as user

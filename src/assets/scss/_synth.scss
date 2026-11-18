@@ -372,3 +372,23 @@
     content: 'A';
   }
 }
+
+// Pad — a grid in major thirds (see padGrid.ts): 5 keys a row at every
+// size, as its shapes only hold if it never reflows. Sharps are tinted, like
+// a piano's black keys, and every A is marked as an anchor.
+
+.synth-keys._grid {
+  .synth-key {
+    width: 20%;
+    font-size: 1.5em;
+  }
+
+  .synth-key._sharp {
+    --background-color: var(--color-key-30);
+    --hover-background-color: var(--color-key-40);
+  }
+
+  .synth-key._a .synth-key-label {
+    font-weight: 600;
+  }
+}
