@@ -8,13 +8,14 @@ import * as Tone from 'tone'
  * - Almost a pure sine, with faint 2nd and 3rd harmonics, and a held note
  *   wobbles very slightly, as breath does.
  * - A note speaks at once (5 ms), starts a few cents flat and rises into
- *   tune over about 180 ms, and stops quickly (about 70 ms).
+ *   tune over about 180 ms. It stops over a breathier tail than the
+ *   reference's, chosen by ear.
  * - Slurred notes change pitch only, gliding there in about 20 ms: no new
  *   attack, and no flat start.
  * - Vibrato comes from the breath. A note is held steady for about 1.2 s,
- *   then dips regularly, about 4.5 times a second: the pitch sits on the
- *   note, then drops about 50 cents and back in roughly 0.1 s, and the
- *   loudness drops about 8 dB with it.
+ *   then dips about 4.5 times a second, in the reference's own shape: the
+ *   pitch eases down about 45 cents and springs back, and the loudness
+ *   drops about 8 dB with it, recovering more slowly.
  */
 export const ocarina = {
   // Just the 2nd and 3rd harmonics, about 40 and 44 dB down, as on the
@@ -47,16 +48,29 @@ export const ocarina = {
     rate: 4.55, // Hz
     plainFor: 1.1, // s steady, after each new or slurred note
     reachFor: 0.25, // s to near its full depth…
-    firstDipAfter: 0.12, // s: the first dip comes in at about half depth
+    firstDipAfter: 0.14, // s: the first dip comes in at about half depth
     deepenFor: 1.5, // s …then a little deeper
     nearShare: 0.85,
-    // The dips: pitch down this far, and loudness to this share
-    dipCents: 50,
-    dipLoudness: 0.68, // a dip to about -8.5 dB
-    // How sharp the dips are: higher is narrower, with a longer steady top
-    dipSharpness: 4,
-    // The top of each cycle sits a little sharp of the note, as measured
-    topShare: 0.07,
+    // One cycle of the reference's vibrato, averaged over its steady
+    // cycles: every 5 ms from one top, through the dip (in the middle), to
+    // the next. The pitch (cents) eases down and springs back up, with a
+    // pointed bottom; the loudness (dB) lags behind it, recovering slowly.
+    // Both are relative to the note before its vibrato began, and corrected
+    // once so the rendered voice measures the reference's cycle (measuring
+    // blurs it slightly, and this table was itself measured).
+    cyclePitch: [
+      1, 1, 1, 3, 6, 5, 4, 1, -0, 1, 1, -3, -3, -6, -12, -11, -16, -21, -25,
+      -30, -34, -42, -49, -39, -32, -29, -22, -15, -9, -7, -2, 1, 4, 2, 2, 6, 6,
+      3, 0, 2, 5, 3, 1, 0, 1,
+    ],
+    cycleLoudness: [
+      1.1, 1.2, 1.2, 1.0, 0.8, 0.5, 0.5, 0.5, 0.5, 0.4, 0.3, 0.2, 0.0, -0.4,
+      -1.1, -1.5, -2.3, -3.2, -4.0, -5.3, -6.6, -7.5, -8.3, -8.1, -7.3, -6.3,
+      -5.1, -4.1, -3.0, -2.2, -1.5, -0.7, -0.2, 0.1, 0.2, 0.5, 0.7, 0.8, 1.0,
+      1.3, 1.3, 1.1, 1.0, 0.9, 1.1,
+    ],
+    // The full dip, as a share of the cycle above
+    depth: 1.05,
   },
 } as const
 
@@ -80,21 +94,36 @@ export function createOcarinaVoice(): Voice {
     envelope: { ...ocarina.envelope },
   })
 
-  // The breath's dips: a sine LFO shaped so that it rests near the top and
-  // dips sharply once a cycle, from about +topShare down to -1. It sways
-  // pitch (in cents of detune) and loudness (as a share of the gain around
-  // 1) together. A plain Gain feeding a parameter adds to it, so the onset
-  // automation on detune still works.
-  const lfo = new Tone.LFO({ frequency: v.rate, min: -1, max: 1 })
-  const dip = new Tone.WaveShaper(
-    (x) => v.topShare - ((1 - x) / 2) ** v.dipSharpness,
-    1024
-  )
+  // The breath's dips: a sawtooth LFO sweeps the phase of each cycle, and
+  // WaveShapers read the reference's cycle off it, for pitch (in cents of
+  // detune) and loudness (as a share of the gain around 1). Both are
+  // scaled so a full dip reads -1. A plain Gain feeding a parameter adds to
+  // it, so the onset automation on detune still works.
+  const lfo = new Tone.LFO({
+    type: 'sawtooth',
+    frequency: v.rate,
+    min: -1,
+    max: 1,
+  })
+  const pitchCycle = v.cyclePitch
+  const loudnessCycle = v.cycleLoudness.map((dB) => 10 ** (dB / 20) - 1)
+  const pitchDipCents = -Math.min(...pitchCycle)
+  const loudnessDipShare = -Math.min(...loudnessCycle)
+  const readCycle = (cycle: readonly number[], scale: number) =>
+    new Tone.WaveShaper((x) => {
+      const at = ((x + 1) / 2) * (cycle.length - 1)
+      const i = Math.min(Math.floor(at), cycle.length - 2)
+      const value = cycle[i]! + (cycle[i + 1]! - cycle[i]!) * (at - i)
+      return value / scale
+    }, 2048)
+  const pitchShape = readCycle(pitchCycle, pitchDipCents)
+  const loudnessShape = readCycle(loudnessCycle, loudnessDipShare)
   const pitchDip = new Tone.Gain(0)
   const loudnessDip = new Tone.Gain(0)
   const loudness = new Tone.Gain(1)
-  lfo.connect(dip)
-  dip.fan(pitchDip, loudnessDip)
+  lfo.fan(pitchShape, loudnessShape)
+  pitchShape.connect(pitchDip)
+  loudnessShape.connect(loudnessDip)
   pitchDip.connect(tone.detune)
   loudnessDip.connect(loudness.gain)
 
@@ -124,15 +153,15 @@ export function createOcarinaVoice(): Voice {
 
   // Each new or slurred note starts steady, then its vibrato comes in.
   // The LFO restarts so the first dip always lands firstDipAfter into the
-  // vibrato. Tone's LFO, restarted, reaches its trough a quarter of a cycle
-  // in (measured); restarting one cycle earlier still, while the vibrato is
-  // at zero, keeps the jump in its phase silent.
+  // vibrato. Tone's sawtooth LFO, restarted, reaches the dip (the middle of
+  // the cycle) half a cycle in (measured); restarting one cycle earlier
+  // still, while the vibrato is at zero, keeps the jump in its phase silent.
   function restartVibrato(time: number) {
     const start = time + v.plainFor
-    lfo.start(start + v.firstDipAfter - 1.25 / v.rate)
+    lfo.start(start + v.firstDipAfter - 1.5 / v.rate)
     for (const [param, full] of [
-      [pitchDip.gain, v.dipCents],
-      [loudnessDip.gain, v.dipLoudness],
+      [pitchDip.gain, pitchDipCents * v.depth],
+      [loudnessDip.gain, loudnessDipShare * v.depth],
     ] as const) {
       param.cancelAndHoldAtTime(time)
       param.linearRampToValueAtTime(0, time + settle)
