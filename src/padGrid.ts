@@ -45,18 +45,19 @@ const A4 = 69
 /**
  * The Pad layout's grid. Its core runs A4 to A6 in rows of 5:
  *
- * - thirds (the default): each row a major third (4 semitones) above the
- *   last, so rows overlap by a note and an octave is three rows straight
- *   up. Grids tuned in major thirds were found significantly easier to play
- *   than the usual fourths (Klin, NIME 2015).
- * - fourths: each row a fourth (5 semitones) above the last, like bass or
- *   guitar strings, so rows meet without overlapping.
+ * - fourths (the default): each row a fourth (5 semitones) above the last,
+ *   like bass or guitar strings, so rows meet without overlapping. By ear,
+ *   the easier for playing the songs.
+ * - thirds: each row a major third (4 semitones) above the last, so rows
+ *   overlap by a note and an octave is three rows straight up. Grids tuned
+ *   in major thirds were found significantly easier to play in general
+ *   than fourths (Klin, NIME 2015).
  *
  * To keep the keys nearer square, the core grows a row above and below in
  * portrait, and a column either side in landscape.
  */
 export function padGrid(
-  kind: PadGridKind = 'thirds',
+  kind: PadGridKind = 'fourths',
   orientation: Orientation = 'portrait'
 ): PadGrid {
   const step = kind === 'thirds' ? 4 : 5

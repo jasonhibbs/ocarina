@@ -177,7 +177,7 @@ test.describe('the Pad grid', () => {
     await page.reload()
   })
 
-  test('lays out semitones along rows a major third apart, squared to the screen', async ({
+  test('lays out semitones along rows a fourth apart, squared to the screen', async ({
     page,
   }) => {
     const keys = page.locator('.synth-key')
@@ -186,7 +186,7 @@ test.describe('the Pad grid', () => {
     )
     // A row more above and below in portrait, a column more either side in
     // landscape
-    const [rows, columns] = landscape ? [6, 7] : [8, 5]
+    const [rows, columns] = landscape ? [5, 7] : [7, 5]
     await expect(keys).toHaveCount(rows * columns)
 
     const layout = await keys.evaluateAll((els) =>
@@ -218,7 +218,7 @@ test.describe('the Pad grid', () => {
       const [, name, octave] = note.match(/^([A-G]#?)(\d)$/)!
       return names.indexOf(name!) + (Number(octave) + 1) * 12
     }
-    // From where each key is on screen: up a row is 4 semitones, along a
+    // From where each key is on screen: up a row is 5 semitones, along a
     // column 1, starting at the bottom-left
     // Rows and columns, grouping positions within a pixel or two (keys can
     // sit on half pixels)
@@ -236,13 +236,15 @@ test.describe('the Pad grid', () => {
     )!
     const base = midi(bottomLeft.note)
     for (const k of layout) {
-      expect(midi(k.note)).toBe(base + lineOf(ys, k.y) * 4 + lineOf(xs, k.x))
+      expect(midi(k.note)).toBe(base + lineOf(ys, k.y) * 5 + lineOf(xs, k.x))
     }
     // Every key a comfortable touch target
     expect(Math.min(...layout.map((k) => k.size))).toBeGreaterThanOrEqual(44)
   })
 
   test('plays a note from either of its keys', async ({ page }) => {
+    // The thirds grid always repeats notes
+    await page.goto('/?grid=thirds')
     await startAudio(page)
     const f5 = page.locator('.synth-key[data-note="F5"]')
     expect(await f5.count()).toBeGreaterThanOrEqual(2)
@@ -256,18 +258,18 @@ test.describe('the Pad grid', () => {
   })
 })
 
-test('offers the fourths grid with ?grid=fourths', async ({ page }) => {
+test('offers the thirds grid with ?grid=thirds', async ({ page }) => {
   await page.evaluate(() => localStorage.setItem('ocarina.synthLayout', 'pad'))
-  await page.goto('/?grid=fourths')
+  await page.goto('/?grid=thirds')
   const keys = page.locator('.synth-key')
-  // 7 rows of 5 in portrait, or 5 rows of 7 in landscape
-  await expect(keys).toHaveCount(35)
-  const notes = await keys.evaluateAll((els) =>
-    els.map((el) => (el as HTMLElement).dataset.note)
-  )
-  // A row up is a fourth: the second row starts 5 semitones above the first
   const landscape = await page.evaluate(
     () => matchMedia('(orientation: landscape)').matches
   )
-  expect(notes[landscape ? 7 : 5]).toBe(landscape ? 'C#5' : 'A4')
+  // 8 rows of 5 in portrait, or 6 rows of 7 in landscape
+  await expect(keys).toHaveCount(landscape ? 42 : 40)
+  const notes = await keys.evaluateAll((els) =>
+    els.map((el) => (el as HTMLElement).dataset.note)
+  )
+  // A row up is a major third: the second row starts 4 semitones above
+  expect(notes[landscape ? 7 : 5]).toBe(landscape ? 'C5' : 'A4')
 })

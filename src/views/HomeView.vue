@@ -39,14 +39,14 @@ const synthLayoutClasses = {
 
 const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
 
-// The Pad grid, in major thirds by default; ?grid=fourths picks the
-// alternative, ready to become a setting. It grows a row above and below in
+// The Pad grid, in fourths by default; ?grid=thirds picks the alternative,
+// ready to become a setting. It grows a row above and below in
 // portrait, and a column either side in landscape. The gamepad layouts use
 // the keys' default notes.
 const gridKind =
-  new URLSearchParams(location.search).get('grid') === 'fourths'
-    ? 'fourths'
-    : 'thirds'
+  new URLSearchParams(location.search).get('grid') === 'thirds'
+    ? 'thirds'
+    : 'fourths'
 const isLandscape = useMediaQuery('(orientation: landscape)')
 const grid = computed(() =>
   padGrid(gridKind, isLandscape.value ? 'landscape' : 'portrait')
