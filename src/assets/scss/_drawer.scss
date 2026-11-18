@@ -36,12 +36,13 @@
   pointer-events: none;
   padding-top: percentage(math.div(35, 375));
 
+  // Clear of the status bar, should iOS lay the app out underneath it
   .is-app & {
-    padding-top: rem(10);
+    padding-top: calc(env(safe-area-inset-top) + #{rem(10)});
   }
 
   @media (orientation: landscape) {
-    padding-top: rem(10);
+    padding-top: calc(env(safe-area-inset-top) + #{rem(10)});
   }
 }
 

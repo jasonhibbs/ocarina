@@ -52,6 +52,10 @@ header {
   touch-action: none;
   margin-left: env(safe-area-inset-left);
   margin-right: env(safe-area-inset-right);
+  // iOS should keep the installed app below the status bar (status bar style
+  // "default"), where this is 0, but sometimes lays it out underneath on
+  // launch. Then this is the status bar's height, and moves the header clear.
+  padding-top: env(safe-area-inset-top);
 
   button._inner {
     flex: auto;
