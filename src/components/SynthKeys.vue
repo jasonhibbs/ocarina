@@ -160,8 +160,8 @@ useEventListener(document.documentElement, 'keyup', (e) => {
   >
     <div class="synth-keys-inner">
       <SynthKey
-        v-for="note in notes"
-        :key="note"
+        v-for="(note, i) in notes"
+        :key="`${i}-${note}`"
         :note="note"
         :title="synthKeyTitle(note)"
         :aria-pressed="isPressed(note)"

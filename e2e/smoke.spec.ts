@@ -168,3 +168,108 @@ test('labels the Switch 2 buttons L, R, Y, X and A', async ({ page }) => {
     ).toHaveCSS('content', `"${letter}"`, { pseudo: 'after' })
   }
 })
+
+test.describe('the Pad grid', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.evaluate(() =>
+      localStorage.setItem('ocarina.synthLayout', 'pad')
+    )
+    await page.reload()
+  })
+
+  test('lays out semitones along rows a fourth apart, squared to the screen', async ({
+    page,
+  }) => {
+    const keys = page.locator('.synth-key')
+    const landscape = await page.evaluate(
+      () => matchMedia('(orientation: landscape)').matches
+    )
+    // A row more above and below in portrait, a column more either side in
+    // landscape
+    const [rows, columns] = landscape ? [5, 7] : [7, 5]
+    await expect(keys).toHaveCount(rows * columns)
+
+    const layout = await keys.evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect()
+        return {
+          note: (el as HTMLElement).dataset.note!,
+          x: Math.round(box.x),
+          y: Math.round(box.y),
+          size: Math.min(box.width, box.height),
+        }
+      })
+    )
+    const names = [
+      'C',
+      'C#',
+      'D',
+      'D#',
+      'E',
+      'F',
+      'F#',
+      'G',
+      'G#',
+      'A',
+      'A#',
+      'B',
+    ]
+    const midi = (note: string) => {
+      const [, name, octave] = note.match(/^([A-G]#?)(\d)$/)!
+      return names.indexOf(name!) + (Number(octave) + 1) * 12
+    }
+    // From where each key is on screen: up a row is 5 semitones, along a
+    // column 1, starting at the bottom-left
+    // Rows and columns, grouping positions within a pixel or two (keys can
+    // sit on half pixels)
+    const lines = (values: number[]) =>
+      [...values]
+        .sort((a, b) => a - b)
+        .filter((v, i, sorted) => i === 0 || v - sorted[i - 1]! > 2)
+    const lineOf = (lines: number[], v: number) =>
+      lines.findIndex((line) => Math.abs(line - v) <= 2)
+    const xs = lines(layout.map((k) => k.x))
+    const ys = lines(layout.map((k) => k.y)).reverse() // bottom row first
+    expect([ys.length, xs.length]).toEqual([rows, columns])
+    const bottomLeft = layout.find(
+      (k) => lineOf(xs, k.x) === 0 && lineOf(ys, k.y) === 0
+    )!
+    const base = midi(bottomLeft.note)
+    for (const k of layout) {
+      expect(midi(k.note)).toBe(base + lineOf(ys, k.y) * 5 + lineOf(xs, k.x))
+    }
+    // Every key a comfortable touch target
+    expect(Math.min(...layout.map((k) => k.size))).toBeGreaterThanOrEqual(44)
+  })
+
+  test('plays a note from either of its keys', async ({ page }) => {
+    // The thirds grid always repeats notes
+    await page.goto('/?grid=thirds')
+    await startAudio(page)
+    const f5 = page.locator('.synth-key[data-note="F5"]')
+    expect(await f5.count()).toBeGreaterThanOrEqual(2)
+    for (const i of [0, 1]) {
+      await f5.nth(i).hover()
+      await page.mouse.down()
+      await expect(f5.nth(i)).toHaveAttribute('aria-pressed', 'true')
+      await page.mouse.up()
+      await expect(f5.nth(i)).toHaveAttribute('aria-pressed', 'false')
+    }
+  })
+})
+
+test('offers the thirds grid with ?grid=thirds', async ({ page }) => {
+  await page.evaluate(() => localStorage.setItem('ocarina.synthLayout', 'pad'))
+  await page.goto('/?grid=thirds')
+  const keys = page.locator('.synth-key')
+  const landscape = await page.evaluate(
+    () => matchMedia('(orientation: landscape)').matches
+  )
+  // 8 rows of 5 in portrait, or 6 rows of 7 in landscape
+  await expect(keys).toHaveCount(landscape ? 42 : 40)
+  const notes = await keys.evaluateAll((els) =>
+    els.map((el) => (el as HTMLElement).dataset.note)
+  )
+  // A row up is a major third: the second row starts 4 semitones above
+  expect(notes[landscape ? 7 : 5]).toBe(landscape ? 'C5' : 'A4')
+})

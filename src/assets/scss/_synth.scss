@@ -296,7 +296,9 @@
   }
 }
 
-.synth-keys:not(._rotated) {
+// The 15 naturals from A4 to A6 for any plain layout; the Pad grid sets its
+// own notes
+.synth-keys:not(._rotated):not(._grid) {
   [data-note='F4'],
   [data-note='G4'],
   [data-note='B6'],
@@ -370,5 +372,26 @@
   }
   [data-note='A5'] .synth-key-inner:after {
     content: 'A';
+  }
+}
+
+// Pad — a chromatic grid (see padGrid.ts): its columns are set from the
+// grid, never by the screen's width, as its shapes only hold if it never
+// reflows. Sharps are tinted, like
+// a piano's black keys, and every A is marked as an anchor.
+
+.synth-keys._grid {
+  .synth-key {
+    width: calc(100% / var(--grid-columns, 5));
+    font-size: 1.3em;
+  }
+
+  .synth-key._sharp {
+    --background-color: var(--color-key-30);
+    --hover-background-color: var(--color-key-40);
+  }
+
+  .synth-key._a .synth-key-label {
+    font-weight: 600;
   }
 }

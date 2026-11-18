@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useUiStore } from '@/stores/ui'
 import { useAudioStore } from '@/stores/audio'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
+import { padGrid } from '@/padGrid'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
 // Saria’s Song        https://youtu.be/3QvlxoX1GjI?t=2988
@@ -30,12 +32,33 @@ const audio = useAudioStore()
 // Layout
 
 const synthLayoutClasses = {
-  pad: '',
+  pad: '_grid',
   n64: '_rotated _gamepad',
   switch2: '_rotated _gamepad _switch',
 } as const
 
 const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
+
+// The Pad grid, in fourths by default; ?grid=thirds picks the alternative,
+// ready to become a setting. It grows a row above and below in
+// portrait, and a column either side in landscape. The gamepad layouts use
+// the keys' default notes.
+const gridKind =
+  new URLSearchParams(location.search).get('grid') === 'thirds'
+    ? 'thirds'
+    : 'fourths'
+const isLandscape = useMediaQuery('(orientation: landscape)')
+const grid = computed(() =>
+  padGrid(gridKind, isLandscape.value ? 'landscape' : 'portrait')
+)
+const synthNotes = computed(() =>
+  synthLayout.value === 'pad' ? grid.value.notes : undefined
+)
+const synthStyle = computed(() =>
+  synthLayout.value === 'pad'
+    ? { '--grid-columns': grid.value.columns }
+    : undefined
+)
 
 const strings = computed(() => ({
   layoutToggleLabel: `Layout: ${synthLayoutLabel.value}`,
@@ -74,7 +97,11 @@ const strings = computed(() => ({
     </header>
 
     <main>
-      <SynthKeys :class="synthLayoutClass" />
+      <SynthKeys
+        :class="synthLayoutClass"
+        :style="synthStyle"
+        :notes="synthNotes"
+      />
     </main>
 
     <!-- Browsers only start audio from a gesture they count as user
