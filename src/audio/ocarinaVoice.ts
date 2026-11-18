@@ -59,15 +59,15 @@ export const ocarina = {
     // once so the rendered voice measures the reference's cycle (measuring
     // blurs it slightly, and this table was itself measured).
     cyclePitch: [
-      1, 1, 1, 3, 6, 5, 4, 1, -0, 1, 1, -3, -3, -6, -12, -11, -16, -21, -25,
-      -30, -34, -42, -49, -39, -32, -29, -22, -15, -9, -7, -2, 1, 4, 2, 2, 6, 6,
-      3, 0, 2, 5, 3, 1, 0, 1,
+      3, 3, 2, 3, 5, 3, 2, -1, -1, -1, -1, -6, -6, -9, -15, -13, -19, -24, -27,
+      -31, -35, -41, -48, -37, -32, -29, -23, -18, -12, -10, -5, -3, 1, -0, 1,
+      4, 4, 2, 1, 3, 5, 3, 2, 1, 3,
     ],
     cycleLoudness: [
-      1.1, 1.2, 1.2, 1.0, 0.8, 0.5, 0.5, 0.5, 0.5, 0.4, 0.3, 0.2, 0.0, -0.4,
-      -1.1, -1.5, -2.3, -3.2, -4.0, -5.3, -6.6, -7.5, -8.3, -8.1, -7.3, -6.3,
-      -5.1, -4.1, -3.0, -2.2, -1.5, -0.7, -0.2, 0.1, 0.2, 0.5, 0.7, 0.8, 1.0,
-      1.3, 1.3, 1.1, 1.0, 0.9, 1.1,
+      1.0, 1.0, 0.9, 0.8, 0.6, 0.4, 0.5, 0.4, 0.3, 0.2, -0.0, -0.2, -0.6, -1.0,
+      -1.7, -2.1, -2.9, -3.7, -4.4, -5.7, -6.7, -7.3, -8.0, -7.7, -7.0, -6.3,
+      -5.2, -4.4, -3.4, -2.7, -2.1, -1.4, -0.9, -0.5, -0.3, 0.0, 0.2, 0.4, 0.6,
+      0.8, 0.9, 0.8, 0.9, 0.9, 1.0,
     ],
     // The full dip, as a share of the cycle above
     depth: 1.05,
@@ -77,6 +77,37 @@ export const ocarina = {
 // 1 ÷ the standard deviation of brown noise low-passed as above (0.0327,
 // measured in offline renders)
 const wobbleScale = 1 / 0.0327
+
+interface FourierSeries {
+  mean: number
+  real: Float32Array
+  imag: Float32Array
+}
+
+/**
+ * One cycle (equally spaced, its last point repeating its first), divided by
+ * scale, as a Fourier series: enough harmonics for a smooth, faithful copy
+ * (16 reproduce the vibrato's cycle within about half a cent).
+ */
+function fourierSeries(
+  cycle: readonly number[],
+  scale: number,
+  harmonics = 16
+): FourierSeries {
+  const n = cycle.length - 1
+  const y = cycle.slice(0, n).map((value) => value / scale)
+  const real = new Float32Array(harmonics + 1)
+  const imag = new Float32Array(harmonics + 1)
+  for (let k = 1; k <= harmonics; k++) {
+    for (let i = 0; i < n; i++) {
+      const angle = (2 * Math.PI * k * i) / n
+      real[k]! += (2 / n) * y[i]! * Math.cos(angle)
+      imag[k]! += (2 / n) * y[i]! * Math.sin(angle)
+    }
+  }
+  const mean = y.reduce((sum, value) => sum + value, 0) / n
+  return { mean, real, imag }
+}
 
 export interface Voice {
   /** A fresh note, from silence */
@@ -94,38 +125,53 @@ export function createOcarinaVoice(): Voice {
     envelope: { ...ocarina.envelope },
   })
 
-  // The breath's dips: a sawtooth LFO sweeps the phase of each cycle, and
-  // WaveShapers read the reference's cycle off it, for pitch (in cents of
-  // detune) and loudness (as a share of the gain around 1). Both are
-  // scaled so a full dip reads -1. A plain Gain feeding a parameter adds to
-  // it, so the onset automation on detune still works.
-  const lfo = new Tone.LFO({
-    type: 'sawtooth',
-    frequency: v.rate,
-    min: -1,
-    max: 1,
-  })
+  // The breath's dips: the reference's cycle, played as a smooth periodic
+  // signal (its Fourier series, through an oscillator), for pitch (in cents
+  // of detune) and loudness (as a share of the gain around 1). Both are
+  // scaled so a full dip reads -1. Web Audio drops a wave's constant part,
+  // so that is added back from a Signal. A plain Gain feeding a parameter
+  // adds to it, so the onset automation on detune still works.
+  //
+  // (Sweeping the table with a sawtooth clicked: its band-limited jump at
+  // the end of each cycle swept through the whole dip in a millisecond.)
   const pitchCycle = v.cyclePitch
   const loudnessCycle = v.cycleLoudness.map((dB) => 10 ** (dB / 20) - 1)
   const pitchDipCents = -Math.min(...pitchCycle)
   const loudnessDipShare = -Math.min(...loudnessCycle)
-  const readCycle = (cycle: readonly number[], scale: number) =>
-    new Tone.WaveShaper((x) => {
-      const at = ((x + 1) / 2) * (cycle.length - 1)
-      const i = Math.min(Math.floor(at), cycle.length - 2)
-      const value = cycle[i]! + (cycle[i + 1]! - cycle[i]!) * (at - i)
-      return value / scale
-    }, 2048)
-  const pitchShape = readCycle(pitchCycle, pitchDipCents)
-  const loudnessShape = readCycle(loudnessCycle, loudnessDipShare)
+  const pitchSeries = fourierSeries(pitchCycle, pitchDipCents)
+  const loudnessSeries = fourierSeries(loudnessCycle, loudnessDipShare)
   const pitchDip = new Tone.Gain(0)
   const loudnessDip = new Tone.Gain(0)
   const loudness = new Tone.Gain(1)
-  lfo.fan(pitchShape, loudnessShape)
-  pitchShape.connect(pitchDip)
-  loudnessShape.connect(loudnessDip)
+  new Tone.Signal(pitchSeries.mean).connect(pitchDip)
+  new Tone.Signal(loudnessSeries.mean).connect(loudnessDip)
   pitchDip.connect(tone.detune)
   loudnessDip.connect(loudness.gain)
+
+  const context = Tone.getContext().rawContext
+  const waveOf = ({ real, imag }: FourierSeries) =>
+    context.createPeriodicWave(real, imag, { disableNormalization: true })
+  const pitchWave = waveOf(pitchSeries)
+  const loudnessWave = waveOf(loudnessSeries)
+
+  // Oscillators can't restart, so each note gets a fresh pair, starting at
+  // the top of a cycle (the dip is half a cycle in)
+  let cycles: { stop(time: number): void }[] = []
+  function startCycles(time: number) {
+    for (const oscillator of cycles) oscillator.stop(time)
+    cycles = [
+      [pitchWave, pitchDip],
+      [loudnessWave, loudnessDip],
+    ].map(([wave, destination]) => {
+      const oscillator = context.createOscillator()
+      oscillator.setPeriodicWave(wave as PeriodicWave)
+      oscillator.frequency.value = v.rate
+      Tone.connect(oscillator, destination as Tone.Gain)
+      oscillator.onended = () => oscillator.disconnect()
+      oscillator.start(time)
+      return oscillator
+    })
+  }
 
   // The breath's wobble: brown noise, low-passed until it only wanders,
   // into the same pitch and loudness. Scaled to the measured wobble by
@@ -152,13 +198,12 @@ export function createOcarinaVoice(): Voice {
   const settle = 0.06
 
   // Each new or slurred note starts steady, then its vibrato comes in.
-  // The LFO restarts so the first dip always lands firstDipAfter into the
-  // vibrato. Tone's sawtooth LFO, restarted, reaches the dip (the middle of
-  // the cycle) half a cycle in (measured); restarting one cycle earlier
-  // still, while the vibrato is at zero, keeps the jump in its phase silent.
+  // The cycles restart so the first dip always lands firstDipAfter into
+  // the vibrato. They start one cycle earlier still, while the vibrato is
+  // at zero, so the switch from the last note's pair is silent.
   function restartVibrato(time: number) {
     const start = time + v.plainFor
-    lfo.start(start + v.firstDipAfter - 1.5 / v.rate)
+    startCycles(start + v.firstDipAfter - 1.5 / v.rate)
     for (const [param, full] of [
       [pitchDip.gain, pitchDipCents * v.depth],
       [loudnessDip.gain, loudnessDipShare * v.depth],
