@@ -177,30 +177,75 @@ test.describe('the Pad grid', () => {
     await page.reload()
   })
 
-  test('runs A4 to A6 in major thirds, octaves straight up', async ({
+  test('lays out semitones along rows a major third apart, squared to the screen', async ({
     page,
   }) => {
     const keys = page.locator('.synth-key')
-    await expect(keys).toHaveCount(30)
-    await expect(keys.first()).toHaveAttribute('data-note', 'A4')
-    await expect(keys.last()).toHaveAttribute('data-note', 'A6')
+    const landscape = await page.evaluate(
+      () => matchMedia('(orientation: landscape)').matches
+    )
+    // A row more above and below in portrait, a column more either side in
+    // landscape
+    const [rows, columns] = landscape ? [6, 7] : [8, 5]
+    await expect(keys).toHaveCount(rows * columns)
 
-    const box = async (i: number) => (await keys.nth(i).boundingBox())!
-    const [a4, a5, row2] = [await box(0), await box(15), await box(5)]
-    // A5 starts the fourth row: straight above A4, three rows up
-    expect(Math.abs(a5.x - a4.x)).toBeLessThan(1)
-    expect(a4.y - a5.y).toBeCloseTo(3 * (a4.y - row2.y), 0)
-    // Every key a comfortable touch target
-    for (const i of [0, 7, 29]) {
-      const b = await box(i)
-      expect(Math.min(b.width, b.height)).toBeGreaterThanOrEqual(44)
+    const layout = await keys.evaluateAll((els) =>
+      els.map((el) => {
+        const box = el.getBoundingClientRect()
+        return {
+          note: (el as HTMLElement).dataset.note!,
+          x: Math.round(box.x),
+          y: Math.round(box.y),
+          size: Math.min(box.width, box.height),
+        }
+      })
+    )
+    const names = [
+      'C',
+      'C#',
+      'D',
+      'D#',
+      'E',
+      'F',
+      'F#',
+      'G',
+      'G#',
+      'A',
+      'A#',
+      'B',
+    ]
+    const midi = (note: string) => {
+      const [, name, octave] = note.match(/^([A-G]#?)(\d)$/)!
+      return names.indexOf(name!) + (Number(octave) + 1) * 12
     }
+    // From where each key is on screen: up a row is 4 semitones, along a
+    // column 1, starting at the bottom-left
+    // Rows and columns, grouping positions within a pixel or two (keys can
+    // sit on half pixels)
+    const lines = (values: number[]) =>
+      [...values]
+        .sort((a, b) => a - b)
+        .filter((v, i, sorted) => i === 0 || v - sorted[i - 1]! > 2)
+    const lineOf = (lines: number[], v: number) =>
+      lines.findIndex((line) => Math.abs(line - v) <= 2)
+    const xs = lines(layout.map((k) => k.x))
+    const ys = lines(layout.map((k) => k.y)).reverse() // bottom row first
+    expect([ys.length, xs.length]).toEqual([rows, columns])
+    const bottomLeft = layout.find(
+      (k) => lineOf(xs, k.x) === 0 && lineOf(ys, k.y) === 0
+    )!
+    const base = midi(bottomLeft.note)
+    for (const k of layout) {
+      expect(midi(k.note)).toBe(base + lineOf(ys, k.y) * 4 + lineOf(xs, k.x))
+    }
+    // Every key a comfortable touch target
+    expect(Math.min(...layout.map((k) => k.size))).toBeGreaterThanOrEqual(44)
   })
 
   test('plays a note from either of its keys', async ({ page }) => {
     await startAudio(page)
     const f5 = page.locator('.synth-key[data-note="F5"]')
-    await expect(f5).toHaveCount(2)
+    expect(await f5.count()).toBeGreaterThanOrEqual(2)
     for (const i of [0, 1]) {
       await f5.nth(i).hover()
       await page.mouse.down()
@@ -215,7 +260,14 @@ test('offers the fourths grid with ?grid=fourths', async ({ page }) => {
   await page.evaluate(() => localStorage.setItem('ocarina.synthLayout', 'pad'))
   await page.goto('/?grid=fourths')
   const keys = page.locator('.synth-key')
-  await expect(keys).toHaveCount(25)
-  await expect(keys.nth(5)).toHaveAttribute('data-note', 'D5')
-  await expect(keys.last()).toHaveAttribute('data-note', 'A6')
+  // 7 rows of 5 in portrait, or 5 rows of 7 in landscape
+  await expect(keys).toHaveCount(35)
+  const notes = await keys.evaluateAll((els) =>
+    els.map((el) => (el as HTMLElement).dataset.note)
+  )
+  // A row up is a fourth: the second row starts 5 semitones above the first
+  const landscape = await page.evaluate(
+    () => matchMedia('(orientation: landscape)').matches
+  )
+  expect(notes[landscape ? 7 : 5]).toBe(landscape ? 'C#5' : 'A4')
 })

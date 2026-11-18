@@ -1,57 +1,66 @@
 import { describe, expect, it } from 'vitest'
-import { fourthsGrid, majorThirdsGrid } from '../padGrid'
+import { padGrid } from '../padGrid'
 
-describe('the Pad grid', () => {
-  const notes = majorThirdsGrid()
-  const rows = Array.from({ length: 6 }, (_, r) =>
-    notes.slice(r * 5, r * 5 + 5)
+const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const midi = (note: string) => {
+  const [, name, octave] = note.match(/^([A-G]#?)(-?\d+)$/)!
+  return names.indexOf(name!) + (Number(octave) + 1) * 12
+}
+
+const rowsOf = ({ notes, columns }: ReturnType<typeof padGrid>) =>
+  Array.from({ length: notes.length / columns }, (_, r) =>
+    notes.slice(r * columns, r * columns + columns)
   )
 
-  it('runs from A4 to A6, in 6 rows of 5', () => {
-    expect(notes).toHaveLength(30)
-    expect(notes[0]).toBe('A4')
-    expect(notes.at(-1)).toBe('A6')
-  })
+describe('the Pad grid', () => {
+  it.each([
+    // kind, orientation, rows, columns, lowest, highest
+    ['thirds', 'portrait', 8, 5, 'F4', 'C#7'],
+    ['thirds', 'landscape', 6, 7, 'G#4', 'A#6'],
+    ['fourths', 'portrait', 7, 5, 'E4', 'D7'],
+    ['fourths', 'landscape', 5, 7, 'G#4', 'A#6'],
+  ] as const)(
+    'in %s, %s: %i rows of %i, %s to %s',
+    (kind, orientation, rows, columns, lowest, highest) => {
+      const grid = padGrid(kind, orientation)
+      expect(grid.columns).toBe(columns)
+      expect(grid.notes).toHaveLength(rows * columns)
+      expect(grid.notes[0]).toBe(lowest)
+      expect(grid.notes.at(-1)).toBe(highest)
+    }
+  )
 
-  it('runs in semitones along each row', () => {
-    expect(rows[0]).toEqual(['A4', 'A#4', 'B4', 'C5', 'C#5'])
-  })
+  it.each([
+    ['thirds', 4],
+    ['fourths', 5],
+  ] as const)(
+    'in %s, runs in semitones along each row, each row %i semitones above the last',
+    (kind, step) => {
+      for (const orientation of ['portrait', 'landscape'] as const) {
+        const rows = rowsOf(padGrid(kind, orientation))
+        const base = midi(rows[0]![0]!)
+        rows.forEach((row, r) =>
+          row.forEach((note, c) => expect(midi(note)).toBe(base + r * step + c))
+        )
+      }
+    }
+  )
 
-  it('starts each row a major third above the last, so rows overlap by a note', () => {
-    expect(rows.map((row) => row[0])).toEqual([
-      'A4',
-      'C#5',
-      'F5',
-      'A5',
-      'C#6',
-      'F6',
-    ])
-    for (let r = 1; r < rows.length; r++) {
-      expect(rows[r]![0]).toBe(rows[r - 1]![4])
+  it('always holds the whole of A4 to A6', () => {
+    for (const kind of ['thirds', 'fourths'] as const) {
+      for (const orientation of ['portrait', 'landscape'] as const) {
+        const notes = new Set(padGrid(kind, orientation).notes.map(midi))
+        for (let n = midi('A4'); n <= midi('A6'); n++) {
+          expect(notes.has(n)).toBe(true)
+        }
+      }
     }
   })
 
-  it('puts an octave three rows straight up', () => {
-    expect(rows[3]![0]).toBe('A5')
-    expect(rows[5]![4]).toBe('A6')
-    expect(rows[2]![4]).toBe('A5')
-  })
-})
-
-describe('the fourths grid', () => {
-  const notes = fourthsGrid()
-  const rows = Array.from({ length: 5 }, (_, r) =>
-    notes.slice(r * 5, r * 5 + 5)
-  )
-
-  it('runs from A4 to A6, in 5 rows of 5, with no duplicates', () => {
-    expect(notes).toHaveLength(25)
-    expect(notes[0]).toBe('A4')
-    expect(notes.at(-1)).toBe('A6')
-    expect(new Set(notes).size).toBe(25)
-  })
-
-  it('starts each row a fourth above the last', () => {
-    expect(rows.map((row) => row[0])).toEqual(['A4', 'D5', 'G5', 'C6', 'F6'])
+  it('puts an octave three rows straight up, in thirds', () => {
+    const rows = rowsOf(padGrid('thirds', 'portrait'))
+    const a4 = rows[1]!.indexOf('A4')
+    expect(rows[4]![a4]).toBe('A5')
+    expect(rows[7]![a4]).toBe('A6')
   })
 })

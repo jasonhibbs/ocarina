@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useMediaQuery } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import { useUiStore } from '@/stores/ui'
 import { useAudioStore } from '@/stores/audio'
 import IconOcarina from '@/components/IconOcarina.vue'
 import IconLayout from '@/components/IconLayout.vue'
 import SynthKeys from '@/components/SynthKeys.vue'
-import { fourthsGrid, majorThirdsGrid } from '@/padGrid'
+import { padGrid } from '@/padGrid'
 
 // Zelda’s Lullaby     https://youtu.be/3QvlxoX1GjI?t=2616
 // Saria’s Song        https://youtu.be/3QvlxoX1GjI?t=2988
@@ -38,14 +39,25 @@ const synthLayoutClasses = {
 
 const synthLayoutClass = computed(() => synthLayoutClasses[synthLayout.value])
 
-// A4 to A6 in major thirds; the gamepad layouts use the keys' default notes.
-// ?grid=fourths picks the alternative grid, ready to become a setting.
-const padNotes =
+// The Pad grid, in major thirds by default; ?grid=fourths picks the
+// alternative, ready to become a setting. It grows a row above and below in
+// portrait, and a column either side in landscape. The gamepad layouts use
+// the keys' default notes.
+const gridKind =
   new URLSearchParams(location.search).get('grid') === 'fourths'
-    ? fourthsGrid()
-    : majorThirdsGrid()
+    ? 'fourths'
+    : 'thirds'
+const isLandscape = useMediaQuery('(orientation: landscape)')
+const grid = computed(() =>
+  padGrid(gridKind, isLandscape.value ? 'landscape' : 'portrait')
+)
 const synthNotes = computed(() =>
-  synthLayout.value === 'pad' ? padNotes : undefined
+  synthLayout.value === 'pad' ? grid.value.notes : undefined
+)
+const synthStyle = computed(() =>
+  synthLayout.value === 'pad'
+    ? { '--grid-columns': grid.value.columns }
+    : undefined
 )
 
 const strings = computed(() => ({
@@ -85,7 +97,11 @@ const strings = computed(() => ({
     </header>
 
     <main>
-      <SynthKeys :class="synthLayoutClass" :notes="synthNotes" />
+      <SynthKeys
+        :class="synthLayoutClass"
+        :style="synthStyle"
+        :notes="synthNotes"
+      />
     </main>
 
     <!-- Browsers only start audio from a gesture they count as user
