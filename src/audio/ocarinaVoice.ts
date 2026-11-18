@@ -1,4 +1,5 @@
 import * as Tone from 'tone'
+import { equalLoudnessSpl } from '@/audio/equalLoudness'
 
 /**
  * An ocarina, matched to a reference recording of a player (the Song of
@@ -41,6 +42,13 @@ export const ocarina = {
   },
   // Slurred notes glide to the new pitch (portamento); fresh notes don't
   glide: 0.02, // s
+  // Every note equally loud to the ear: lower notes need more level to sound
+  // as loud (ISO 226:2003 equal-loudness contours, at a moderate level).
+  // Each note gets the level it needs relative to A5.
+  balance: {
+    phon: 60,
+    reference: 880, // Hz, A5
+  },
   // A fresh note starts flat and rises into tune
   onsetDetune: -8, // cents
   onsetSettle: 0.18, // s
@@ -108,6 +116,11 @@ function fourierSeries(
   const mean = y.reduce((sum, value) => sum + value, 0) / n
   return { mean, real, imag }
 }
+
+// The output level (dB): set from renders so a held E4, boosted most, with
+// its vibrato and the reverb, peaks no higher than about -1.5 dBFS (it
+// reached +2.6 dBFS at the earlier -3.5)
+const outputTrim = -7.5
 
 export interface Voice {
   /** A fresh note, from silence */
@@ -189,10 +202,19 @@ export function createOcarinaVoice(): Voice {
   pitchWobble.connect(tone.detune)
   loudnessWobble.connect(loudness.gain)
 
+  // Each note's level for equal loudness (see ocarina.balance)
+  const balance = new Tone.Gain(1)
+  const { phon, reference } = ocarina.balance
+  const referenceSpl = equalLoudnessSpl(reference, phon)
+  const balanceFor = (note: string) =>
+    Tone.dbToGain(
+      equalLoudnessSpl(Tone.Frequency(note).toFrequency(), phon) - referenceSpl
+    )
+
   const reverb = new Tone.Reverb({ decay: 0.6, wet: 0.4 })
-  // As loud as the earlier, plainer voice
-  const output = new Tone.Volume(-3.5)
-  tone.chain(loudness, reverb, output, Tone.getDestination())
+  // Trimmed so the lowest notes, boosted most, still peak clear of clipping
+  const output = new Tone.Volume(outputTrim)
+  tone.chain(loudness, balance, reverb, output, Tone.getDestination())
 
   // Long enough to glide out of a held note's vibrato without a click
   const settle = 0.06
@@ -219,6 +241,8 @@ export function createOcarinaVoice(): Voice {
   return {
     triggerAttack(note, time) {
       tone.portamento = 0
+      balance.gain.cancelAndHoldAtTime(time)
+      balance.gain.setValueAtTime(balanceFor(note), time)
       tone.triggerAttack(note, time)
       tone.detune.cancelScheduledValues(time)
       tone.detune.setValueAtTime(ocarina.onsetDetune, time)
@@ -227,6 +251,12 @@ export function createOcarinaVoice(): Voice {
     },
     slideTo(note, time) {
       tone.portamento = ocarina.glide
+      // The level follows the glide, so a slur doesn't jump in loudness
+      balance.gain.cancelAndHoldAtTime(time)
+      balance.gain.linearRampToValueAtTime(
+        balanceFor(note),
+        time + ocarina.glide
+      )
       tone.setNote(note, time)
       restartVibrato(time)
     },
