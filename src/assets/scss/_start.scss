@@ -135,8 +135,8 @@ button.audio-start {
   border-radius: 0;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  -webkit-backdrop-filter: blur(1.5px) grayscale(1);
-  backdrop-filter: blur(1.5px) grayscale(1);
+  -webkit-backdrop-filter: blur(1.5px) grayscale(0.5);
+  backdrop-filter: blur(1.5px) grayscale(0.5);
 
   &:focus {
     box-shadow: none;
